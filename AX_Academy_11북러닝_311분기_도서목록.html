@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AX Academy 북러닝 3분기 도서 목록</title>
+<link href="https://cdn.jsdelivr.net/npm/pretendard@latest/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0B0E14;--surface:#141820;--surface2:#1A1F2B;--surface3:#222838;
+  --border:#2A3040;--border-hover:#3A4560;
+  --text:#E8EAF0;--text2:#9BA3B5;--text3:#6B7385;
+  --seed:#22C55E;--seed-bg:rgba(34,197,94,.1);--seed-border:rgba(34,197,94,.2);
+  --adv:#3B82F6;--adv-bg:rgba(59,130,246,.1);--adv-border:rgba(59,130,246,.2);
+  --deep:#A855F7;--deep-bg:rgba(168,85,247,.1);--deep-border:rgba(168,85,247,.2);
+  --accent:#F59E0B;--accent-bg:rgba(245,158,11,.1);--accent-border:rgba(245,158,11,.2);
+  --star:#EF4444;--star-bg:rgba(239,68,68,.08);--star-border:rgba(239,68,68,.2);
+}
+body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+a{color:inherit;text-decoration:none}
+
+/* Header */
+.hero{background:linear-gradient(135deg,#0F1923 0%,#162033 50%,#1A1040 100%);border-bottom:1px solid var(--border);padding:48px 24px 40px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 50%,rgba(59,130,246,.06) 0%,transparent 50%),radial-gradient(circle at 70% 50%,rgba(168,85,247,.06) 0%,transparent 50%);animation:heroPulse 8s ease-in-out infinite alternate}
+@keyframes heroPulse{0%{opacity:.6}100%{opacity:1}}
+.hero-badge{display:inline-block;background:rgba(245,158,11,.12);color:var(--accent);font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;letter-spacing:1.5px;margin-bottom:18px;border:1px solid rgba(245,158,11,.2);text-transform:uppercase;position:relative}
+.hero h1{font-size:32px;font-weight:800;color:#fff;margin-bottom:8px;position:relative;letter-spacing:-.5px}
+.hero p{font-size:14px;color:var(--text2);position:relative;max-width:500px;margin:0 auto}
+
+/* Stats */
+.stats-wrap{padding:32px 24px 0;display:flex;justify-content:center}
+.stats{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 24px;text-align:center;min-width:100px;flex:0 1 auto}
+.stat-num{font-size:28px;font-weight:800;letter-spacing:-1px}
+.stat-label{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-top:2px}
+.stat-seed .stat-num{color:var(--seed)}.stat-adv .stat-num{color:var(--adv)}.stat-deep .stat-num{color:var(--deep)}.stat-total .stat-num{color:var(--text)}
+
+/* Tabs */
+.tab-wrap{padding:28px 24px 0;display:flex;justify-content:center}
+.tab-bar{display:inline-flex;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px;gap:4px}
+.tab-btn{padding:10px 24px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;white-space:nowrap;position:relative}
+.tab-btn:hover{color:var(--text2)}
+.tab-btn.active{background:var(--surface3);color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.tab-btn .tab-count{font-size:11px;font-weight:700;margin-left:6px;padding:2px 7px;border-radius:6px;background:var(--surface3);color:var(--text3)}
+.tab-btn.active .tab-count{background:rgba(255,255,255,.1);color:var(--text2)}
+.tab-btn.star-tab.active{background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(245,158,11,.12));color:#fff}
+
+/* Container */
+.container{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+
+/* Filters */
+.filters{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.search-wrap{flex:1;min-width:200px;position:relative}
+.search-wrap input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px 10px 38px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border .2s}
+.search-wrap input:focus{border-color:var(--adv)}
+.search-wrap input::placeholder{color:var(--text3)}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3)}
+.filter-btn{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
+.filter-btn:hover{border-color:var(--border-hover);color:var(--text)}
+.filter-btn.active{color:#fff}
+.filter-btn.active[data-level="Seed"]{background:var(--seed-bg);border-color:var(--seed-border);color:var(--seed)}
+.filter-btn.active[data-level="고급"]{background:var(--adv-bg);border-color:var(--adv-border);color:var(--adv)}
+.filter-btn.active[data-level="심화"]{background:var(--deep-bg);border-color:var(--deep-border);color:var(--deep)}
+.filter-btn.active[data-level="all"]{background:var(--accent-bg);border-color:var(--accent-border);color:var(--accent)}
+
+/* Recommender pills */
+.rec-filters{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.rec-pill{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;transition:all .15s;font-family:inherit}
+.rec-pill:hover{border-color:var(--border-hover);color:var(--text2)}
+.rec-pill.active{background:var(--surface3);border-color:var(--border-hover);color:var(--text)}
+.rec-count{font-size:11px;color:var(--text3);margin-bottom:16px;font-weight:500}
+
+/* Book cards */
+.book-list{display:flex;flex-direction:column;gap:8px}
+.book-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;transition:all .2s;cursor:pointer;position:relative;overflow:hidden}
+.book-card:hover{border-color:var(--border-hover);background:var(--surface2)}
+.book-card.expanded{background:var(--surface2);border-color:var(--border-hover)}
+.book-card.starred{border-left:3px solid var(--star)}
+.book-top{display:flex;align-items:flex-start;gap:14px}
+.book-num{flex-shrink:0;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--surface3);color:var(--text3)}
+.book-info{flex:1;min-width:0}
+.book-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.45}
+.book-meta{font-size:12px;color:var(--text3);display:flex;flex-wrap:wrap;gap:4px 12px;margin-bottom:8px}
+.book-meta span{white-space:nowrap}
+.book-tags{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.level-tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;letter-spacing:.3px}
+.level-tag.seed{background:var(--seed-bg);color:var(--seed);border:1px solid var(--seed-border)}
+.level-tag.adv{background:var(--adv-bg);color:var(--adv);border:1px solid var(--adv-border)}
+.level-tag.deep{background:var(--deep-bg);color:var(--deep);border:1px solid var(--deep-border)}
+.rec-tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;background:var(--surface3);color:var(--text2);border:1px solid var(--border)}
+.rec-count-badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--accent-bg);color:var(--accent);border:1px solid rgba(245,158,11,.15)}
+
+/* Expanded detail */
+.book-detail{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;padding:0 0 0 42px}
+.book-card.expanded .book-detail{max-height:600px;padding:14px 0 4px 42px}
+.detail-reasons{font-size:13px;color:var(--text2);line-height:1.7}
+.detail-reason-item{margin-bottom:8px;padding-left:12px;border-left:2px solid var(--border)}
+.detail-reason-name{font-weight:700;color:var(--text);margin-right:4px}
+.detail-link{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:7px 14px;border-radius:8px;background:var(--surface3);border:1px solid var(--border);font-size:12px;font-weight:600;color:var(--adv);transition:all .15s}
+.detail-link:hover{background:var(--adv-bg);border-color:var(--adv-border)}
+
+/* Level guide */
+.level-guide{margin-bottom:28px}
+.guide-toggle{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s;width:100%;font-family:inherit}
+.guide-toggle:hover{border-color:var(--border-hover)}
+.guide-toggle-text{font-size:13px;font-weight:600;color:var(--text2)}
+.guide-toggle svg{color:var(--text3);transition:transform .2s}
+.guide-toggle.open svg{transform:rotate(180deg)}
+.guide-content{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.guide-content.open{max-height:500px}
+.guide-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;padding:12px 0 0}
+.guide-card{background:var(--surface);border-radius:12px;padding:16px 18px;border:1px solid var(--border)}
+.guide-card-title{font-size:14px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.guide-card-desc{font-size:12px;color:var(--text3);line-height:1.6}
+
+/* Pagination */
+.pagination{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:24px}
+.page-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--text3);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:inherit}
+.page-btn:hover{border-color:var(--border-hover);color:var(--text)}
+.page-btn.active{background:var(--adv-bg);border-color:var(--adv-border);color:var(--adv)}
+.page-btn.nav{width:auto;padding:0 14px;font-size:12px}
+.page-btn:disabled{opacity:.3;cursor:default;pointer-events:none}
+.page-info{font-size:12px;color:var(--text3);margin:0 8px}
+
+/* 공감도서 special banner */
+.featured-banner{background:linear-gradient(135deg,rgba(239,68,68,.06),rgba(245,158,11,.06));border:1px solid rgba(239,68,68,.15);border-radius:14px;padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:14px}
+.featured-icon{font-size:28px;flex-shrink:0}
+.featured-text h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px}
+.featured-text p{font-size:12px;color:var(--text3);line-height:1.5}
+
+/* Empty state */
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:.4}
+.empty-text{font-size:14px}
+
+/* Responsive */
+@media(max-width:640px){
+  .hero h1{font-size:24px}
+  .stats{gap:8px}
+  .stat-card{padding:12px 16px;min-width:70px}
+  .stat-num{font-size:22px}
+  .book-card{padding:14px 16px}
+  .book-detail,.book-card.expanded .book-detail{padding-left:0}
+  .guide-cards{grid-template-columns:1fr}
+  .tab-btn{padding:9px 16px;font-size:13px}
+}
+
+/* Scroll animation */
+.book-card{opacity:0;transform:translateY(8px);animation:cardIn .35s ease forwards}
+@keyframes cardIn{to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<div class="hero">  
+  <h1>북러닝 3분기 도서 목록</h1>
+  <p>AX 추진 Cell이 추천하고 AI가 선정한 북러닝 리스트</p>
+</div>
+
+<!-- Stats -->
+<div class="stats-wrap">
+  <div class="stats">
+    <div class="stat-card stat-total"><div class="stat-num">50</div><div class="stat-label">전체 도서</div></div>
+    <div class="stat-card stat-seed"><div class="stat-num">23</div><div class="stat-label">Seed</div></div>
+    <div class="stat-card stat-adv"><div class="stat-num">17</div><div class="stat-label">고급</div></div>
+    <div class="stat-card stat-deep"><div class="stat-num">10</div><div class="stat-label">심화</div></div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tab-wrap">
+  <div class="tab-bar">
+    <button class="tab-btn star-tab active" data-tab="featured" onclick="switchTab('featured')">⭐ 공감도서 선정<span class="tab-count">3</span></button>
+    <button class="tab-btn" data-tab="all50" onclick="switchTab('all50')">전체 50선<span class="tab-count">50</span></button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Level Guide -->
+  <div class="level-guide">
+    <button class="guide-toggle" id="guideToggle" onclick="toggleGuide()">
+      <span class="guide-toggle-text">📘 난이도 기준 안내</span>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+    <div class="guide-content" id="guideContent">
+      <div class="guide-cards">
+        <div class="guide-card">
+          <div class="guide-card-title"><span class="level-tag seed">Seed</span>입문 · 23권 (46%)</div>
+          <div class="guide-card-desc">AI·데이터 개념 이해, 리터러시, 기본 도구 사용, 트렌드 이해, 윤리 등 AI/AX 기초 이해와 기본 활용을 위한 입문 단계</div>
+        </div>
+        <div class="guide-card">
+          <div class="guide-card-title"><span class="level-tag adv">고급</span>실무 적용 · 17권 (34%)</div>
+          <div class="guide-card-desc">업무 생산성 향상, 직무별 적용, 프롬프트 엔지니어링, 노코드 분석 등 업무·직무 맥락에 AI 도구를 적용해 산출물을 만드는 실무 단계</div>
+        </div>
+        <div class="guide-card">
+          <div class="guide-card-title"><span class="level-tag deep">심화</span>고도화 · 10권 (20%)</div>
+          <div class="guide-card-desc">AI 에이전트, RAG/LLM, 머신러닝/딥러닝, 워크플로우 자동화 설계 등 기술 구현이나 고난도 분석을 다루는 프로젝트/고도화 단계</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters" id="filtersArea">
+    <div class="search-wrap">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input type="text" id="searchInput" placeholder="도서명, 저자, 출판사 검색..." oninput="onFilterChange()">
+    </div>
+    <button class="filter-btn active" data-level="all" onclick="setLevel(this,'all')">전체</button>
+    <button class="filter-btn" data-level="Seed" onclick="setLevel(this,'Seed')">Seed</button>
+    <button class="filter-btn" data-level="고급" onclick="setLevel(this,'고급')">고급</button>
+    <button class="filter-btn" data-level="심화" onclick="setLevel(this,'심화')">심화</button>
+  </div>
+
+  <!-- Recommender pills -->
+  <div class="rec-filters" id="recFilters"></div>
+
+  <div class="rec-count" id="recCount"></div>
+  <div class="book-list" id="bookList"></div>
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<script>
+var FEATURED=[{"n":1,"r":["김용민","원민경"],"t":"박태웅의 AI 강의 2026","a":"박태웅","p":"한빛비즈","d":"2026-03-20","u":"https://product.kyobobook.co.kr/detail/S000219446416","l":"Seed","desc":"[김용민] 독자들이 선정한 AI 분야 최고의 책으로, AI 트렌드와 기술 변화를 쉽고 명확하게 정리한 필독서||[원민경] AI의 현재 기술적 흐름과 다가올 미래의 변화를 짚어주는 책"},{"n":2,"r":["이은우","심규빈","김용민","원민경"],"t":"AX 전략 마스터클래스","a":"원유현","p":"한빛비즈","d":"2025-11-11","u":"https://product.kyobobook.co.kr/detail/S000218305065","l":"고급","desc":"[심규빈] KT그룹 AI 전략가가 18개 기업의 AX 사례로 '무엇을, 어디서부터'를 제시||[김용민] 18개 글로벌 기업의 실제 AX 전환 사례를 담아 전략적 AI 도입 방법론을 제시||[원민경] 18개 글로벌 기업의 실제 AX 사례를 담은 책"},{"n":3,"r":["심규빈"],"t":"AI 에이전트 생태계","a":"조쉬(이주환)","p":"로드북","d":"2025-08-04","u":"https://product.kyobobook.co.kr/detail/S000217098357","l":"심화","desc":"[심규빈] AX의 다음 단계인 에이전틱 AI 시대를 기술·비즈니스·철학 세 관점에서 구조적으로 해석"}];
+
+var BOOKS=[{"n":1,"r":["홍석진","심규빈","김용민","원민경","김규동"],"t":"AI 2026 트렌드&활용백과","a":"김덕진","p":"스마트북스","d":"2025-10-21","u":"https://product.kyobobook.co.kr/detail/S000218055137","l":"Seed","desc":"[홍석진] 2026년 빅테크 동향과 30개 AI 도구 활용법을 담은 가장 최신 실용 백과사전||[심규빈] AI가 의사결정 파트너로 전환되는 시대에 기업과 개인이 취해야 할 AX 전략 방향을 제시||[김용민] 빅테크 AI 전략 분석부터 실무 활용법까지 최신 AI 트렌드를 총망라한 연간 백과||[원민경] 2026년 최신 AI 트렌드부터 AI 도구의 활용법을 백과사전처럼 총망라한 책||[김규동] 2026년 빅테크 동향과 30개 AI 도구 활용법을 담은 가장 최신 실용 백과사전"},{"n":2,"r":["홍석진","심규빈","김규동"],"t":"박태웅의 AI 강의 2025","a":"박태웅","p":"한빛비즈","d":"2024-09-30","u":"https://product.kyobobook.co.kr/detail/S000214298857","l":"Seed","desc":"[홍석진] 한국 IT 원로의 시각으로 AI 본질과 한계를 짚은 비전공자용 입문서||[심규빈] AX를 추진하는 조직이 공통 언어를 갖추기 위한 기초서||[김규동] 한국 IT 원로의 시각으로 AI 본질과 한계를 짚은 비전공자용 입문서"},{"n":3,"r":["홍석진","김규동"],"t":"트렌드 코리아 2026","a":"김난도 외","p":"미래의창","d":"2025-09-24","u":"https://product.kyobobook.co.kr/detail/S000217467412","l":"Seed","desc":"[홍석진] 국내 소비자·학습자 트렌드를 짚는 연간 필독서로 시장 변화 파악의 출발점||[김규동] 국내 소비자·학습자 트렌드를 짚는 연간 필독서로 시장 변화 파악의 출발점"},{"n":4,"r":["홍석진","김규동"],"t":"AI 리터러시: 인공지능 필수 지식부터 완벽 활용까지","a":"김용성","p":"프리렉","d":"2024-12-02","u":"https://product.kyobobook.co.kr/detail/S000214845678","l":"Seed","desc":"[홍석진] 2025 세종도서 선정작으로 AI 이해·프롬프트·문제 해결·비판적 사고·윤리 5대 영역을 체계적으로 다룬 입문 실용서||[김규동] 2025 세종도서 선정작으로 AI 이해·프롬프트·문제 해결·비판적 사고·윤리 5대 영역을 체계적으로 다룬 입문 실용서"},{"n":5,"r":["김용민","원민경"],"t":"박태웅의 AI 강의 2026","a":"박태웅","p":"한빛비즈","d":"2026-03-20","u":"https://product.kyobobook.co.kr/detail/S000219446416","l":"Seed","desc":"[김용민] 독자들이 선정한 AI 분야 최고의 책으로, AI 트렌드와 기술 변화를 쉽고 명확하게 정리한 필독서||[원민경] AI의 현재 기술적 흐름과 다가올 미래의 변화를 짚어주는 책"},{"n":6,"r":["심규빈"],"t":"AI 상식 사전","a":"김지현","p":"크레타","d":"2025-06-27","u":"https://product.kyobobook.co.kr/detail/S000216841231","l":"Seed","desc":"[심규빈] SK 경영경제연구소 부사장이 AX를 이해하는 데 필요한 AI 핵심 개념 50가지를 한 권에 정리"},{"n":7,"r":["심규빈"],"t":"2025 AI 트렌드 100","a":"Ai100연구소","p":"골든래빗㈜","d":"2025-06-15","u":"https://product.kyobobook.co.kr/detail/S000216681173","l":"Seed","desc":"[심규빈] 사내 AI 자동화 50종을 직접 운용한 저자가 AX 도입 시 쓸 만한 도구 100개를 카테고리별로 안내"},{"n":8,"r":["심규빈"],"t":"AI 비즈니스 트렌드 2025","a":"이예림, 이소영, 임종진, 한지혜","p":"매일경제신문사","d":"2024-11-15","u":"https://product.kyobobook.co.kr/detail/S000214724356","l":"Seed","desc":"[심규빈] 2025년 가장 많이 쓰인 AI 서비스 40가지를 직접 써보고 비교 정리해, 도입 우선순위를 잡는 데 유용"},{"n":9,"r":["김형효"],"t":"윤리적인 인공지능","a":"안성진, 권정인 외","p":"자유아카데미","d":"2026-01-02","u":"https://product.kyobobook.co.kr/detail/S000218918178","l":"Seed","desc":"[김형효] 인공지능 시대 지녀야 할 핵심 역량과 윤리 쟁점을 사례와 섹터별로 소개"},{"n":10,"r":["김형효"],"t":"2026 AI 사용법","a":"송진혁 외","p":"상상력집단","d":"2025-12-08","u":"https://product.kyobobook.co.kr/detail/S000218880549","l":"Seed","desc":"[김형효] 사용자 편의를 고려한 교재 형식 디자인 구성, AI 활용 사례를 풍부하게 수록"},{"n":11,"r":["김형효"],"t":"AI 최전선(AI First)","a":"애덤 브로트먼, 앤디 색","p":"윌북","d":"2026-04-05","u":"https://product.kyobobook.co.kr/detail/S000219468791","l":"Seed","desc":"[김형효] AI 시대에 AI를 받아들이는 자세를 인식론적으로 소개"},{"n":12,"r":["김형효","원민경"],"t":"출근길에 읽고 퇴근길에 완성하는 바이브 코딩","a":"노승헌","p":"THE TIES","d":"2026-02-02","u":"https://product.kyobobook.co.kr/detail/S000219071696","l":"Seed","desc":"[원민경] 비전문가도 AI 바이브 코딩으로 개발을 시작할 수 있도록 돕는 책"},{"n":13,"r":["김형효"],"t":"클로드 코드를 활용한 바이브 코딩 완벽 입문","a":"히라카와 토모히데","p":"위키북스","d":"2026-03-12","u":"https://product.kyobobook.co.kr/detail/S000219349783","l":"Seed","desc":"[김형효] 클로드로 바이브 코딩하기 위한 첫 걸음, 클로드 시작부터 앱 보안 배포까지"},{"n":14,"r":["이은우","김용민","원민경","이윤라"],"t":"처음 만나는 바이브 코딩 X MCP","a":"김동한","p":"박영사","d":"2026-03-30","u":"https://product.kyobobook.co.kr/detail/S000219470421","l":"Seed","desc":"[김용민] AI와 감정·맥락으로 협업하는 바이브 코딩과 MCP 실전 활용법 입문서||[원민경] 바이브 코딩과 MCP 기반 AI 활용 방식을 쉽게 설명한 책"},{"n":15,"r":["이은우"],"t":"AI로 차트 그래프 인포그래픽 한 번에 끝내기","a":"이현","p":"천그루숲","d":"2026-01-30","u":"https://product.kyobobook.co.kr/detail/S000219080761","l":"Seed","desc":""},{"n":16,"r":["서준영"],"t":"그림으로 배우는 생성형 AI","a":"프리양카 베르가디아 외","p":"한빛미디어","d":"2026-04-13","u":"https://product.kyobobook.co.kr/detail/S000219713793","l":"Seed","desc":"[서준영] 그림을 통해 생성형 AI의 핵심 개념을 직관적으로 풀어낸 책"},{"n":17,"r":["서준영"],"t":"차별하는 데이터 : 상관관계, 이웃, 새로운 인식의 정치","a":"엔디 희경 전","p":"워크룸프레스","d":"2026-01-05","u":"https://product.kyobobook.co.kr/detail/S000218964220","l":"Seed","desc":"[서준영] 기계학습과 알고리듬에 인간의 편견과 차별이 어떻게 내재해 있는지를 다루는 책"},{"n":18,"r":["서준영"],"t":"민들레 Vol.159 : AI 시대, 교육과 인간의 길","a":"민들레 편집부","p":"민들레","d":"2026-03-01","u":"https://product.kyobobook.co.kr/detail/S000219391237","l":"Seed","desc":"[서준영] 대안교육 전문지의 AI 특집호로, 콘텐츠 기획의 사각지대를 보완해주는 자료"},{"n":19,"r":["서준영"],"t":"먼저 온 미래","a":"장강명","p":"동아시아","d":"2025-06-26","u":"https://product.kyobobook.co.kr/detail/S000216885989","l":"Seed","desc":"[서준영] 알파고 이후 한국 바둑계의 9년을 30명의 기사 인터뷰로 기록한 르포"},{"n":20,"r":["서준영"],"t":"AI 리터러시 교육 어떻게 할 것인가","a":"권영부","p":"지식프레임","d":"2026-03-10","u":"https://product.kyobobook.co.kr/detail/S000219342172","l":"Seed","desc":"[서준영] 현장 교사 출신 저자가 K-12 수업에서 AI 리터러시를 어떻게 가르칠지를 구체적으로 풀어낸 책"},{"n":21,"r":["백부경"],"t":"AI와 친한 아이가 살아남습니다","a":"신재현, 공혜정","p":"매일경제신문사","d":"2026-01-25","u":"https://product.kyobobook.co.kr/detail/S000219025064","l":"Seed","desc":"[백부경] 초등학교 부부가 알려주는 AI 교실의 현장"},{"n":22,"r":["백부경"],"t":"피지컬 AI 메가 트렌드","a":"최홍섭, 원미르","p":"위즈덤하우스","d":"2026-01-28","u":"https://product.kyobobook.co.kr/detail/S000219115073","l":"Seed","desc":"[백부경] AI의 미래, 피지컬 AI 그리고 직업과 교육의 변화"},{"n":23,"r":["이윤라"],"t":"문과의 언어로 풀어낸 AI 필수 용어 56","a":"남규택","p":"파이돈","d":"2025-10-13","u":"https://product.kyobobook.co.kr/detail/S000218055222","l":"Seed","desc":""},{"n":24,"r":["이은우","심규빈","김용민","원민경"],"t":"AX 전략 마스터클래스","a":"원유현","p":"한빛비즈","d":"2025-11-11","u":"https://product.kyobobook.co.kr/detail/S000218305065","l":"고급","desc":"[심규빈] KT그룹 AI 전략가가 18개 기업의 AX 사례로 '무엇을, 어디서부터'를 제시||[김용민] 18개 글로벌 기업의 실제 AX 전환 사례를 담아 전략적 AI 도입 방법론을 제시||[원민경] 18개 글로벌 기업의 실제 AX 사례를 담은 책"},{"n":25,"r":["이은우","김용민"],"t":"AX 리더십","a":"김경수","p":"라온북","d":"2025-11-06","u":"https://product.kyobobook.co.kr/detail/S000218278602","l":"고급","desc":"[김용민] AI 전환 시대에 필요한 리더십 역량과 조직 변화 관리 전략을 체계적으로 정리"},{"n":26,"r":["이은우","김용민"],"t":"Dify AI, 코드 없는 미래","a":"김정욱","p":"한빛미디어","d":"2025-12-01","u":"https://product.kyobobook.co.kr/detail/S000218643002","l":"고급","desc":"[김용민] 코드 없이 AI 워크플로우를 구축하는 Dify 플랫폼 실전 활용 가이드"},{"n":27,"r":["이은우","김용민","서준영","원민경","김규동"],"t":"AI 프로덕트는 어떻게 만들어지는가","a":"류인태, 김예림, 임나정","p":"한빛미디어","d":"2026-04-10","u":"https://product.kyobobook.co.kr/detail/S000219598383","l":"고급","desc":"[김용민] PM·디자이너·개발자가 반드시 알아야 할 AI 프로덕트 기획부터 출시까지 전 단계||[서준영] AI 프로덕트가 실제로 만들어지는 과정과 의사결정 흐름을 다루는 책||[원민경] AI 기반으로 기획, 디자인, 개발, 리서치 과정을 실무자의 시선으로 풀어낸 책||[김규동] 범람하는 AI 프로덕트들 사이에서 어떤 기획을 해야할까에 대해 생각해보게 되는 책"},{"n":28,"r":["이은우","김용민","원민경"],"t":"생성형 AI 시대 기업이 살아남는 법","a":"박주원","p":"바다위의정원","d":"2026-02-10","u":"https://product.kyobobook.co.kr/detail/S000219188319","l":"고급","desc":"[김용민] 저자가 현장에서 검증한 AX 실행 가이드로 기업 AI 도입 전략을 구체적으로 제시||[원민경] 저자가 현장에서 검증한 AX 실행 가이드를 제시하는 책"},{"n":29,"r":["홍석진"],"t":"듀얼 브레인","a":"이선 몰릭","p":"상상스퀘어","d":"2025-03-19","u":"https://product.kyobobook.co.kr/detail/S000215838626","l":"고급","desc":"[홍석진] AI를 '도구'가 아닌 '동료'로 다루는 협업 원칙을 제시한 NYT 베스트셀러"},{"n":30,"r":["홍석진"],"t":"엔비디아 웨이","a":"이덕주","p":"더퀘스트","d":"2024-07-25","u":"https://product.kyobobook.co.kr/detail/S000213805237","l":"고급","desc":"[홍석진] 한국 특파원이 취재한 엔비디아의 AI 시대 전략적 의사결정과 조직 문화 케이스"},{"n":31,"r":["홍석진"],"t":"넥서스","a":"유발 하라리","p":"김영사","d":"2024-10-11","u":"https://product.kyobobook.co.kr/detail/S000214465905","l":"고급","desc":"[홍석진] 정보 네트워크의 역사로 본 AI 시대 지식 전달자의 책무"},{"n":32,"r":["홍석진","김용민","서준영","김규동"],"t":"AI 디지털 교육 트렌드 리포트 2026","a":"박기현 외","p":"테크빌교육","d":"2026-01-09","u":"https://product.kyobobook.co.kr/detail/S000218938609","l":"고급","desc":"[홍석진] 'AI 에이전트 시대, 교육자를 위한 AI 리터러시'를 11대 키워드로 정리한 2026년 교육 분야 핵심 이슈 가이드||[김용민] 교육업계 전문가들이 분석한 AI 교육 정책 흐름과 에듀테크 트렌드 동향 리포트||[서준영] 테크빌교육에서 출간, 교육업계의 주요 스피커들이 저자로 참여하기에 정책 흐름과 동향 이해에 좋은 도서||[김규동] 'AI 에이전트 시대, 교육자를 위한 AI 리터러시'를 11대 키워드로 정리한 가이드"},{"n":33,"r":["홍석진"],"t":"AI × 인간지능의 시대","a":"김상균","p":"베가북스","d":"2024-04-17","u":"https://product.kyobobook.co.kr/detail/S000212923906","l":"고급","desc":"[홍석진] 인지과학 관점에서 본 AI와 인간 지능의 결합과 증강"},{"n":34,"r":["심규빈"],"t":"AI 트랜스포메이션","a":"케이트리","p":"제이펍","d":"2025-03-28","u":"https://product.kyobobook.co.kr/detail/S000216042931","l":"고급","desc":"[심규빈] AI 도입부터 조직 변화 관리까지 단계별 로드맵을 제시하는 실무 실행서"},{"n":35,"r":["심규빈"],"t":"AI 코리아 2025","a":"김상균 외","p":"파지트","d":"2024-11-01","u":"https://product.kyobobook.co.kr/detail/S000214614606","l":"고급","desc":"[심규빈] 해외 사례가 아닌 국내 기업의 실제 산업별 AX 적용 현황을 직접 제시"},{"n":36,"r":["심규빈"],"t":"업무 생산성을 확 높이는 AI 서비스","a":"김종철","p":"성안당","d":"2025-01-15","u":"https://product.kyobobook.co.kr/detail/S000215097044","l":"고급","desc":"[심규빈] AI 툴을 업무 유형별로 분류해 소개해, 우리 조직에 맞는 도구를 빠르게 선택하는 데 도움"},{"n":37,"r":["김용민","백부경","원민경"],"t":"AI 시대의 팀장은 다르게 일합니다","a":"김현","p":"중앙북스","d":"2026-01-30","u":"https://product.kyobobook.co.kr/detail/S000219080456","l":"고급","desc":"[김용민] AI 시대 리더의 역할 변화를 다양한 사례로 쉽게 설명, 실무 관리자 필독서||[백부경] AI 시대 속 리더의 역할 정의||[원민경] AI시대 리더의 역할 변화에 대해 다양한 사례를 들어서 쉽게 설명한 책"},{"n":38,"r":["김용민","서준영"],"t":"최고의 프롬프트 엔지니어링 강의","a":"김진중","p":"리코맨드","d":"2024-01-17","u":"https://product.kyobobook.co.kr/detail/S000213362002","l":"고급","desc":"[김용민] LLM 작동 원리 기반으로 프롬프트를 효과적으로 설계하는 방법론 입문서||[서준영] 골빈해커의 저서로, LLM의 작동 원리에 대한 이해를 바탕으로 프롬프트를 짤 수 있도록 돕는 입문서"},{"n":39,"r":["서준영","김규동"],"t":"AI 프로젝트 100% 성공을 위한 체크리스트 17","a":"유진호 외","p":"책만","d":"2026-01-30","u":"https://product.kyobobook.co.kr/detail/S000219059344","l":"고급","desc":"[서준영] AI 프로덕트 기획 시 점검해야 할 핵심 포인트들을 체크리스트 형태로 정리한 책||[김규동] 범람하는 AI 프로덕트들 사이에서 어떤 기획을 해야할까에 대해 생각해보게 되는 책"},{"n":40,"r":["원민경"],"t":"AI워커스: 리디자인","a":"김아람","p":"스마트북스","d":"2026-03-06","u":"https://product.kyobobook.co.kr/detail/S000219335705","l":"고급","desc":"[원민경] 현장에서 쓸 만한 AI 활용 매뉴얼을 제시하는 책"},{"n":41,"r":["이은우"],"t":"AX 설계의 법칙: 기술을 넘어 구조로","a":"박영용","p":"퍼플","d":"2026-05-01","u":"https://product.kyobobook.co.kr/detail/S000219617100","l":"심화","desc":""},{"n":42,"r":["홍석진"],"t":"더 커밍 웨이브","a":"무스타파 술래이만","p":"한스미디어","d":"2024-01-11","u":"https://product.kyobobook.co.kr/detail/S000211812703","l":"심화","desc":"[홍석진] 딥마인드 창업자가 AI·생명공학 신기술의 가능성과 통제 과제를 다룬 SERI CEO 선정 도서"},{"n":43,"r":["홍석진"],"t":"AI 이후의 세계","a":"헨리 키신저 외","p":"윌북","d":"2023-05-22","u":"https://product.kyobobook.co.kr/detail/S000201553092","l":"심화","desc":"[홍석진] 정치·산업·학계 세 거장이 교차한 시선으로 본 AI 시대 의사결정과 인간 정체성"},{"n":44,"r":["홍석진"],"t":"생성형 AI를 위한 프롬프트 엔지니어링","a":"제임스 피닉스 외","p":"한빛미디어","d":"2025-06-23","u":"https://product.kyobobook.co.kr/detail/S000216858506","l":"심화","desc":"[홍석진] 프롬프트 원칙부터 자율 에이전트까지 다룬 콘텐츠 제작자용 종합 실무서"},{"n":45,"r":["홍석진","김규동"],"t":"AI시대 진로의 탄생","a":"한민정","p":"나이스에듀","d":"2026-03-25","u":"https://product.kyobobook.co.kr/detail/S000219570492","l":"심화","desc":"[홍석진] KAIST 명예교수가 2028년 도래할 AGI 시대를 대비해 일자리·교육 변화와 인간이 키워야 할 9가지 필수 능력을 제시||[김규동] KAIST 명예교수가 AGI 시대 일자리·교육 변화와 인간이 키워야 할 9가지 필수 능력을 제시"},{"n":46,"r":["심규빈"],"t":"AI 에이전트 생태계","a":"조쉬(이주환)","p":"로드북","d":"2025-08-04","u":"https://product.kyobobook.co.kr/detail/S000217098357","l":"심화","desc":"[심규빈] AX의 다음 단계인 에이전틱 AI 시대를 기술·비즈니스·철학 세 관점에서 구조적으로 해석"},{"n":47,"r":["김용민","백부경"],"t":"AI 에이전트, 초개인화 경험을 설계하라","a":"안용일, 유성진, 최호규","p":"알에이치코리아","d":"2026-04-10","u":"https://product.kyobobook.co.kr/detail/S000219653338","l":"심화","desc":"[김용민] AX 전환 실패 케이스 분석을 통해 AI 에이전트 기반 초개인화 서비스 설계 전략 탐색||[백부경] AX 전환 실패 케이스 분석 및 실질적 해결안 탐색"},{"n":48,"r":["서준영"],"t":"신뢰할 수 있는 AI와 에이전트 RAG","a":"정천수","p":"커뮤니케이션북스","d":"2026-04-09","u":"https://product.kyobobook.co.kr/detail/S000219615463","l":"심화","desc":"[서준영] K-12 특성상 선행학습 콘텐츠에 조심해야 하는데, 생성형 AI를 활용한 콘텐츠 기획에 있어 RAG에 대한 이해가 도움"},{"n":49,"r":["서준영"],"t":"가상 면접 사례로 배우는 생성형 AI 서비스 설계","a":"알리 아미니안 외","p":"인사이트","d":"2026-03-12","u":"https://product.kyobobook.co.kr/detail/S000219386206","l":"심화","desc":"[서준영] 가상 면접 사례 형식으로 생성형 AI 시스템의 설계 의사결정을 다루는 책"},{"n":50,"r":["서준영"],"t":"AGI 시대의 가추적 사유","a":"서준호","p":"커뮤니케이션북스","d":"2026-04-22","u":"https://product.kyobobook.co.kr/detail/S000219751444","l":"심화","desc":"[서준영] 연역·귀납을 넘어서는 '가추적 사유(abduction)'를 AGI 시대 인간의 차별화 역량으로 제시하는 책"}];
+
+var RECOMMENDERS=["홍석진","심규빈","김용민","원민경","김규동","김형효","이은우","서준영","백부경","이윤라"];
+var currentTab="featured";
+var currentLevel="all";
+var currentRec="all";
+var expandedId=null;
+var currentPage=1;
+var PER_PAGE=10;
+
+// Init recommender pills
+var recGrid=document.getElementById("recFilters");
+var allPill=document.createElement("button");
+allPill.className="rec-pill active";allPill.textContent="전체";allPill.dataset.rec="all";
+allPill.onclick=function(){setRec("all")};recGrid.appendChild(allPill);
+RECOMMENDERS.forEach(function(name){
+  var count=BOOKS.filter(function(b){return b.r.indexOf(name)>=0}).length;
+  var pill=document.createElement("button");
+  pill.className="rec-pill";pill.dataset.rec=name;
+  pill.textContent=name+" ("+count+")";
+  pill.onclick=function(){setRec(name)};
+  recGrid.appendChild(pill);
+});
+
+function switchTab(tab){
+  currentTab=tab;currentPage=1;expandedId=null;
+  document.querySelectorAll(".tab-btn").forEach(function(b){b.classList.toggle("active",b.dataset.tab===tab)});
+  // Show/hide filters for featured tab
+  var showFilters=tab==="all50";
+  document.getElementById("filtersArea").style.display=showFilters?"flex":"none";
+  document.getElementById("recFilters").style.display=showFilters?"flex":"none";
+  render();
+}
+
+function setLevel(btn,lv){
+  document.querySelectorAll(".filter-btn").forEach(function(b){b.classList.remove("active")});
+  btn.classList.add("active");
+  currentLevel=lv;expandedId=null;currentPage=1;render();
+}
+function setRec(name){
+  currentRec=name;expandedId=null;currentPage=1;
+  document.querySelectorAll(".rec-pill").forEach(function(p){
+    p.classList.toggle("active",p.dataset.rec===name);
+  });
+  render();
+}
+function onFilterChange(){currentPage=1;expandedId=null;render()}
+function toggleGuide(){
+  var t=document.getElementById("guideToggle");
+  var c=document.getElementById("guideContent");
+  t.classList.toggle("open");c.classList.toggle("open");
+}
+function toggleCard(n){
+  expandedId=(expandedId===n)?null:n;
+  renderList(getFiltered());
+}
+function goPage(p){
+  currentPage=p;expandedId=null;
+  renderList(getFiltered());
+  document.getElementById("bookList").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function getFiltered(){
+  var src=currentTab==="featured"?FEATURED:BOOKS;
+  if(currentTab==="featured")return src;
+  var q=(document.getElementById("searchInput").value||"").toLowerCase();
+  return src.filter(function(b){
+    if(currentLevel!=="all"&&b.l!==currentLevel)return false;
+    if(currentRec!=="all"&&b.r.indexOf(currentRec)<0)return false;
+    if(q){
+      var hay=(b.t+" "+b.a+" "+b.p+" "+b.desc).toLowerCase();
+      if(hay.indexOf(q)<0)return false;
+    }
+    return true;
+  });
+}
+
+function getLevelClass(lv){
+  if(lv==="Seed")return "seed";if(lv==="고급")return "adv";if(lv==="심화")return "deep";return "";
+}
+
+function parseReasons(desc){
+  if(!desc)return[];
+  return desc.split("||").filter(function(s){return s.trim()}).map(function(s){
+    var m=s.match(/^\[([^\]]+)\]\s*(.*)/);
+    if(m)return{name:m[1],text:m[2]};
+    return{name:"",text:s};
+  });
+}
+
+function renderList(list){
+  var container=document.getElementById("bookList");
+  var pagEl=document.getElementById("pagination");
+  var totalPages=Math.ceil(list.length/PER_PAGE);
+  if(currentTab==="featured")totalPages=1; // no pagination for featured
+
+  var start=(currentPage-1)*PER_PAGE;
+  var end=currentTab==="featured"?list.length:start+PER_PAGE;
+  var page=list.slice(start,end);
+
+  document.getElementById("recCount").textContent=list.length+"권"+(currentTab==="all50"?" 중 "+(start+1)+"~"+Math.min(end,list.length)+"번":"")+" 표시 중";
+
+  if(page.length===0){
+    container.innerHTML='<div class="empty"><div class="empty-icon">📚</div><div class="empty-text">조건에 맞는 도서가 없습니다</div></div>';
+    pagEl.innerHTML="";
+    return;
+  }
+
+  var html="";
+  // Featured banner
+  if(currentTab==="featured"){
+    html+='<div class="featured-banner"><div class="featured-text"><h3>공감도서 선정</h3><p>AX 추진 Cell 전원이 검토하고 AI가 최종 선정한 공감도서입니다. 난이도별(Seed / 고급 / 심화) 각 1권씩 선정되었습니다.</p></div></div>';
+  }
+
+  page.forEach(function(b,i){
+    var isExpanded=expandedId===b.n;
+    var reasons=parseReasons(b.desc);
+    var lvCls=getLevelClass(b.l);
+    var starred=currentTab==="featured"?" starred":"";
+
+    html+='<div class="book-card'+starred+(isExpanded?' expanded':'')+'" style="animation-delay:'+(i*0.03)+'s" onclick="toggleCard('+b.n+')">';
+    html+='<div class="book-top">';
+    html+='<div class="book-num">'+b.n+'</div>';
+    html+='<div class="book-info">';
+    html+='<div class="book-title">'+b.t+'</div>';
+    html+='<div class="book-meta"><span>'+b.a+'</span><span>'+b.p+'</span><span>'+b.d+'</span></div>';
+    html+='<div class="book-tags">';
+    html+='<span class="level-tag '+lvCls+'">'+b.l+'</span>';
+    if(b.r.length>1)html+='<span class="rec-count-badge">'+b.r.length+'명 추천</span>';
+    b.r.forEach(function(name){html+='<span class="rec-tag">'+name+'</span>'});
+    html+='</div></div></div>';
+
+    html+='<div class="book-detail">';
+    if(reasons.length>0){
+      html+='<div class="detail-reasons">';
+      reasons.forEach(function(r){
+        html+='<div class="detail-reason-item">';
+        if(r.name)html+='<span class="detail-reason-name">'+r.name+'</span>';
+        html+=r.text+'</div>';
+      });
+      html+='</div>';
+    }
+    if(b.u){
+      html+='<a class="detail-link" href="'+b.u+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">교보문고에서 보기 →</a>';
+    }
+    html+='</div></div>';
+  });
+  container.innerHTML=html;
+
+  // Pagination
+  if(totalPages<=1||currentTab==="featured"){pagEl.innerHTML="";return}
+  var ph='<button class="page-btn nav" onclick="goPage('+(currentPage-1)+')"'+(currentPage<=1?' disabled':'')+'>‹ 이전</button>';
+  for(var pg=1;pg<=totalPages;pg++){
+    ph+='<button class="page-btn'+(pg===currentPage?' active':'')+'" onclick="goPage('+pg+')">'+pg+'</button>';
+  }
+  ph+='<button class="page-btn nav" onclick="goPage('+(currentPage+1)+')"'+(currentPage>=totalPages?' disabled':'')+'>다음 ›</button>';
+  pagEl.innerHTML=ph;
+}
+
+function render(){renderList(getFiltered())}
+
+// Initial render
+switchTab("featured");
+</script>
+</body>
+</html>
