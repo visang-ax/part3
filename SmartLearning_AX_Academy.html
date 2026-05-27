@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>2026년 비상교육 유밥 스마트러닝 AX Academy 인증 과정</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { scrollbar-gutter: stable; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    background: #f5f6f8;
+    color: #1f2937;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  header.page-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    color: #fff;
+    padding: 28px 32px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  header.page-header h1 {
+    margin: 0 0 6px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  header.page-header .subtitle { font-size: 13px; opacity: 0.9; }
+  .container { padding: 24px 32px 80px; max-width: 1600px; margin: 0 auto; }
+
+  .panel {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid #e5e7eb;
+  }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: flex-start; }
+  .filter-group { min-width: 220px; }
+  .filter-group.flex-wide { flex: 1; min-width: 320px; }
+  .filter-group label.group-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .filter-group.highlight {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: -12px 0;
+    position: relative;
+  }
+  .filter-group.highlight label.group-label { color: #b91c1c; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 16px;
+    font-size: 12.5px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.12s;
+    color: #374151;
+    white-space: nowrap;
+    position: relative;
+  }
+  .chip:hover { background: #e5e7eb; }
+  .chip.active {
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
+  }
+  .chip.disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    background: #f9fafb;
+    color: #9ca3af;
+    border-color: #e5e7eb;
+  }
+  .chip.disabled:hover { background: #f9fafb; }
+  .chip.disabled .chip-count { background: rgba(0,0,0,0.04); color: #9ca3af; }
+  .chip-count {
+    display: inline-block;
+    padding: 0 6px;
+    margin-left: 4px;
+    background: rgba(0,0,0,0.08);
+    color: #6b7280;
+    border-radius: 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .chip.active .chip-count {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+  }
+  /* Level chips match the table badge colors (pastel background + dark text) */
+  .chip.level-seed.active { background: #dcfce7; color: #166534; border-color: #86efac; }
+  .chip.level-deep.active { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+  .chip.level-advanced.active { background: #ede9fe; color: #5b21b6; border-color: #c4b5fd; }
+  .chip.level-seed.active .chip-count,
+  .chip.level-deep.active .chip-count,
+  .chip.level-advanced.active .chip-count { background: rgba(0,0,0,0.06); color: inherit; }
+  .chip.level-seed.active .info-icon,
+  .chip.level-deep.active .info-icon,
+  .chip.level-advanced.active .info-icon { background: #fff; color: #1f2937; border-color: rgba(0,0,0,0.15); }
+
+  .chip .info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.6);
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 700;
+    font-style: italic;
+    font-family: Georgia, serif;
+    cursor: pointer;
+    margin-left: 2px;
+    border: 1px solid #d1d5db;
+    line-height: 1;
+  }
+  .chip:not(.active) .info-icon { background: #fff; }
+  .chip.active .info-icon { background: rgba(255,255,255,0.85); color: #1f2937; border-color: rgba(255,255,255,0.7); }
+  .chip .info-icon:hover { background: #fbbf24; color: #1f2937; border-color: #f59e0b; }
+
+  /* Popover */
+  .popover {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    z-index: 50;
+    width: 380px;
+    max-width: calc(100vw - 60px);
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    padding: 14px 16px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #1f2937;
+    white-space: normal;
+    box-sizing: border-box;
+  }
+  .popover.flip-right { left: auto; right: 0; }
+  .popover.flip-right::before { left: auto; right: 18px; }
+  .popover::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    left: 18px;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-left: 1px solid #d1d5db;
+    border-top: 1px solid #d1d5db;
+    transform: rotate(45deg);
+  }
+  .popover .pop-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+  .popover .pop-title { font-weight: 700; font-size: 14px; }
+  .popover .pop-title.seed { color: #166534; }
+  .popover .pop-title.deep { color: #991b1b; }
+  .popover .pop-title.advanced { color: #5b21b6; }
+  .popover .pop-close {
+    cursor: pointer;
+    color: #9ca3af;
+    font-size: 18px;
+    line-height: 1;
+    padding: 2px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .popover .pop-close:hover { background: #f3f4f6; color: #374151; }
+  .popover h5 {
+    margin: 10px 0 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .popover p {
+    margin: 0;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+
+  .search-box-wrap { flex: 1; min-width: 240px; }
+  .search-box-wrap input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+  }
+  .search-box-wrap input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .count-info { font-size: 13px; color: #4b5563; }
+  .count-info strong { color: #111827; font-size: 15px; }
+  .actions { display: flex; gap: 8px; }
+  .btn {
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.12s;
+  }
+  .btn-primary { background: #2563eb; color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-secondary { background: #fff; color: #374151; border-color: #d1d5db; }
+  .btn-secondary:hover { background: #f3f4f6; }
+  .btn-ghost { background: transparent; color: #6b7280; border-color: #e5e7eb; }
+  .btn-ghost:hover { background: #f9fafb; color: #374151; }
+
+  .table-wrap {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid #e5e7eb;
+  }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+  thead th {
+    background: #f9fafb;
+    color: #374151;
+    font-weight: 700;
+    font-size: 12px;
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 2px solid #e5e7eb;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  thead th .sort-ind { color: #9ca3af; margin-left: 4px; font-size: 10px; }
+  thead th.sort-asc .sort-ind, thead th.sort-desc .sort-ind { color: #2563eb; }
+
+  tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: top;
+    font-size: 13px;
+  }
+  tbody tr:hover { background: #f9fafb; }
+  tbody tr.expanded { background: #eff6ff; }
+  tbody tr.expanded:hover { background: #dbeafe; }
+
+  td.col-title { font-weight: 600; color: #1e3a8a; cursor: pointer; max-width: 320px; }
+  td.col-title:hover { text-decoration: underline; }
+  td.col-cat { color: #6b7280; font-size: 12px; white-space: nowrap; }
+  th.th-seq, td.col-seq { width: 56px; text-align: center; color: #9ca3af; font-variant-numeric: tabular-nums; font-size: 12px; white-space: nowrap; }
+  td.col-seq { font-weight: 600; }
+  td.col-num { text-align: center; color: #4b5563; white-space: nowrap; }
+  td.col-inst { color: #4b5563; font-size: 12.5px; max-width: 140px; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .badge-seed { background: #dcfce7; color: #166534; }
+  .badge-advanced { background: #ede9fe; color: #5b21b6; }
+  .badge-deep { background: #fee2e2; color: #991b1b; }
+
+  .detail-row { display: none; background: #f9fafb; }
+  .detail-row.show { display: table-row; }
+  .detail-row td { padding: 16px 24px 20px; background: #f9fafb; }
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .detail-block h4 {
+    margin: 0 0 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .detail-block p {
+    margin: 0;
+    font-size: 13px;
+    color: #1f2937;
+    white-space: pre-wrap;
+    line-height: 1.6;
+  }
+
+  .empty { padding: 60px 20px; text-align: center; color: #9ca3af; font-size: 14px; }
+
+  /* Search highlight */
+  mark.hl {
+    background: #fde047;
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 2px;
+    font-weight: 700;
+    box-shadow: 0 0 0 1px #facc15;
+  }
+  td.col-title mark.hl { background: #fde047; }
+  .detail-block mark.hl { background: #fef08a; }
+
+  @media print {
+    body { background: #fff; }
+    header.page-header { background: #1e3a8a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .panel.filter-panel, .toolbar .actions, .popover { display: none !important; }
+    .container { padding: 16px; max-width: 100%; }
+    .table-wrap { box-shadow: none; border: 1px solid #999; }
+    table { min-width: 0; font-size: 11px; }
+    thead th { position: static; }
+    tbody td { padding: 6px 8px; font-size: 11px; }
+    tr { page-break-inside: avoid; }
+    .detail-row { display: none !important; }
+    td.col-title { max-width: none; }
+  }
+</style>
+</head>
+<body>
+<header class="page-header">
+  <h1>2026년 비상교육 유밥 스마트러닝 AX Academy 인증 과정</h1>
+  <div class="subtitle">필터를 활용해 원하는 과정을 빠르게 찾고, 결과를 엑셀로 내려받거나 인쇄할 수 있습니다.</div>
+</header>
+
+<div class="container">
+
+  <div class="panel filter-panel">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label class="group-label">카테고리 1 (대분류)</label>
+        <div class="chips" id="filter-cat1"></div>
+      </div>
+      <div class="filter-group flex-wide">
+        <label class="group-label">카테고리 2 (중분류) <span style="font-weight:500;color:#9ca3af;font-size:11px;">연관 없는 항목은 흐리게 표시</span></label>
+        <div class="chips" id="filter-cat2"></div>
+      </div>
+      <div class="filter-group highlight">
+        <label class="group-label">★ 레벨(Level) <span style="font-weight:500;color:#6b7280;font-size:11px;">(ⓘ 클릭 시 설명)</span></label>
+        <div class="chips" id="filter-level"></div>
+      </div>
+      <div class="filter-group search-box-wrap">
+        <label class="group-label">검색 (과정명·강사·요약·목표·대상)</label>
+        <input type="text" id="search-input" placeholder="키워드를 입력하세요…">
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="count-info">전체 <strong id="total-count">0</strong>개 과정 중 <strong id="filtered-count">0</strong>개 표시 중</div>
+    <div class="actions">
+      <button class="btn btn-ghost" id="select-all-btn">☑ 카테고리 전체 선택</button>
+      <button class="btn btn-ghost" id="reset-btn">필터 초기화</button>
+      <button class="btn btn-secondary" id="print-btn">🖨 인쇄</button>
+      <button class="btn btn-primary" id="export-btn">⬇ 엑셀 다운로드</button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th class="th-seq">순번</th>
+            <th data-sort="cat1">카테고리1<span class="sort-ind">▼</span></th>
+            <th data-sort="cat2">카테고리2<span class="sort-ind">▼</span></th>
+            <th data-sort="title">과정명<span class="sort-ind">▼</span></th>
+            <th data-sort="duration">학습시간<span class="sort-ind">▼</span></th>
+            <th data-sort="contents">콘텐츠수<span class="sort-ind">▼</span></th>
+            <th data-sort="instructor">강사<span class="sort-ind">▼</span></th>
+            <th data-sort="level">레벨(Level)<span class="sort-ind">▼</span></th>
+          </tr>
+        </thead>
+        <tbody id="data-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = [{"cat1": "AI", "cat2": "", "title": "인공지능(AI) - 동영상을 만들어 주는 Luma(루마) AI 배우기 (2026)", "duration": "1:00:20", "contents": "3", "instructor": "강태안", "summary": "· 본 강좌를 통해 AI 플랫폼에 대한 이해와 개념을 학습할 수 있다. \n· 본 강좌를 통해 Luma 드림 머신 ai에 대한 사용 방법을 익힐 수 있다.", "goal": "· luma ai를 통한 영상 생성과 이미지 생성에 대한 학습 · ai의 모델 개념과 각종 커뮤니티적 요소에 대한 학습", "target": "· 남녀노소 누구나 학습과 취득 가능", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "네이버클라우드와 떠나는 AI 여행", "duration": "1:01:55", "contents": "4", "instructor": "김선현/김민형", "summary": "인공지능의 개념과 발전 과정을 알고, AI 기술 발전이 가져올 다양한 변화를 비즈니스 측면에서 살펴보자!", "goal": "- AI의 개념과 역사에 대해 알고, 발전 과정을 살펴볼 수 있다.\n- AI의 현주소와 미래의 발전 가능성을 예측하고, 인공지능 분야의 다양한 기술에 대해 알 수 있다.\n- AI와 클라우드 기술이 합쳐졌을 때, 비즈니스에 미치는 영향을 알고 이를 활용할 수 있다.", "target": "- 인공지능의 최신 트렌드에 관심이 있는 직장인\n- AI를 통해 비즈니스의 혁신을 도모하는 기업의 임직원", "level": "Seed"}, {"cat1": "Biz. Skill", "cat2": "업무수행력", "title": "말해봐, ChatGPT가 다 해줄게. 대화·응대 전략", "duration": "1:06:57", "contents": "6", "instructor": "예지영", "summary": "본 과정은 감정 조율형 커뮤니케이션, 부정 표현 완화, 사내외 커뮤니케이션 전략, 고객 공감형 응대, 역할 기반 시뮬레이션 등 실무에서 자주 접하는 대화 상황을 중심으로 구성되어 있으며, ChatGPT를 활용해 효과적인 프롬프트를 설계하고 다양한 말하기 유형을 실습한다. 단순 표현 자동화가 아닌, 상황의 맥락을 고려한 전략적 표현력을 강화할 수 있도록 구성된 실전형 강의다.", "goal": "다양한 대화 상황에 맞는 어조와 표현을 프롬프트로 설계할 수 있다.\nGPT를 활용해 상황별 응대 및 보고 문장을 전략적으로 구성할 수 있다.\n반복 커뮤니케이션 업무를 자동화할 수 있는 템플릿 라이브러리를 구축할 수 있다.", "target": "고객응대, 사내 커뮤니케이션 등 정중하고 명확한 표현이 필요한 사무직 실무자\n보고서, 회신 메일 등 문서 기반 커뮤니케이션을 담당하는 관리자 및 실무 담당자\n반복되는 커뮤니케이션 업무를 AI를 활용해 효율화하고자 하는 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "Welcome, 직장인 코딩은 처음이지?", "duration": "1:08:19", "contents": "8", "instructor": "이승현", "summary": "비전공자나 컴퓨팅적 사고를 위한 초보 직장인을 위한 코딩 과정으로, 알고리즘에 대한 이해와, 논리적 사고 능력을 함양해보자.", "goal": "- 코딩을 익힘으로써 데이터를 활용하는 방법을 고민해보고 직무에 적용하는 사고를 할 수 있도록 프로그래밍 역량을 키워 나가, 업무능력을 향상시킬 수 있다. ", "target": "- 프로그래밍 언어를 접해보지 못한 비전공자 직장인\n- 기초 코딩을 접해 보고 싶은 직장인 \n- 컴퓨팅 사고가 무엇인지 궁금한 직장인 \n- 직원들에게 코딩의 필요성을 강조해야 하는 리더 ", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "생성형 AI 활용 힐링 음악 제작 (Gemini Ai, Suno AI)", "duration": "1:16:47", "contents": "8", "instructor": "윤재영", "summary": "· 이 과정은 Google Gemini와 Suno AI를 활용하여 힐링 음악을 제작하는 실습 중심 강의입니다. \n· 아이디어 도출부터 프롬프트 작성, 음악 생성, 저작권·윤리적 고려까지 창의적 제작 흐름을 체험합니다.", "goal": "· 생성형 AI의 특징과 활용법을 이해하고 Gemini와 Suno AI를 연계하여 맞춤형 음악을 제작합니다. · 저작권과 윤리적 책임을 고려하며 AI 시대의 올바른 창작 태도를 습득합니다.", "target": "AI를 활용해 힐링 음악 제작 과정을 체험하며 창의적 활용 능력을 기르는 학습자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "직무별 맞춤 ChatGPT 활용법: AI로 업무 혁신하기", "duration": "1:18:28", "contents": "7", "instructor": "박기삼", "summary": "\"AI로 일의 혁신을 시작하다!\" 반복 업무 자동화, 콘텐츠 제작, 데이터 정리 등 다양한 직무에서 바로 적용 가능한 AI 스킬을 배우세요!\n", "goal": "- 직무에 적합한 ChatGPT 활용 방법을 이해하고 실무에 바로 적용할 수 있다.  \n- 반복적인 업무를 자동화하여 효율성을 높이고 시간 관리를 최적화할 수 있다.  \n- ChatGPT를 활용해 마케팅, 인사, 고객 서비스 등 다양한 분야에서 성과를 향상시킬 수 있다.  \n- ChatGPT를 활용한 커리어 개발과 자기소개서 작성법으로 취업 경쟁력을 강화할 수 있다.  ", "target": "- AI를 활용해 업무 효율성을 높이고 싶은 직장인\n- 마케팅, 인사, CS, R&D, 경영지원 등의 실무에 ChatGPT를 적용하고 싶은 전문가\n- AI를 활용한 취업 및 커리어 개발에 관심 있는 취준생 및 경력 개발자 \n- 업무 자동화와 데이터 관리로 시간을 절약하고 싶은 모든 직무 담당자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "프롬프트에 대한 이해와 ChatGPT 주요 기능 활용법", "duration": "1:23:12", "contents": "7", "instructor": "박기삼/임재훈", "summary": "프롬프트 엔지니어링부터 문서 작성 및 분석까지, AI 도구를 이용한 실무 능력을 극대화할 수 있습니다.", "goal": "- 프롬프트 엔지니어링을 익혀 ChatGPT와 효과적으로 소통할 수 있다.", "target": "- ChatGPT를 업무에 적용하고 싶은 직장인\n- 프롬프트 엔지니어링을 배우고 이를 다양한 업무에 적용하고자 하는 관리자 및 실무자", "level": "심화"}, {"cat1": "Biz. Skill", "cat2": "업무수행력", "title": "말해봐, ChatGPT가 다 해줄게. 창의적 질문력", "duration": "1:25:01", "contents": "7", "instructor": "오수정", "summary": "본 과정은 ChatGPT를 활용해 실무에서 필요한 질문을 직접 설계하고, 이를 기반으로 아이디어 생성, 보고서 작성, 문제 해결까지 확장하는 질문력 중심의 교육이다. 좋은 질문을 만드는 법부터 팀 단위 워크숍, Why 기반 사고, 질문 템플릿 자동화까지 실습 중심으로 구성되어 있어, 직장인이 현장에서 바로 활용할 수 있는 질문 설계 및 사고력 향상 교육을 제공한다.", "goal": "다양한 실무 문서에 맞는 GPT 프롬프트 질문을 구조화할 수 있다.\n창의적 사고를 유도하는 질문을 통해 아이디어를 생성하고 확장할 수 있다.\n반복 업무에 질문 템플릿을 적용하여 업무 자동화 기반을 마련할 수 있다.", "target": "회의, 보고, 정책 제안 등 실무 문서에서 GPT를 적극 활용하고 싶은 직장인\n아이디어 회의, 브레인스토밍, 기획 업무 등 창의력을 요구받는 실무자\n질문력을 바탕으로 팀 커뮤니케이션과 문제 해결 능력을 향상시키고자 하는 관리자", "level": "심화"}, {"cat1": "자기계발", "cat2": "자기혁신", "title": "AI 퍼스트 시대에 필요한 질문 전략", "duration": "1:28:22", "contents": "11", "instructor": "고영리", "summary": "보고서는 물론 일반 글쓰기까지! AI 활용법으로 질문 능력을 키워보자.", "goal": "- AI 도구를 제대로 이용하는 방법에 대해 이해할 수 있다.\n- AI를 활용한 질문법에 대해 집중적으로 다루고 있어 다양한 직무에 이를 활용할 수 있다.\n- 글쓰기와 보고서 작성 등 다양한 영역에서 요구되는 질문 능력과 사고력을 다질 수 있다.", "target": "- AI를 활용해 질문 방법을 배우고 질문력과 사고력을 확장하고 싶은 모든 임직원\n- 일상생활이나 업무에서 필요한 글쓰기 능력을 기르고 싶은 학생 및 직장인", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "ChatGPT와 함께하는 엑셀, PPT, 그리고 AI 도구 활용법", "duration": "1:30:38", "contents": "8", "instructor": "박기삼", "summary": "AI 기술의 진보로 업무 생산성이 혁신적으로 향상됩니다! ", "goal": "- ChatGPT를 활용하여 엑셀 함수, 데이터 분석, 그리고 시각화를 능숙하게 수행할 수 있다.\n- 엑셀 VBA를 활용한 업무 자동화 스킬을 습득하여 반복 작업을 효율적으로 처리할 수 있다.\n- ChatGPT와 감마AI를 활용해 PPT 기획과 제작을 빠르고 효과적으로 수행할 수 있다.\n- Perplexity, Claude, Gemini 등 최신 AI 도구를 활용하여 검색, 분석, 요약 등의 업무를 효과적으로 처리할 수 있다.\n- AI 시대의 변화와 기회를 이해하고, 실무에 적용 가능한 AI 활용 능력을 갖출 수 있다.", "target": "- AI를 활용한 업무 생산성 향상을 원하는 직장인.\n- 엑셀, PPT 등 실무 도구를 효과적으로 다루고자 하는 초보자 및 숙련자.\n- 최신 AI 도구를 활용해 업무에 적용하고자 하는 모든 직장인.", "level": "심화"}, {"cat1": "리더십", "cat2": "변화관리", "title": "AI 시대, 관점이 곧 경쟁력이다", "duration": "1:32:48", "contents": "10", "instructor": "은종성", "summary": "AI는 기술이 아니라 선택입니다. 그 선택을 가르는 건 바로 ‘관점’입니다.", "goal": "1. AI 기술을 전략적 관점에서 해석하고 선택하는 기준을 갖출 수 있다.\n2. 산업과 비즈니스 흐름을 이해하고, 그에 따른 조직·업무 전략 방향을 파악할 수 있다.\n3. 실제 AI 적용 사례를 통해 업무 혁신과 가치 창출 방식을 도출할 수 있다.", "target": "1. AI를 기술이 아닌 전략적 자산으로 이해하고 싶은 실무자·관리자\n2. 업무에 AI를 적용해야 하지만, 어디서부터 시작할지 막막한 기획자·PM·교육담당자·운영담당자\n3. 산업 변화 흐름과 AI 활용 전략을 폭넓게 이해하고 싶은 모든 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "AI로 10배 빨라지는 Photoshop (포토샵)", "duration": "1:34:46", "contents": "3", "instructor": "김기민", "summary": "· 생성형 AI 기반 포토샵 기능을 활용해 이미지 제작의 새로운 가능성을 탐색하며, 인터페이스 이해부터 핵심 도구 활용까지 체계적으로 학습합니다. · AI 이미지 생성, 사진 보정, 합성, 디자인 레이아웃 구성 등 전통적인 포토샵 기술과 최신 AI 기능을 결합해 효율적인 워크플로우를 익힙니다. · 실전 포스터 제작, SNS 콘텐츠 디자인, 브랜드 비주얼 개발 등 다양한 실습 프로젝트를 통해 즉시 활용 가능한 실무 능력을 강화합니다.", "goal": "· 생성형 AI 기능과 포토샵의 핵심 도구를 연계해 이미지 제작 및 편집 작업을 효율적으로 수행할 수 있습니다. · 레이어, 마스크, 스마트 오브젝트를 활용하여 복잡한 구성을 체계적으로 설계하고 수정할 수 있습니다.", "target": "· AI 기능이 탑재된 최신 포토샵을 체계적으로 배우고 싶은 초중급 학습자 · 이미지 생성부터 편집까지 AI와 디자인 기술을 함께 익히고자 하는 디자이너 및 콘텐츠 제작자 · AI 기반 그래픽 편집 기술로 작업 효율을 높이고자 하는 크리에이터 및 마케터", "level": "심화"}, {"cat1": "IT", "cat2": "IT 기획", "title": "파이썬 데이터 시각화 마스터", "duration": "1:35:19", "contents": "6", "instructor": "김계철", "summary": "데이터 시각화의 중요성과 기본적인 개념을 이해하고, 다양한 데이터 시각화 기법을 활용하여 데이터를 효과적으로 표현할 수 있는 능력을 배양합니다.", "goal": "- 복잡한 데이터를 명확하고 직관적으로 전달할 수 있는 시각화 방법을 습득하고, 이를 통해 데이터 기반 의사결정과 커뮤니케이션 능력을 향상시킬 수 있다.\n- 시간, 분포, 관계, 비교, 공간 등 다양한 정보 시각화 기법을 익혀, 데이터를 시각적으로 분석하고 중요한 패턴과 인사이트를 도출할 수 있다.", "target": "- 공공기관 근무자\n- 데이터를 기반으로 의사결정하고 행정서비스을 제공하고자 하는 자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] Kling AI로 영상 기획부터 SNS 배포까지 90분 만에 완성하기", "duration": "1:35:24", "contents": "7", "instructor": "장세인", "summary": "영상도 텍스트로 만드는 시대, 클릭 몇 번만으로 텍스트를 고화질 영상 콘텐츠로 제작해 주는\n‘Kling AI’ 마스터하기!", "goal": "- 텍스트 한 줄로 이미지·영상을 제작하는 AI 기술을 활용하여 영상 콘텐츠를 제작할 수 있다.\n- 모핑, Motion Brush, Lip Sync 등 다양한 연출 효과를 AI로 구현할 수 있다.\n- Kling AI, ClipChamp, Wrtn, Buffer 등의 도구들을 유기적으로 연결하여 활용할 수 있다.", "target": "- 다양한 AI 도구에 대해 학습하고 활용법을 익히고 싶은 직장인\n- AI를 활용하여 영상 콘텐츠를 만들고 싶은 마케팅·기획·HR 담당자\n- 복잡한 툴 없이도 감각적인 비주얼을 구현하고 싶은 모든 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[AI 스킬링] 사회과학 연구 프로젝트를 위한 AI 활용 실전 가이드", "duration": "1:35:59", "contents": "5", "instructor": "신민수", "summary": "막막한 논문 작성, 수많은 AI 중 무엇을 써야 할지 모르겠다면? 사회과학 연구자를 위한 논문 작성 AI 활용법!\n\n본 과정은 사회과학 연구 분야에 맞춰, 연구 주제 선정부터 선행연구 분석, 연구 설계, 데이터 분석까지 논문 작성 전 과정에 AI를 활용하는 실전 과정이다.\nChatGPT, Gemini, Claude, Consensus, SciSpace 등 다양한 AI 도구를 활용해 실제 연구 과제를 진행하며, 각 단계에서 목적에 맞는 AI를 선택하고 활용하는 역량을 기를 수 있다.", "goal": "- 논문 작성 과정에 맞춰 생성형 AI를 효과적으로 활용할 수 있다.\n- 연구 주제 선정부터 데이터 분석까지 AI를 활용해 논문을 체계적으로 작성할 수 있다.\n- 다양한 AI 도구를 목적에 맞게 선택하고 실제 연구에 적용할 수 있다.", "target": "- 논문 또는 연구 프로젝트 수행이 필요한 직장인\n- 연구·분석 기반 업무를 수행하는 직장인\n- 생성형 AI를 활용하고 있지만 실무에 제대로 적용하지 못하는 직장인", "level": "심화"}, {"cat1": "Biz. Skill", "cat2": "기획력", "title": "AI 에이전트 시대, 인공지능으로 확장하는 기획력", "duration": "1:39:44", "contents": "10", "instructor": "이정훈", "summary": "AI를 통한 업무 수행, 정확한 지시가 답이다.", "goal": "1. AI를 통해 기획서의 구조를 설계하고, 핵심 내용을 시작적으로 표현할 수 있다. \n2. AI를 활용하여 다양한 아이디어와 실행안을 창의적으로 생성할 수 있다.\n3. AI 기반 기획서를 효과적으로 보고하고, 업무에 실질적으로 적용할 수 있다. ", "target": "1. 기획업무를 담당하는 임직원\n2. AI 시대에 필요한 기획력을 학습하고자 하는 임직원\n3. AI를 기획 실무에 적용할 수 있는 구체적 방법을 알고 싶은 모든 임직원", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[AI 스킬링] 자연과학 연구 프로젝트를 위한 AI 활용 실전 가이드", "duration": "1:41:22", "contents": "5", "instructor": "신민수", "summary": "막막한 논문 작성, 수많은 AI 중 무엇을 써야 할지 모르겠다면? 자연과학 연구자를 위한 논문 작성 AI 활용법!\n\n본 과정은 자연과학 연구 분야에 맞춰, 연구 주제 선정부터 선행연구 분석, 연구 설계, 데이터 분석까지 논문 작성 전 과정에 AI를 활용하는 실전 과정이다.\nChatGPT, Gemini, Claude, Consensus, SciSpace 등 다양한 AI 도구를 활용해 실제 연구 과제를 진행하며, 각 단계에서 목적에 맞는 AI를 선택하고 활용하는 역량을 기를 수 있다.", "goal": "- 논문 작성 과정에 맞춰 생성형 AI를 효과적으로 활용할 수 있다.\n- 연구 주제 선정부터 데이터 분석까지 AI를 활용해 논문을 체계적으로 작성할 수 있다.\n- 다양한 AI 도구를 목적에 맞게 선택하고 실제 연구에 적용할 수 있다.", "target": "- 논문 또는 연구 프로젝트 수행이 필요한 직장인\n- 연구·분석 기반 업무를 수행하는 직장인\n- 생성형 AI를 활용하고 있지만 실무에 제대로 적용하지 못하는 직장인", "level": "심화"}, {"cat1": "Biz. Skill", "cat2": "업무수행력", "title": "말해봐, ChatGPT가 다 해줄게. 실전 업무 활용", "duration": "1:43:04", "contents": "7", "instructor": "김금란", "summary": "본 과정은 ChatGPT를 기반으로 Napkin AI, Gamma AI, Felo AI, Imagen 3, Suno AI 등 다양한 생성형 AI 도구를 활용하여 실제 사무환경에서 필요한 콘텐츠를 자동 생성·활용하는 실전형 강의이다. 보고서 요약, 발표자료 구성, 이미지 생성, 음악 제작 등 멀티모달 콘텐츠 제작 역량을 중심으로 구성되어 있으며, 각 도구의 특성을 살린 업무별 적용사례 실습이 포함된다.", "goal": "다양한 생성형 AI 도구를 활용해 시각 콘텐츠 및 발표자료를 자동으로 제작할 수 있다.\n하나의 정보나 주제를 카드뉴스, PPT, 마인드맵 등 다양한 형식으로 변환할 수 있다.\n업무 목적에 맞는 이미지 및 음악 콘텐츠를 생성하고 실무에 적용할 수 있다.", "target": "보고서, 발표자료 등 콘텐츠 제작을 반복적으로 수행하는 실무자\n사내 커뮤니케이션, 홍보, 교육 콘텐츠 제작을 담당하는 기획·홍보 담당자\n생성형 AI를 실제 업무에 적용하고자 하는 전 직무의 사무직 종사자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "AI Vibe(바이브) 코딩으로 TodoList App 하루 만에 만들기 Part.1 바이브 코딩이란, Cursor AI", "duration": "1:43:14", "contents": "4", "instructor": "김동준", "summary": "본 과정은 커서 AI 인공지능 Cursor AI 툴을 사용하여 TodoList 앱을 질문만으로 만들어보는 동영상 과정입니다.", "goal": "최신 AI 인공지능 툴을 사용하여 웹 프로그램을 개발합니다.", "target": "커서 AI 인공지능 툴을 사용하여 질문만으로 애플리케이션 만드는 과정을 배우고자 하는 사람", "level": "고급"}, {"cat1": "Biz. Skill", "cat2": "업무수행력", "title": "말해봐, ChatGPT가 다 해줄게. 스마트 업무 자동화", "duration": "1:45:17", "contents": "6", "instructor": "김애란", "summary": "이 과정은 ChatGPT 및 생성형 AI 도구를 활용하여 반복 문서 자동화, 보고서 요약, PPT 및 발표대본 생성, 회의록 정리, 스마트 리서치 등 다양한 실무 문서 작성 업무를 자동화하는 실전 중심의 교육으로 문서 유형별 자동화 전략부터 AI 기반 정보 수집 및 활용법까지, 실습과 사례 중심으로 구성되어 있어 학습자가 실제 업무에 바로 적용할 수 있도록 설계되어 있다.", "goal": "반복 문서 작성 및 정리에 필요한 프롬프트 작성 능력을 기른다.\n다양한 문서 유형(기획안, 회의록, 발표자료 등)에 생성형 AI를 적용할 수 있다.\n정보 수집부터 시각화까지 문서 작성 전 과정을 자동화할 수 있다.", "target": "반복적인 문서 업무를 효율적으로 자동화하고자 하는 일반 직장인\n팀 리더 및 관리자급으로 문서 보고와 회의가 잦은 실무자\n공공기관, 지자체, 기업의 문서 작성 및 보고 업무 담당자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "직장인을 위한 ChatGPT 실무 활용법", "duration": "1:50:31", "contents": "15", "instructor": "박기삼/임재훈", "summary": "이 과정은 ChatGPT의 다양한 실무 활용 방법을 통해 직장인들이 ChatGPT를 통해 업무 효율성을 높일 수 있으며, ChatGPT를 통해 보고서 작성, 이메일 처리, 번역 및 데이터 분석 등 다양한 업무에서 ChatGPT를 활용할 수 있도록 돕습니다. ", "goal": "- ChatGPT의 주요 기능과 개념을 이해하고 이를 실무에 적용할 수 있다.\n- 보고서, 이메일, 번역 등 다양한 업무에서 ChatGPT를 활용해 효율성을 높인다.\n- 데이터 분석 및 자동화 작업에 ChatGPT를 적용하여 업무 생산성을 극대화한다.", "target": "- ChatGPT를 업무에 적용하고 싶은 직장인\n- 인공지능 도구를 활용해 문서 작성, 데이터 처리 등의 업무 시간을 절감하고자 하는 실무자", "level": "심화"}, {"cat1": "Biz. Skill", "cat2": "업무수행력", "title": "AI 시대, 저작권을 지키고 인간의 감각을 더하는 글쓰기", "duration": "1:50:53", "contents": "10", "instructor": "정지우", "summary": "모두가 AI로 글을 쓰는 시대, 이제 우리는 무엇을 어떻게 써야 할까?\n저작권법 변호사이자 작가가 전하는 '저작권 걱정 없는 AI 글쓰기 전략’", "goal": "1. AI 글쓰기의 원리와 활용 전략을 이해하고 실무에 적용할 수 있다.\n2. AI의 한계를 인식하고 인간 고유의 감각과 창의성을 결합한 글쓰기를 실천할 수 있다.\n3. AI 글쓰기와 관련된 저작권 이슈를 설명하고 법적 리스크를 예방할 수 있다.", "target": "- AI 도구를 활용해 글쓰기·창작·업무 생산성을 높이고 싶은 직장인\n- 콘텐츠 기획, 마케팅, 브랜딩 등 차별화된 콘텐츠 제작 업무를 담당하는 직장인\n- AI 관련 저작권·법적 리스크에 대비해야 하는 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 데이터 리터러시 Overview", "duration": "1:52:44", "contents": "6", "instructor": "김진", "summary": "데이터 기반으로 사고하고 비즈니스 문제를 데이터로 해결해내는 능력을 키워보자.", "goal": "1. 전반적인 데이터의 개념과 종류를 이해하고 데이터 활용을 위한 계획을 수립할 수 있다. \n2. 데이터를 분석이 가능한 형태로 구조화, 정제화할 수 있다.\n3. 데이터에 분석모델을 적용해 인사이트를 도출할 수 있다.", "target": "- 비즈니스 문제를 데이터 기반 인사이트로 해결하고 싶은 직장인\n- 쉬운 분석도구인 엑셀을 활용하여 데이터를 분석하고 시각화하고 싶은 직장인", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "누구나 쉽게! AI로 시작하는 Photoshop (포토샵) 디자인", "duration": "1:52:48", "contents": "4", "instructor": "김기민", "summary": "· 생성형 AI 기반 포토샵 기능을 활용해 이미지 제작의 새로운 가능성을 탐색하며, 인터페이스 이해부터 핵심 도구 활용까지 체계적으로 학습합니다. \n· AI 이미지 생성, 사진 보정, 합성, 디자인 레이아웃 구성 등 전통적인 포토샵 기술과 최신 AI 기능을 결합해 효율적인 워크플로우를 익힙니다. \n· 실전 포스터 제작, SNS 콘텐츠 디자인, 브랜드 비주얼 개발 등 다양한 실습 프로젝트를 통해 즉시 활용 가능한 실무 능력을 강화합니다.", "goal": "· 생성형 AI 기능과 포토샵의 핵심 도구를 연계해 이미지 제작 및 편집 작업을 효율적으로 수행할 수 있습니다. · 레이어, 마스크, 스마트 오브젝트를 활용하여 복잡한 구성을 체계적으로 설계하고 수정할 수 있습니다.", "target": "· AI 기능이 탑재된 최신 포토샵을 체계적으로 배우고 싶은 초중급 학습자 · 이미지 생성부터 편집까지 AI와 디자인 기술을 함께 익히고자 하는 디자이너 및 콘텐츠 제작자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "AI 시대의 올바른 판단을 위한 AI 윤리와 리터러시", "duration": "1:54:30", "contents": "8", "instructor": "이상욱", "summary": "AI에게 결정을 위탁한 시대,\n‘AI에게 지배당할 것인가, 지배할 것인가’를 결정하는 것은 AI 활용 스킬이 아닌 인간 고유의 ‘윤리적 감각’!\n\n\n지금 가장 핫한 AI 윤리 이슈와 리스크를 사례, 법규, 업무 적용을 통해 알려주는 강의\n\n- AI를 맹신하지 않고, 제대로 질문하고 판단하는 힘을 기르기 위한 윤리적 분별력을 기르는 법 제시\n- AI 윤리 분야 특강 섭외 1순위, 한양대 철학/인공지능학과 이상욱 교수 직강\n- OECD, EU, UNESCO, 인공지능 기본법 등 국내외 AI 규제의 방향을 짚어주는 강의", "goal": "- AI 사용과 관련된 주요 윤리적 쟁점을 식별할 수 있다.\n- 국제 규범 트렌드를 통해 AI를 활용한 업무 상황에서 발생할 수 있는 리스크를 분석할 수 있다.\n- AI를 책임 있게 활용하기 위한 AI 리터러시 기반의 실천 전략을 제시할 수 있다.", "target": "- 생성형 AI를 실무에서 활용하는 모든 직장인\n- AI 활용 가이드라인과 법적 책임이 궁금한 직장인\n- 생성형 AI 도입 전략을 가지고 있는 조직 리더", "level": "Seed"}, {"cat1": "Biz. Skill", "cat2": "업무수행력", "title": "AI 업무 실전 활용 - 나는 인공지능 동료와 일한다", "duration": "1:56:22", "contents": "10", "instructor": "김태은", "summary": "ChatGPT가 쏘아올린 업무의 미래, 확장된 협업의 내일을 만나다 ", "goal": "- 인공지능을 어떤 업무에 활용할 수 있는지 그 기능과 활용 범위를 이해할 수 있다.\n- 인공지능 프로그램을 실제 업무에 어떻게 활용하면 되는지 상황별 프롬프트 작성법을 이해하고 직접 적용해볼 수 있다.", "target": "- 신기술을 활용한 업무혁신과 성과증진이 필요한 리더\n- AI 기술을 실무에 활용할 방법을 찾는 임직원\n- 기술 혁신 트렌드에 뒤쳐지지 않고자 하는 임직원 \n- 업무 효율 증진을 고민하는 모든 임직원", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "[AI 스킬링] 다양한 AI와 실전 프롬프트로 30분 만에 끝내는 보고서 작성", "duration": "1:56:28", "contents": "8", "instructor": "박경수", "summary": "보고서 작성 고민 끝! 퇴근 전 보고 끝!\n지금 당장 업무에 써먹어야 할 20개 성생형 AI와 만능 프롬프트 33개", "goal": "1. 보고서 작성 단계에 맞는 최적의 생성형 AI를 선별하고 단계별로 활용할 수 있다.\n2. 보고서 작성의 전 단계를 AI로 처리하고, 단계별 프롬프트 작성법을 익혀 원하는 결과물을 정확하게 도출할 수 있다.\n3. 반복적인 문서 작업을 자동화해 업무 효율을 높이고 핵심 업무에 집중하는 업무 루틴을 만들고 실행할 수 있다.   ", "target": "1. AI를 활용하여 자료 조사부터 분석·시각화·문서 작성까지 보고서 작성의 전 과정을 체계적으로 익히고 싶은 직장인\n2. 생성형 AI를 활용해 보고서·기획서 작성 시간을 획기적으로 줄이고 싶은 모든 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "ChatGPT로 업그레이드하는 비즈니스 엑셀 2", "duration": "1:59:35", "contents": "12", "instructor": "권현욱", "summary": "이 과정은 ChatGPT를 활용해 엑셀의 기본 역량을 업그레이드할 수 있도록 해줍니다.\n \n■ 엑셀, 워드, 파워포인트에서의 단순 작업이 힘들다면?\n  매크로와 VBA 코딩 등 엑셀뿐만 아니라 워드와 파워포인트에도 ChatGPT를 활용하여 쉽고 빠르게 ‘업무 자동화’ 하여 업무 역량을 업그레이드할 수 있습니다.\n \n■   다양한 예제 실습\n  다양한 예제를 통해 학습 내용을 응용해 볼 수 있어요!\n \n■   국내 최초 발간 [챗GPT+엑셀 업무자동화 정석] 저자의 강의\n   Microsoft Excel MVP(최고기술전문가)이자 국내 최초로 발간된 ChatGPT 엑셀 본격 활용서 [챗GPT+엑셀 업무자동화 정석] 저자의 강의로 누구나 쉽게 이해할 수 있습니다.", "goal": "ChatGPT를 활용하여 엑셀뿐만 아니라 워드, 파워포인트에서까지 업무 자동화할 수 있는 다양한 아이디어에 대해 학습할 수 있다.", "target": "엑셀을 더 잘 활용하고 싶고, 워드와 파워포인트에도 ChatGPT를 활용하여 업무 역량을 업그레이드하고 싶은 모든 학습자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "Orange로 하는 노코드 AI 데이터 분석(1) 데이터마이닝 입문", "duration": "10:08:16", "contents": "20", "instructor": "최정아", "summary": "코딩 없는 AI 데이터 분석, Orange3! 데이터 분석 입문자도 쉽고 빠르게 할 수 있는 데이터 마이닝\n\nOrange3는 코딩 없이 드래그 앤드 드롭 기능으로 누구나 쉽게 데이터 분석을 할 수 있는 머신 러닝 도구이다. 다양한 업무 수행을 위해 꼭 필요한 데이터 분석, 아직도 엑셀 밖에 모른다면 Orange3를 활용해보자.\n\n본 과정은 실무에 가장 많이 쓰이는 대표적인 분석 방법을 활용한 실전 사례 분석을 제공한다. 데이터 분석의 기본 개념부터 Orange3를 활용한 데이터 분석을 습득하여 데이터 분석 능력을 향상해 보자.", "goal": "- 노코딩 인공지능 데이터분석 도구인 Orange3 활용 방법을 설명할 수 있다.\n- 데이터 분석의 기본 개념을 익히고, 대표적인 분석 기법들을 활용할 수 있다.\n- 데이터 분석 업무를 자동화하여 업무 효율성을 향상할 수 있다.", "target": "- 데이터 분석을 처음 시작하는 직장인\n- 코딩 없이 데이터를 분석하고 싶은 직장인\n- 데이터 분석 역량을 향상하여 업무 효율성을 향상하고자 하는 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "Orange로 하는 노코드 AI 데이터 분석(5) 군집화와 차원 축소", "duration": "10:31:46", "contents": "18", "instructor": "최정아", "summary": "코딩 없는 AI 데이터 사이언스, Orange3! 노코드 AI 프로그램으로 군집화와 차원 축소를 쉽고 빠르게!\n\nOrange3는 코딩 없이 드래그 앤드 드롭 기능으로 누구나 쉽게 데이터 분석을 할 수 있는 머신 러닝 도구이다. 클러스터링과 차원 축소, 아직도 파이썬 밖에 모른다면 Orange3를 활용해보자.\n\n본 과정을 통해 복잡한 프로그래밍의 벽을 허물고, 데이터 분석을 자신 있게 수행할 수 있는 심화 데이터 사이언티스트로 거듭나 보자.", "goal": "- Orange3에서 군집화 알고리즘을 활용하는 방법을 설명할 수 있다.\n- Orange3의 선형, 비선형 차원 축소 기법을 활용하여 복잡한 데이터의 차원을 줄일 수 있다.\n- 다양한 실습을 통해 실무적 데이터 분석 기술을 강화할 수 있다.", "target": "- 노코드 프로그램으로 군집화와 데이터 차원 축소를 간단히 수행하고 싶은 직장인\n- 파이썬보다 더 간단한 심화 분석 도구 사용을 원하는 직장인\n- 데이터 분석 역량을 향상하여 업무 효율성을 향상하고자 하는 직장인", "level": "고급"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "머신러닝의 이해와 실습", "duration": "10:36:35", "contents": "20", "instructor": "양지헌", "summary": "머신러닝 핵심주제를 전반적으로 다루며, 머신러닝의 다양한 주제를 이론과 함께 파이썬 코딩으로 직접 실습해보는 과정으로서, 실제 비즈니스에서 필요로 하는 거의 모든 주제를 경험해볼 수 있습니다  ", "goal": "머신러닝의 여러 가지 알고리즘을 이해하고 이를 활용하여 파이썬 코딩으로 구현할 수 있다.", "target": "- 머신러닝 초보자\n- 파이썬 기초 가능자\n- 머신러닝 관련 전공자로서 근래의 발전된 내용을 공부하고자 하는 직장인", "level": "고급"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 통계 분석 마스터 클래스 Part.2", "duration": "10:43:46", "contents": "13", "instructor": "김진/최정아", "summary": "통계에 장벽을 느끼는 직장인을 위한 통계 입문 강의!", "goal": "1. 통계에 대한 기본적인 이해를 학습하고 데이터 분석의 결과에 대해 통계적 시각을 가지고 바라볼 수 있다.\n2. 통계 지식을 기반으로 각종 통계 자료에 대한 데이터 분석과 데이터 신뢰 여부에 대해 판단할 수 있다.", "target": "- 분석 기반의 업무를 하고 있는 직장인\n- 통계 분석에 대한 전반적인 이해가 필요한 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "실무에 바로 쓰는 파이썬 웹크롤러 제작", "duration": "11:27:15", "contents": "19", "instructor": "서진수", "summary": "파이썬 기초문법과 웹(HTML) 기본문법부터 시작하여 공공기관 운영 웹사이트와 일반 기업의 웹사이트 정보 수집용 웹크롤러를 제작하는 방법을 배우는 과정입니다 다양한 예제를 통해 배우고 실습함으로써 실무적용 능력을 습득할 수 있습니다", "goal": "- 파이썬 언어의 기본 문법을 이해하고 활용할 수 있다.\n- 웹 페이지의 작동원리를 이해하고 원하는 태그를 찾아낼 수 있다.\n- 다양한 실제 웹사이트들의 정보를 수집할 수 있는 웹 크롤러를 직접 만들 수 있다.", "target": "- 인터넷의 다양한 데이터를 수집해야 하는 기획자나 분석가\n- 고객들의 반응이나 니즈를 찾아야 하는 상품 담당\n- 웹 크롤러를 만들어야 하는 개발자\n- 파이썬 언어의 기초부터 활용까지 배우기 원하는 모든 임직원", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "ChatGPT 마스터 클래스 : 남들보다 100배 더 잘 쓰기 위한 활용법 A to Z", "duration": "11:40:02", "contents": "19", "instructor": "최정아", "summary": "어떻게하면 남들보다 ChatGPT를 효과적으로 활용할 수 있을까? \n원하는 비즈니스 환경에서 ChatGPT를 호출하여 편리하고, 효과적으로 활용할 수 있는 방법을 알려드립니다!", "goal": "- ChatGPT의 활용법을 파악하여 목적에 따라 ChatGPT를 효과적으로 사용할 수 있다. \n- 구글 스프레드 시트 등 다양한 연동 서비스를 활용해 생산성을 극대화 할 수 있다. \n- 원하는 비즈니스 환경에서 ChatGPT를 호출하여 편리하고, 효과적으로 작업할 수 있다. \n- ChatGPT의 심화스킬 및 응용법을 학습하여 프롬프트 엔지니어링으로 구체적인 명령을 수행할 수 있다.", "target": "- ChatGPT를 마스터하여 업무의 생산성을 극대화시키고자 하는 직장인 \n- ChatGPT 심화 활용법, 프롬프트 엔지니어링 기술을 마스터하고자 하는 개발자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "코딩이 필요한 당신에게 CURSOR AI 입문기 with Claude Code", "duration": "11:48:05", "contents": "24", "instructor": "이대성/장재현", "summary": "AI가 도와주는 웹 개발, 누구나 만드는 실용 웹서비스 입문\n혼자서는 어려운 프로젝트도 AI와 함께라면 가능합니다.\n코드 작성부터 UI 디자인까지, Cursor AI와 GPT API를 활용해 웹사이트와 웹서비스를 빠르게 제작하는 방법을 익힙니다. 단순 기능 구현을 넘어, 나만의 서비스와 프로젝트를 직접 완성합니다.", "goal": "Cursor AI와 ChatGPT API를 활용하여 간단한 웹사이트 제작부터 로그인, 결제, AI 기능 연동까지 직접 구현할 수 있는 실습형 역량을 기릅니다.", "target": "코딩 경험이 없지만 웹사이트·웹서비스 제작에 관심이 있는 구성원, 기획·운영·데이터 관련 직무 담당자", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "Orange로 하는 노코드 AI 데이터 분석(2) 전처리와 시각화", "duration": "11:54:07", "contents": "21", "instructor": "최정아", "summary": "코딩 없는 AI 데이터 분석, Orange3! 효과적인 데이터 분석을 위한 전처리부터 데이터의 가치를 보여주는 시각화까지 한 번에!\n\nOrange3는 코딩 없이 드래그 앤드 드롭 기능으로 누구나 쉽게 데이터 분석을 할 수 있는 머신 러닝 도구이다. 데이터 전처리와 시각화, 아직도 엑셀과 파워포인트 밖에 모른다면 Orange3를 활용해보자.\n\n본 과정을 통해 엑셀보다 편하게 데이터를 전처리 하고, 파워포인트보다 쉽게 시각화하는 방법을 습득하여, 심화 데이터 사이언티스트로 거듭나 보자.", "goal": "- 데이터 전처리와 피처 엔지니어링의 기본 프로세스를 설명할 수 있다.\n- 데이터 전처리로 효과적인 데이터 분석의 기초를 마련할 수 있다.\n- 다양한 시각화 기법을 활용하여 분석 결과를 명확하게 전달할 수 있다.", "target": "- 노코드 프로그램으로 데이터 전처리와 피처 엔지니어링을 간단히 수행하고 싶은 직장인\n- 데이터 시각화를 통해 분석 결과를 명확하게 전달하고자 하는 직장인\n- 데이터 시각화 역량을 향상하여 업무 효율성을 향상하고자 하는 직장인", "level": "심화"}, {"cat1": "OA", "cat2": "프리미어", "title": "쉽게 배우는 프리미어CC(영상편집, 생성형 AI)", "duration": "12:11:24", "contents": "28", "instructor": "양지원", "summary": "영상편집 업계에서 가장 많이 사용되는 프리미어 프로 프로그램에 대한 사용 방법과 AI를 활용한 영상편집 방법에 대해 이해한다. \n이를 통해 영상편집 파트에 대한 전문 인력 양성을 목표로 한다.", "goal": "1. 프리미어 프로의 주요 구성 패널을 이해하고, 러프 컷 편집과 정밀 컷 편집의 기초를 다진다.\n2. 기초 편집 후 효과 적용, 색 보정, 자막 삽입을 통해 종합 편집을 진행한다.\n3. 오디오 볼륨 조절, 배경 음악 삽입 및 믹싱을 통해 더 높은 품질의 영상 콘텐츠를 제작할 수 있도록 한다.\n4. AI를 활용한 편리한 기능을 통해 영상편집 시간을 줄이고 작업 속도를 높여 입문자들이 크리에이티브한 작업에 몰두할 수 있도록한다. ", "target": "- 프리미어 프로 입문자\n- 프리미어 기존버전 학습자", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "[ICT 지식 큐브] 인공지능, 보안, 네트워크, 클라우드", "duration": "12:20:28", "contents": "24", "instructor": "이정하/박수민/김준삼/김정욱/전지웅/박민수/최수경/김정우", "summary": "다양한 업무영역 크로스오버가 가능한 IT 전문 기술자를 양성하자.", "goal": "- ICT 기술 트렌드, 비즈니스 및 ICT 기술 융합 등 단순하고 명확한 개념설명과 사례를 기반으로 짧은 시간 내 내재화가 가능하도록 핵심 내용을 중심으로 학습한다. \n- 다양한 업무영역 크로스오버가 가능한 IT 전문 기술자 양성이 가능하며, 전문 자격 취득을 위한 에센스를 제공한다.", "target": "- 정보화에 관심이 있는 자\n- ICT 기술 관련 전문직 종사자, 시스템 및 소프트웨어 엔지니어 및 IT 전문 역량 강화 희망자\n- ICT 전문자격(정보관리/컴퓨터시스템응용기술사, 정보시스템감리사 등) 취득에 관심이 있는 분", "level": "Seed"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "비전공자도 쉽게 하는 Python 입문", "duration": "12:47:02", "contents": "16", "instructor": "박성백", "summary": "Python 환경설정부터 Python 프로그래밍의 기초 개념, 라이브러리, 언어의 사용 등을 실습 기반으로 제시하여 비전공자도 쉽게 익히고, 업무에 활용할 수 있도록 내용을 구성하였습니다. ", "goal": "- Python 개발환경을 구축하고, 기본 구조를 이해할 수 있다. \n- Python 언어의 기본문법, 리스트(list), 튜플(tuple), 셋(set), 딕셔너리(dictionary) 함수 사용법을 익힐 수 있다.\n- 제어문, 반복문 등을 통해 코드를 제어하는 방법을 습득하고, 자료형을 통해 데이터를 다루는 방법을 파악할 수 있다. \n- Python의 내장 형식과 함수들을 연습해서 간단하고, 반복적인 업무를 코드로 작성할 수 있다.", "target": "- Python을 처음 시작하는 프로그래밍 입문자\n- 응용프로그램 개발 및 데이터베이스 관리 업무를 시작하는 실무자\n- 프로그래밍으로 업무를 효율적으로 하고자 하는 모든 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "ChatGPT를 활용한 세상에서 제일 쉬운 파이썬 코딩 클래스", "duration": "13:14:41", "contents": "21", "instructor": "김진", "summary": "코딩알못도 개발자만큼 프로그래밍을? 생성형 AI가 다 알려주는 코딩 비법!\n본 과정을 통해 코딩알못 초보자가 챗GPT를 활용하여 기초 코딩 지식을 익히고 프로젝트 실습까지 수행하도록 성장하는 방법을 제공합니다.", "goal": "- 생성 AI를 활용한 프로그래밍 계획 및 실제 구문을 작성할 수 있다.\n- 목표 기술에 대한 단계별 학습 계획을 작성할 수 있다.\n- 코딩 프로젝트를 수행하며 코드 리팩토링과 상세한 피드백을 요청할 수 있다.\n- 생성 AI 기반 코딩을 수행할 수 있는 기초 코딩 역량을 기를 수 있다.\n", "target": "- 코딩에 생성형 AI를 활용하는 법을 알고 싶은 직장인\n- 실무에서 필요한 기초 코딩 지식을 쉽게 익히고 싶은 직장인\n- 생성형 AI 사용법을 익혀 효율적으로 업무를 하고 싶은 모든 분\n", "level": "고급"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "데이터 분석을 위한 파이썬 프로그램 통계분석 기초", "duration": "13:28:54", "contents": "28", "instructor": "정훈희", "summary": "[SW교육특강]데이터분석을 위한 파이썬 프로그램 통계분석 데이터 기초 과정 강좌를 수강합니다.", "goal": " - 파이썬을 이용한 데이터분석 방법에 대해 학습할 수 있다.", "target": "- 파이썬 프로그램을 사용하고자 하는 자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI 스킬링] AI 업무 자동화로 완성하는 24시간 무인 오피스", "duration": "13:32:06", "contents": "28", "instructor": "안현수", "summary": "AI로 내 컴퓨터에 24시간 일하는 '무인 사무실' 만드는 법!\n코드를 몰라도 따라하면 완성되는 엔드 투 엔드 대량 업무 자동화 워크플로우", "goal": "1. 오피스 툴들을 하나로 묶어 끊김 없이 돌아가는 엔드 투 엔드 자동화 시스템을 설계할 수 있다.\n2. PC에 파이썬 환경을 구축하여 안전하게 대량의 데이터를 분석할 수 있다.\n3. 바이브코딩만으로 원하는 프로그램을 스스로 구현할 수 있다.", "target": "1. MS Office 프로그램을 사용하는 사무직 직장인\n2. 보안에 민감한 데이터를 다루는 데이터 분석 담당자\n3. '실무자'를 넘어 '설계자'로 도약하고 싶은 기획자", "level": "고급"}, {"cat1": "OA", "cat2": "일러스트", "title": "쉽게 배우는 일러스트CC(그래픽, 생성형 AI)", "duration": "14:42:49", "contents": "24", "instructor": "신현숙", "summary": "2D 그래픽의 대표적인 벡터 드로잉 프로그램인 일러스트레이터의 기본적인 사용법을 이해하고 이를 활용한 이미지 제작과 AI 기능을 통한 이미지 표현를 극대화하여 창의적인 디자인 작업에 자유롭게 적용할 수 있는 전문적인 시각 표현 기술을 익히는데 그 목표를 둔다.", "goal": "1. 일러스트레이터의 기본적인 도구 사용법을 익힌다.\n2. 다양한 벡터이미지를 제작할 수 있도록 여러 가지 형태를 실습한다.\n3. 일러스트레이터의 그래픽 효과를 이미지에 적용하여 표현력을 높이도록 한다.\n4. AI 기능을 활용하여 아이디어에 맞는 적합한 이미지를 빠르게 생성하고 퀄리티 높은 결과물을 제작하도록 한다.", "target": "- 일러스트 입문자 \n- 일러스트 기존버전 학습자", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "R을 활용한 빅데이터 및 통계분석", "duration": "14:56:30", "contents": "24", "instructor": "박성백", "summary": "R프로그래밍을 이용해 누구나 빅데이터 분석을 할 수 있도록 데이터의 기본적인 개념, R의 유용한 함수와 패키지, 데이터 분석 실습을 담았습니다. ", "goal": "- R을 통한 데이터 스크래핑 기법과 크롤링 기법을 익혀 원하는 데이터를 추출할 수 있다.\n- R을 활용하여 데이터 분석 방법을 익히고 통계자료로 만들 수 있다.  \n- 다양한 타입의 자료를 수집하여 비즈니스 관점으로 활용할 수 있다.", "target": "- 전산시스템 및 데이터 관리 담당자\n- 마케팅 정보 수집 및 분석자\n- 빅데이터 수집 및 분석을 효율적으로 진행하고 싶은 현업 종사자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI 스킬링] 기획자를 위한 AI Excel 실전: 뇌과학적 데이터 시각화 테크닉", "duration": "18:43:04", "contents": "33", "instructor": "최정아", "summary": "0.2초만에 시선을 사로잡는 보고서의 비밀! 뇌과학 인지 설계를 기반으로 AI와 함께 빠르게 완성하는 압도적 데이터 시각화", "goal": "- 뇌과학 기반 시지각 원리를 체계적으로 분석하여, 보고서의 가독성을 객관적으로 평가하고 개선할 수 있다.\n- 복잡한 데이터에서 핵심 인사이트를 도출하고 이를 전략적으로 강조하는 대시보드를 설계할 수 있다.\n- AI와 엑셀 고급 기능을 활용하여 시계열 예측 보간 및 지도 시각화 등 고난도 데이터 전처리와 시각화 프로세스를 자동화할 수 있다.", "target": "- 시각화 이론은 모르고 감각에만 의존하여 보고서를 작성하는 실무자\n- 복잡한 데이터의 핵심 인사이트 도출 및 전달에 어려움을 겪는 기획자\n- AI를 도구로 활용하여 데이터 전처리 및 시각화 생산성을 높이고 싶은 모든 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "AI가 훔쳐간 인문학", "duration": "2:00:36", "contents": "8", "instructor": "김철수", "summary": "\"AI가 훔쳐가 인문학\" 의 저자, 김철수 소장의 철학적 질문을 바탕으로 AI시대를 살아가야 할 현대인에게 삶의 통찰과 지혜를 제시합니다.", "goal": "1. AI와 공존하며 살아가야 하는 시대, 철학적 질문을 바탕으로 삶의 통찰력과 지혜를 얻어갈 수 있다.\n2. AI시대 필요한 기술과 사고의 방법 학습으로 미래에 대비할 수 있다.", "target": "인공지능 및 인문학에 관심 있는 모든 사람", "level": "Seed"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[슬기로운 통계생활] Tidyverse 기초과정", "duration": "2:02:53", "contents": "5", "instructor": "이삭", "summary": "R 데이터 분석의 주축을 이루는 tidyverse 패키지를 통해 주요 함수의 용법을 이해하자!", "goal": "- Tidyverse 패키지 주요함수에 대한 기초 내용과 사용법을 숙지할 수 있다.\n- Tidyverse 패키지를 사용하여 데이터의 특성들을 시각화하고, 해석할 수 있다.", "target": "- 데이터 분석을 처음 공부하는 직장인\n- R을 처음 배우는 직장인\n- Tidyverse 패키지를 활용하고자 하는 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "ChatGPT로 업그레이드하는 비즈니스 엑셀 1", "duration": "2:03:12", "contents": "12", "instructor": "권현욱", "summary": "이 과정은 ChatGPT를 활용해 엑셀의 기본 역량을 업그레이드할 수 있도록 해줍니다.\n \n■ 엑셀, 워드, 파워포인트에서의 단순 작업이 힘들다면?\n  매크로와 VBA 코딩 등 엑셀뿐만 아니라 워드와 파워포인트에도 ChatGPT를 활용하여 쉽고 빠르게 ‘업무 자동화’ 하여 업무 역량을 업그레이드할 수 있습니다.\n \n■   다양한 예제 실습\n  다양한 예제를 통해 학습 내용을 응용해 볼 수 있어요!\n \n■   국내 최초 발간 [챗GPT+엑셀 업무자동화 정석] 저자의 강의\n   Microsoft Excel MVP(최고기술전문가)이자 국내 최초로 발간된 ChatGPT 엑셀 본격 활용서 [챗GPT+엑셀 업무자동화 정석] 저자의 강의로 누구나 쉽게 이해할 수 있습니다.", "goal": "ChatGPT를 활용하여 엑셀의 기본 기능뿐만 아니라 복잡한 함수 사용 등 다양한 엑셀 활용법에 대해 학습할 수 있다.", "target": "ChatGPT와 엑셀을 처음 사용하거나 엑셀 활용이 어려운 모든 학습자", "level": "심화"}, {"cat1": "경영일반", "cat2": "경영혁신", "title": "같은 AI 다른 세대, 우리는 왜 이렇게 AI를 다르게 쓰는가", "duration": "2:09:13", "contents": "8", "instructor": "최원설/이재하/고은비", "summary": "2025년, 업무혁신의 가장 큰 트렌드 AI\nAI는 이제 모든 세대가 마주한 공통의 과제입니다.\nXYZ세대는 서로 다른 방식으로 AI를 이해하고 활용하고 있습니다. 이 과정은 세대별 시각 차이를 넘어, AI를 소통과 협업의 언어로 바꾸는 방법을 함께 모색합니다. AI 시대, 세대를 잇는 새로운 일의 문화를 만나보세요.4", "goal": "세대 이해와 AI 기반 협업으로 조직 맞춤 커뮤니케이션 전략을 수립할 수 있다.", "target": "다양한 세대가 함께 일하는 조직 구성원 및 관리자 (MZ세대 ~ X세대)", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "일단 따라하면 생산성이 높아지는 RPA 활용 모음.ZIP", "duration": "2:09:14", "contents": "12", "instructor": "양지수", "summary": "AI, 로봇과 함께 일하는 4차 산업혁명 시대! 앞으로 RPA 활용 능력은 엑셀 만큼이나 직장인에게 꼭 필요한 역량으로 여겨질 수 있는데요. \n단순반복 업무는 RPA 로봇에 맡긴다면, 보다 생산적인 업무에 몰입할 수 있습니다. 글로벌 RPA 시장 점유율 1위(가트너, 2018) UiPath로 RPA 활용 방법을 알아봅니다.", "goal": "RPA로 대체할 수 있는 업무를 파악할 수 있다.\nUipath 툴을 사용하여 내가 원하는 RPA 프로세스를 만들 수 있다.", "target": "RPA를 처음 접하는 구성원, 코딩 없이 RPA를 활용하고 싶은 구성원", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] n8n으로 쉽게 완성하는 나만의 AI 워크플로우", "duration": "2:10:58", "contents": "6", "instructor": "윤현지", "summary": "반복 업무는 최소화하고, 성과는 극대화하자!\n글로벌 기업들이 선택한 AI 에이전트 기반 자동화 툴, n8n으로 코딩 없이 Agentic Workflow를 시작해보자!", "goal": "1. AI 에이전트와 자동화의 기본 개념부터 실무 워크플로우 구성까지 단계별로 습득할 수 있다.\n2. 단순 업무 자동화가 아닌 AI를 통해 새로운 단계로 진화한 업무 자동화를 빠르게 접목하여 실무에 활용할 수 있다. \n3. 실무에서 자주 쓰는 케이스의 워크플로우를 실습을 통해 구성할 수 있다.", "target": "1. 반복 업무를 자동화하여 업무 생산성과 효율성을 높이고 싶은 직장인\n2. 최신 AI 활용 역량을 실무에 접목하고 싶은 모든 임직원", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "평범한 직장인도 5분만에 만드는 AI 콘텐츠", "duration": "2:12:55", "contents": "8", "instructor": "김경찬", "summary": "생성형 AI 시대 직장인이 갖추어야 할 콘텐츠 생성 실무 역량 중심 구성 AI 시대, 창의적 콘텐츠 제작은 직장인에게 경쟁력이 되고 있습니다. 본 과정은 AI를 활용한 업무 효율성과 경쟁력을 동시에 높이는 실질적이고 실무적인 강의를 제공합니다. 10년차 직장인이자 사내 AI 활용 강의를 하고 있는 강사를 통해 이론이 아닌 일반 직장인도 실제 활용가능한 기능 위주로 학습을 진행합니다. ", "goal": "1. 미드저니, 런웨이 젠쓰리 등 생성형 AI를 통해 누구든 쉽게 원하는 이미지, 영상을 만들 수 있습니다.  \n2. 현 직장인 디자이너가 직접 알려주는 기능 세팅, 프롬프트, 유의사항, 활용 팁을 통해 교육영상 한편이 끝날 때마다 해당 기능을 바로 활용할 수 있습니다. ", "target": "- 기술을 활용하여 실무에 필요한 콘텐츠를 직접 제작하고자 하는 직장인\n- 미드저니와 같은 생성형 AI 도구를 활용해 브랜드 이미지, 광고 콘텐츠, 영상 등을 효율적으로 제작하려는 디자이너나 마케터\n- 조직 내 AI 도입 가능성을 탐색하고, 팀의 생산성과 창의성을 높이기 위해 AI 기반 콘텐츠 제작 방법을 배우고자 하는 관리자", "level": "심화"}, {"cat1": "자기계발", "cat2": "자기혁신", "title": "디지털 분신술: AI와 함께 만드는 퍼스널 에이전트", "duration": "2:15:00", "contents": "10", "instructor": "손동진", "summary": "하나의 정체성으로는 부족한 시대, 디지털 분신술을 펼쳐라! 나와 함께 일하는 퍼스널 에이전트로 나의 역할과 능률을 확장해 보자", "goal": "1. 자신의 경험을 직무 전문성으로 구조화해 브랜드화하고, 콘텐츠 자산 전략으로 확장할 수 있다.\n2. AI 에이전트를 구축하고 업무 현장에 활용할 수 있다.\n3. AI 에이전트에 분야와 역할을 부여하여 실전에서 업무 생산성을 극대화하고 수 있다.", "target": "1. AI를 ‘도구’가 아닌, ‘업무 파트너‘로 쓰며 경쟁력을 키우고 싶은 모든 직장인\n2. 개인 업무 역량을 시스템화하고 싶은 1인 기업가와 기획 담당자\n3. SNS를 운영하며 자신의 경험을 장기 수익으로 창출하고 싶은 인플루언서와 크리에이터 ", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 새로운 비즈니스 기회를 선점하는 AI 기술 트렌드", "duration": "2:15:57", "contents": "10", "instructor": "이소영, 이예림", "summary": "AI 기술 트렌드에서 엿볼 수 있는 비즈니스 기회 창출 인사이트", "goal": "- 현장에서 가장 많은 실무적 변화를 가져오고 있는 핵심 AI 기술을 설명할 수 있다.\n- AI 도입 전후의 비즈니스 변화 요소를 비교해볼 수 있다.\n- 자신이 속한 조직에 접목 가능한 AI 기술을 선정하고 적용 시나리오를 작성할 수 있다.", "target": "- 전략적 시야가 필요한 경영/기획 실무자\n- AI와 결합되어 발생하는 비즈니스 기회를 선점하고자 하는 경영자\n- 빠르게 바뀌는 AI 트렌드와 소비자 트렌드에 대한 이해가 필요한 모든 직장인", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "AI 리더십: 창의력과 데이터가 만나는 리더십의 미래", "duration": "2:20:08", "contents": "10", "instructor": "오상진", "summary": "본 과정은 ‘데이터와 AI 중심의 환경’을 조성하고 구성원의 협업을 강화하며, 창의적인 조직 문화를 구축하는 방법을 제시합니다.  \n\n☞ 이 과정이 특별한 이유는..?\n ① AI 데이터 자본주의 시대에 어떻게 적응하고 리더십을 발휘할 수 있는지 인사이트를 얻어갈 수 있어요!\n ② 창의성, 증거기반 시스템 사고, 센스메이킹 등 키워드로 알아보는 AI 시대 리더십을 키울 수 있습니다. \n ③ 프로그램 개발자 출신의 경영학자이자, 창의적 조직 HR 전문가인 [AI 리더십] 저자가 쉽게 풀어주는 강의입니다.", "goal": "AI 데이터 자본주의 시대, 창의력과 데이터를 활용한 올바른 대응 방법을 학습하고,  현업에서 AI 중심의 조직문화와 데이터 리더십을 구축할 수 있다.", "target": "AI 데이터 시대를 이해하고 창의적인 조직 문화를 구축하고 싶은 모든 구성원", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "Cursor AI (커서) 입문에서 실전 웹사이트 만들기까지 Part.1 기본 사용법", "duration": "2:23:40", "contents": "5", "instructor": "김동준", "summary": "본 과정은 커서 AI 인공지능 툴에 대한 기초 사용법과 이를 사용한 실전 웹사이트 만들기에 대해서 배우는 동영상 과정입니다.", "goal": "- 최신 AI 인공지능 툴을 사용하여 모던한 웹사이트 구축 과정을 학습합니다.", "target": "- 커서 AI 인공지능 툴을 사용하여 실전 웹사이트를 만드는 과정을 배우고자 하는 사람", "level": "심화"}, {"cat1": "Biz. Skill", "cat2": "업무수행력", "title": "말해봐, ChatGPT가 다 해줄게. 데이터 분석", "duration": "2:24:27", "contents": "7", "instructor": "고일화", "summary": "이 과정은 ChatGPT를 활용하여 수치형·텍스트형 데이터를 분석하고 이를 실무 보고서로 전환하는 실습 중심 교육이며 기본적인 데이터 구조화부터, 패턴 인사이트 도출, KPI 분석, 고객 피드백 자동 분류, 반복 보고서 자동화 템플릿 구축까지 포괄적으로 다루며, 데이터 해석과 문장 전환 능력을 함께 기를 수 있다. 데이터 시각화 힌트 제공과 함께, 팀/개인 맞춤형 템플릿 설계까지 병행하여 학습 효과를 극대화한다.", "goal": "수치 및 텍스트 데이터를 GPT에 맞는 구조로 정리하고 분석할 수 있다.\n데이터 기반 문장을 자동으로 생성하는 프롬프트를 설계할 수 있다.\n반복적인 보고서 업무를 자동화할 수 있는 템플릿을 구축할 수 있다.", "target": "데이터 해석과 보고서 작성을 동시에 효율화하고 싶은 일반 사무직 종사자\n고객 피드백, KPI, 설문 등 다양한 데이터를 다루는 기획/마케팅/영업 담당자\n반복적인 리포트 작성 업무를 자동화하고 싶은 관리자 및 팀 리더", "level": "심화"}, {"cat1": "Biz. Skill", "cat2": "프리젠테이션", "title": "기획, 디자인, 발표까지 다 되는 AI 활용 프레젠테이션", "duration": "2:26:06", "contents": "8", "instructor": "홍순성", "summary": "AI를 잘 쓰면 프레젠테이션 고수가 될 수 있다! 직장과 비즈니스에서 프레젠테이션 역량은 필수입니다. 하지만 멋진 기획, 세련된 디자인, 효과적인 발표까지 완성하려면 많은 시간과 노력이 필요하죠. 이 과정을 통해 프레젠테이션 준비는 더 이상 부담이 아니라 즐거운 경험으로 바뀔 것입니다.", "goal": "- 프레젠테이션 준비 단계별로 적절한 AI 도구를 선택하여 쓸 수 있다.\n- 적절한 프롬프트와 작업 순서를 적용하여 더 좋은 프레젠테이션 결과물을 효율적으로 만들어낼 수 있다.", "target": "- 기획서와 보고서를 효율적으로 작성해야 하는 직장인\n- 프레젠테이션과 발표 역량을 중시하는 비즈니스 실무자\n- 업무 혁신과 디지털 생산성을 추구하는 일반 사무직 및 관리자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "코파일럿 실무 활용 강의! MS오피스에서 인공지능 활용하기", "duration": "2:26:55", "contents": "11", "instructor": "박기삼/임재훈", "summary": "MS 오피스에서 인공지능 코파일럿을 활용해 업무 효율성과 생산성을 극대화하는 실무 활용 강의!", "goal": "- 코파일럿의 주요 기능과 개념을 이해하고 이를 실무에 적용할 수 있다.\n- MS 워드, 엑셀, 파워포인트에서 코파일럿을 사용하여 문서 작성, 데이터 분석, 프레젠테이션 제작 등의 업무 생산성을 극대화할 수 있다. \n- 코파일럿을 통해 이메일 관리, 보고서 작성 등 반복 업무를 효율적으로 처리할 수 있다.\n- 코파일럿을 이용하여 업무 시간을 절감하고 생산성을 향상할 수 있는 구체적인 방법을 터득한다.", "target": "- MS 코파일럿을 활용해 업무 생산성을 높이고 싶은 직장인\n- 워드, 엑셀, 파워포인트에서 인공지능 기능을 통해 일의 효율성을 극대화하고 싶은 모든 직장인\n- 데이터 처리, 문서 작성, 프레젠테이션 제작 등 다양한 사무 작업에서 인공지능을 적극적으로 도입하고자 하는 관리자 및 실무자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "리더를 위한 생성형 AI 비즈니스 전략", "duration": "2:29:40", "contents": "6", "instructor": "김진", "summary": "미래를 이끄는 리더의 필수 선택, 생성형 AI 비즈니스 전략 교육\n\nAI의 잠재력을 전략적으로 활용하여, 조직을 다음 단계로 도약시키는 방법을 모색해보자!\n\n본 과정을 통해 리더들이 비즈니스 현장에서 필수 역량이 된 생성형 인공지능을 업무와 사업에 제대로 활용할 수 있을 것이다.", "goal": "- 생성형 인공지능 도구를 활용한 다양한 방법을 습득할 수 있다.\n- AI와의 상호작용을 최적화하는 프롬프트 엔지니어링 기법을 배워, 생산성을 극대화할 수 있다.\n- AI를 활용한 비즈니스 전략을 이해하고, 이를 통해 혁신적인 비즈니스 환경을 구축할 수 있다.", "target": "- AI 기술을 활용해 생산성을 높이고자 하는 모든 직장인 및 경영인\n- 최신 AI 기술을 업무에 적용하고 싶은 IT 전문가\n- 프롬프트 엔지니어링 기법을 배우고 싶은 데이터 분석가\n- AI 비즈니스 전략을 이해하고 적용하고 싶은 경영자와 기획자", "level": "심화"}, {"cat1": "IT", "cat2": "IT 기획", "title": "올인원 데이터분석 실무 : 데이터를 다루는 핵심 테크닉", "duration": "2:29:42", "contents": "4", "instructor": "김계철", "summary": "데이터 분석의 본질적인 문제를 해결하기 위해 반드시 알아야 하는 10개의 핵심 테크닉을 학습하고, 이를 바탕으로 데이터를 효율적으로 가공하고, 분석 및 모델링을 통해 실행 가능한 인사이트를 도출할 수 있는 실무형 역량을 배양하는 데 초점을 둡니다.", "goal": "- 데이터 가공, 군집분석, 텍스트 분석 등 다양한 데이터 처리 및 분석 기법을 학습하여, 실무에서 데이터를 활용해 문제를 정의하고 해결할 수 있는 실질적인 능력을 갖춘다.\n- 머신러닝 기술을 이해하고 이를 활용한 모델을 구축함으로써, 데이터를 기반으로 예측 및 의사결정 지원을 위한 자동화된 솔루션을 설계할 수 있는 역량을 확보한다.", "target": "- 공공기관 근무자\n- 데이터를 기반으로 의사결정하고 행정서비스을 제공하고자 하는 자", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] AI 혁명을 이끈 천재들의 비즈니스 인사이트", "duration": "2:32:34", "contents": "12", "instructor": "이승민", "summary": "우리는 왜 기술이 아닌 '사람'을 통해 AI를 배워야 할까?\nAI 혁명을 이끈 천재들에게 배우는 통찰, 기술보다 빛나는 사람의 이야기", "goal": "1. AI 혁신을 이끈 핵심 인물들의 도전과 업적을 파악하고, 급변하는 기술 환경 속에서 개인과 기업이 갖춰야 할 미래 경쟁력이 무엇인지 파악할 수 있다.\n2. AI 기술이 변화시키는 산업 구조와 미래 사회의 거시적 방향성에 대한 인사이트를 얻을 수 있다.\n3. AI 혁명이라는 거대한 흐름 속에서 인간 고유의 역할과 창의적 기회를 발견할 수 있다.", "target": "1. AI의 발전과 이를 통한 미래 인사이트를 파악하고 싶은 직장인\n2. AI 변화의 흐름을 이해하고 트렌드를 알고 싶은 직장인\n3. AI 시대의 의사결정과 문제해결 역량이 요구되는 직장인", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "AI를 활용한 실무 영상 만들기 (ChatGPT x RunwayML x Photoshop x 영상편집)", "duration": "2:35:36", "contents": "8", "instructor": "박서연", "summary": "· 본 과정을 통해 학습자는 AI를 이용한 기획, 이미지 제작, 동영상 제작을 할 수 있게 됩니다. · 본 과정은 AI영상 제작을 하기 위한 입문자들에게 영상기획부터 편집까지 진행하여 하나의 완성 된 영상을 제작할 수 있도록 구성하였습니다.", "goal": "· AI 기반 이미지·영상 생성 도구를 활용하여 영상 기획부터 제작까지의 전체 흐름을 이해하고 적용할 수 있다. · AI를 활용한 이미지 제작, 영상 소스 생성, 편집 과정을 통해 실무형 영상 콘텐츠를 완성할 수 있다. · 기본적인 영상 편집 기초를 익혀 AI 생성 결과물을 효과적으로 연출할 수 있다. · 완성도 있는 짧은 영상 콘텐츠를 제작하여 실무 활용 또는 포트폴리오로 활용할 수 있다.", "target": "AI를 활용한 영상 제작에 관심 있는 입문자 및 초보자 영상 편집 또는 콘텐츠 제작을 처음 접하는 일반인 유튜브, SNS, 쇼츠 등 영상 콘텐츠를 직접 제작하고자 하는 창작자 디자인·영상·미디어 분야에 관심 있는 고등학생, 대학생, 일반 성인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "업무시간을 절반으로, ChatGPT로 시작하는 데이터 리터러시(2)", "duration": "2:36:09", "contents": "10", "instructor": "구자룡", "summary": "생성형 AI 도구를 활용한 노코드 데이터 분석을 주제로 합니다. ChatGPT, Gemini, Claude, Perplexity, Julius 등의 AI 도구를 사용하여 데이터 수집, 분석, 시각화, 보고서 작성 등 데이터 분석의 모든 단계를 수행합니다. \n", "goal": "- 다양한 데이터 분석 기법을 습득하고 실습을 통해 실제 비즈니스 상황에서의 적용 능력을 향상시킵니다.\n- AI를 활용한 데이터 분석 결과를 해석하고 이를 기반으로 전략적 의사결정을 내릴 수 있는 능력을 기릅니다.\n- 코드 작성 없이도 데이터 수집, 클리닝, 분석, 시각화까지 모든 데이터 분석 과정을 AI 도구로 수행하는 기술을 익힙니다.\n- 시장 조사, 설문지 작성, 데이터 수집, 가설 검정, 상관관계 및 인과관계 분석, 텍스트 데이터 분석 등 다양한 데이터 분석 도구와 기법을 효과적으로 활용할 수 있는 능력을 기릅니다.", "target": "- 마케팅 전략을 세우고 시장 조사가 필요한 학습자\n- 기존에 복잡한 데이터 분석 도구없이 보다 빠르고 간편하게 데이터를 분석하고 싶은 학습자\n- 빠르고 효율적으로 데이터를 분석하여 의사결정을 하고 싶은 학습자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI 치트키] 인공지능 × 인간지능 새 판짜기", "duration": "2:36:11", "contents": "8", "instructor": "김미경", "summary": "인간 사고 증폭을 위한 인간-AI 협업의 새 프레임\n\n인간의 능력을 최대한 증폭시키기 위해 AI는 어떻게 활용해야 하는가? 창의성의 새로운 판 위에서 인간–AI 협업은 어떤 기준으로 실행되어야 하는가? 그리고 직무와 워크플로우는 어떻게 설계해야 하는가?\n이 과정은 이러한 질문에 답할 수 있는 새로운 틀과 실행 전략을 제시한다.", "goal": "창의성에 대한 확장된 개념과 새로운 평가 관점을 이해한다.\n인간–AI 협업 기반의 창의성 증폭 메커니즘과 협업 모델을 이해한다.\n생성형 AI의 기술적 특성과 한계를 고려한 활용·관리 기준을 수립한다. \nAI–인간 협업 관점에서 창의적 직무 변화와 실행 방향을 도출한다.", "target": "- AI를 활용하여 창의적 생산성을 높이고자 하는 모든 직장인\n- AI와 인간 협업을 통한 업무 체계와 조직 구조를 마련하고자 하는 모든 비즈니스 리더 및 실무자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 한 번에 끝내는 제미나이 올인원: 워크스페이스, 나노바나나, Veo&Flow, Canvas", "duration": "2:37:43", "contents": "5", "instructor": "서지연", "summary": "AI 툴 이동 없이 제미나이 하나로, 기획부터 고퀄리티 비주얼 콘텐츠 완성까지 원스톱으로 끝내기!\nAI 툴 이동 없이 제미나이에서 한 번에! 이미지·영상·문서 제작 통합 솔루션\n- AI 툴 옮겨 다니느라 낭비되는 시간은 이제 그만, 단 하나의 플랫폼 구글 제미나이에서 끝내는 멀티모달 AI 활용법 제시\n- 기획부터 시각화·영상 완성까지 제미나이 하나로 처리하며 콘텐츠 제작 속도와 결과물 완성도 극대화", "goal": "1. 모바일 앱의 실전 활용 전략과 PC 웹 맞춤 설정을 통해 언제 어디서든 제미나이를 자유롭게 호출하고 활용할 수 있다.\n2. 텍스트 프롬프트를 넘어 나노바나나와 Veo3 등의 도구를 사용하여 수준 높은 이미지와 영상을 제작할 수 있다.\n3. 구글 워크스페이스 연동 및 Canvas 기능을 마스터하여 데이터 시각화와 자료 편집 업무의 효율을 향상시킬 수 있다.", "target": "1. 기획부터 이미지, 영상 제작까지 AI 툴 하나로 효율적으로 작업 하고 싶은 직장인\n2. 디자인 툴 숙련 없이 감각적인 이미지, 영상을 제작하고 싶은 직장인\n3. 기획서나 보고서 작성할 때마다 시각화 자료가 부족해 고민인 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "Chat GPT, 내 동료가 되어라!", "duration": "2:37:43", "contents": "10", "instructor": "이시한", "summary": "Chat GPT,  우리는 어떻게 기회를 만들어갈 것인가?", "goal": "- 이론적 정의부터 Chat GPT가 이끈 각계각층의 변화를 살펴보고, 미래 인재 경쟁력(아이디어를 갖고, AI를 잘 활용하는 인간)에 대해 이해할 수 있습니다.\n- 검색과 가상의 마케팅 사례 등을 바탕으로 Chat GPT의 활용 방안을 확인할 수 있습니다.", "target": "-  전 구성원", "level": "Seed"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "[DS Class] 딥러닝 실무 프로젝트", "duration": "2:37:59", "contents": "4", "instructor": "김진숙", "summary": "본 강의를 통해 딥러닝의 중요 핵심 모델 중 이미지 인식 AI 모델인 CNN을 활용한 이미지 분류 프로젝트를 제작해보고, 이를 바탕으로 다양한 이미지 파일들을 딥러닝 CNN 알고리즘을 활용하면 쉽게 구분할 수 있습니다.", "goal": "- 딥러닝에 활용할 데이터 확보 및 전처리, 데이터 셋 나누기 과정을 알 수있다.\n- 모델 학습 및 평가와 모델 개선 방법을 알 수 있다.\n- Flask 프레임워크를 이용한 CNN모델 웹 서빙에 대해 알 수 있다.", "target": "- 딥러닝을 활용할 줄 알지만 실무에 적용해본 적이 없어 명확한 결과물을 만들어보고 싶은 분\n- 딥러닝 뿐 아니라 데이터 핸들링 과정을 포함해 인공지능 분석의 모든 과정을 실제로 활용해보고 싶으신 분", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "AI 시대, 문제 해결의 새로운 패러다임:HIPS", "duration": "2:38:45", "contents": "10", "instructor": "변창우", "summary": "AI 시대, 지금 직장인이 직면한 가장 큰 문제는 AI가 우리의 일과 직장을 어떻게 바꾸어갈 것인가 하는 문제입니다. \n‘AI가 우리의 자리를 대체할 것인가?’, ‘AI를 활용하여 성과를 높이려면 어떻게 해야 하는가?’라는 질문에 대한 답을 찾아야 할 때입니다.", "goal": "- 새로운 아이디어를 도출하고, 학습 내용을 바로 업무에 적용할 수 있는 실전 가이드로 현업의 문제 상황을 해결할 수 있습니다.\n- 다양한 실무 예시를 통해 HIPS 프로세스를 실전에서 적용하는 방법을 연습하며, 피드백을 통해 역량을 향상시킬 수 있습니다.", "target": "- 실무에 바로 적용 가능한 능력을 강화하고 싶은 모든 직장인\n- 문제를 발견하고 정의하며 해결하는 능력을 향상 시키고 싶은 직장인", "level": "Seed"}, {"cat1": "리더십", "cat2": "변화관리", "title": "AI 시대의 조직 성장을 이끄는 변화관리 전략", "duration": "2:38:56", "contents": "10", "instructor": "박종규", "summary": "AI와 함께 일하는 시대, 우리는 변화에 어떻게 반응해야 할까? AI 시대 변화관리의 새로운 기준과 전략", "goal": "1. AI 도입이 변화관리와 조직문화에 미치는 영향과 변화 양상을 설명할 수 있다.\n2. AI 시대에 효과적인 변화관리 전략과 실행 프로세스를 설명할 수 있다.\n3. 조직의 혁신과 성과를 높이기 위한 변화관리 전략을 실제 팀에 적용할 수 있다.", "target": "1. AI 시대에 맞는 변화관리 역량을 통해 성과와 팀 몰입을 높이고 싶은 팀 리더와 관리자\n2. AI 도입 이후 기존 조직문화와 변화관리에 한계를 느끼고 재정비를 필요로 하는 리더\n3. AI 시대, 변화에 대한 불안감과 고민을 느끼는 모든 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "초보자를 위한 파이썬 프로그램 기초개념 마스터", "duration": "2:40:15", "contents": "13", "instructor": "정훈희", "summary": "파이썬 프로그램 초보자를 위한 특별강좌 기초개념부터 배우기 과정을 수강합니다.", "goal": "- 파이썬 언어의 특징에 대해 학습한다.\n- 파이썬의 기본 문법에 대해 학습한다.", "target": "- 프로그래밍 입문자", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 미드저니로 생성하고 캡컷으로 완성하는 AI 영상 제작 클래스", "duration": "2:42:10", "contents": "6", "instructor": "양솔지", "summary": "복잡한 촬영도, 비싼 비용도 필요 없는 AI 영상 제작, 미드저니로 생성하고 캡컷으로 편집하여 쉽고 빠르게 나만의 영상 완성하기!", "goal": "- 미드저니를 활용하여 목적에 맞는 AI 이미지와 영상을 생성할 수 있다.\n- 캡컷의 편집 기능을 활용하여 원하는 형태의 영상을 제작할 수 있다.\n- 색감, 톤, 무드를 일관되게 유지하는 스타일 코드로 나만의, 우리 브랜드의 영상 스타일을 전략적으로 구축할 수 있다.", "target": "- 짧은 시간 안에 실무에 바로 적용할 수 있는 AI 영상 제작 방법을 알고자 하는 직장인\n- 이미지, 영상 제작의 전 과정을 AI로 효율화하고 싶은 직장인\n- 브랜드 무드를 유지하면서도 일관된 영상을 구축하고 싶은 영상 기획자 및 개발자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "직무별 AI 대응 전략 - 내 일자리 진단부터 스킬업까지", "duration": "2:44:30", "contents": "8", "instructor": "이시한", "summary": "내 일의 미래를 진단하고, AI와 함께 성장하는 법을 배운다.\n기술은 빠르게 진화하고, 산업 구조와 직무는 그보다 더 빠르게 바뀝니다.\n지금 필요한 것은 내 일의 미래를 읽는 힘. AI 트렌드를 이해하고, 변화를 주도하는 사람만이 생존합니다.\n이 과정은 산업 재편과 기술 전환 흐름 속에서 지금, 나의 일에 어떤 변화가 오는지, 그리고 어떻게 대비할 수 있는지를 직무 관점에서 구체적으로 알려드립니다.", "goal": "AI 기반 산업 재편 흐름과 기술 트렌드를 이해하고 직무별 변화 양상과 대응 전략을 파악할 수 있다.", "target": "변화에 대응해야 하는 전 직군 실무자 ", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[슬기로운 통계생활] 엑셀로 배우는 기초통계 part1", "duration": "2:46:53", "contents": "8", "instructor": "이삭", "summary": "엑셀을 사용한 기초 통계 과정! \n통계의 기초지식을 학습하고, 데이터가 주어졌을 때 통계적으로 시각화하는 방법을 학습합니다.\n또한 데이터의 특성을 나타내는 통계 지표들을 학습하면서 엑셀의 기능을 자연스럽게 익힐 수 있는 강의입니다.", "goal": "- 확률변수를 통해 데이터의 발생 원리에 대해 이해할 수 있다.\n- 다양한 엑셀 기능을 활용하여 데이터의 특성을 나타내는 방법을 사용할 수 있다.", "target": "- 통계를 처음 배우는 분들\n- 데이터 분석을 처음 공부하는 분들\n- 엑셀을 활용하여 통계를 처음 사용하는 분들", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "AI-POT (AI 프롬프트활용능력) 2급 Part.1 기초", "duration": "2:47:08", "contents": "5", "instructor": "강태안", "summary": "· 본 강좌를 통해 AI 플랫폼에 대한 이해와 개념을 학습할 수 있다. \n· 본 강좌를 통해 AI-POT 2급 자격증을 취득할 수 있다.", "goal": "· AI 프롬프트 활용능력에 대한 학습 · 대화형 인공지능인 chatGPT에 대한 이해, 사용 방법에 대한 학습", "target": "· 남녀노소 누구나 학습 가능", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] AI 에이전트 입문 치트키, Claude MCP로 끝내는 업무 자동화", "duration": "2:47:32", "contents": "5", "instructor": "한정호", "summary": "글로벌 교역의 근간을 이루는 해운&조선 산업, 활발한 투자가 예상되는 가운데 알 건 알아야 시장을 따라간다!\n전 세계 교역량의 80% 이상은 해상 운송에 의해 이루어지고 있다. 이를 가능하게 하는 산업이 바로 해운과 조선이다.\n본 과정은\n해운&조선의 기본 개념부터 산업의 성장과 전망, 그리고 투자에 영향을 미치는 여러 요소들까지 15년차 해운/조선 연구원, 현직 글로벌 1위 조선소 기획자가 잘 짜놓은 효율적 커리큘럼을 따라 안내한다.", "goal": "1. MCP로 가능한 다양한 자동화 기술을 습득할 수 있다.\n2. AI 에이전트를 실제 업무에서 활용하는 법을 이해하여 효율을 향상시킬 수 있다.\n3. SNS, 크롤링, 디자인 등 다양한 툴로  MCP 연동을 수행할 수 있다.", "target": "1. 팀원들의 생산성을 향상시켜 팀의 성과를 끌어올리고 싶은 팀장/관리자\n2. AI를 활용하여 반복업무를 줄이고 업무생산성을 높이고 싶은 실무자 \n3. AI 활용 역량을 갖추어야 하는 모든 직장인", "level": "고급"}, {"cat1": "리더십", "cat2": "팀웍", "title": "AI 시대의 효율성을 높이는 팀워크 전략", "duration": "2:48:04", "contents": "10", "instructor": "박희만", "summary": "- AI 도입으로 인해 조직의 핵심 이슈로 대두되고 있는 ‘팀워크의 재설계’를 다루는 최초의 전문 과정 \n- 팀워크의 최신 이론과 AI 시대에 적용 가능한 팀워크의 새로운 기준 및 실행 전략을 제시", "goal": "1. AI의 도입이 팀워크에 미치는 영향과 변화 양상을 설명할 수 있다.\n2. AI를 팀의 일부로 받아들일 때 필요한 팀 설계 전략을 설명할 수 있다.\n3. 성과를 높이기 위한 AI 기반 협업 전략을 실제 팀에 적용할 수 있다.", "target": "1. AI 시대에 맞는 협업 문화를 만들고 싶은 팀장\n2. AI 도입 이후 기존 업무 방식과 팀워크에 한계를 느끼고 재정비를 필요로 하는 팀 구성원\n3. 새로운 시대에 맞는 소통과 공동 작업 방식을 통해 업무 생산성을 높이고 싶은 모든 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "업무시간을 절반으로, ChatGPT로 시작하는 데이터 리터러시(1)", "duration": "2:48:25", "contents": "10", "instructor": "구자룡", "summary": "생성형 AI 도구를 활용한 노코드 데이터 분석을 주제로 합니다. ChatGPT, Gemini, Claude, Perplexity, Julius 등의 AI 도구를 사용하여 데이터 수집, 분석, 시각화, 보고서 작성 등 데이터 분석의 모든 단계를 수행합니다. \n", "goal": "- 다양한 데이터 분석 기법을 습득하고 실습을 통해 실제 비즈니스 상황에서의 적용 능력을 향상시킵니다.\n- AI를 활용한 데이터 분석 결과를 해석하고 이를 기반으로 전략적 의사결정을 내릴 수 있는 능력을 기릅니다.\n- 코드 작성 없이도 데이터 수집, 클리닝, 분석, 시각화까지 모든 데이터 분석 과정을 AI 도구로 수행하는 기술을 익힙니다.\n- 시장 조사, 설문지 작성, 데이터 수집, 가설 검정, 상관관계 및 인과관계 분석, 텍스트 데이터 분석 등 다양한 데이터 분석 도구와 기법을 효과적으로 활용할 수 있는 능력을 기릅니다.", "target": "- 마케팅 전략을 세우고 시장 조사가 필요한 학습자\n- 기존에 복잡한 데이터 분석 도구없이 보다 빠르고 간편하게 데이터를 분석하고 싶은 학습자\n- 빠르고 효율적으로 데이터를 분석하여 의사결정을 하고 싶은 학습자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "Cursor AI (커서) 입문에서 실전 웹사이트 만들기까지 Part.4 실습 (웹사이트 만들기 3)", "duration": "2:49:17", "contents": "7", "instructor": "김동준", "summary": "본 과정은 커서 AI 인공지능 툴에 대한 기초 사용법과 이를 사용한 실전 웹사이트 만들기에 대해서 배우는 동영상 과정입니다.", "goal": "- 최신 AI 인공지능 툴을 사용하여 모던한 웹사이트 구축 과정을 학습합니다.", "target": "- 커서 AI 인공지능 툴을 사용하여 실전 웹사이트를 만드는 과정을 배우고자 하는 사람", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "AI 생성 이미지로 완성하는 일러스트 실무 (Illustrator AI)", "duration": "2:49:18", "contents": "6", "instructor": "김기민", "summary": "· 그림 실력이 없어도 누구나 쉽게 시작할 수 있도록, AI 일러스트 제작의 기본 개념부터 실무 활용까지 단계적으로 학습합니다. · 텍스트 입력만으로 이미지를 만들어내는 프롬프트 작성법을 익히고, 원하는 스타일과 분위기를 효과적으로 표현하는 방법을 이해합니다. · 다양한 AI 이미지 생성 도구를 활용하여 캐릭터, 배경, 콘텐츠용 일러스트 등을 직접 제작하며 창작 역량을 확장합니다. · 생성된 이미지를 수정·보완하는 방법까지 함께 익혀, 개인 창작물, SNS 콘텐츠, 굿즈 제작 등 실생활에 바로 활용 가능한 결과물을 완성합니다.", "goal": "· AI 이미지 생성 도구의 기본 원리와 기능을 이해하고, 스스로 원하는 이미지를 기획하고 생성할 수 있습니다. · 목적과 주제에 맞는 프롬프트를 작성하여 스타일, 분위기, 구도, 디테일을 효과적으로 제어할 수 있습니다. · 다양한 AI 도구를 활용해 캐릭터, 배경, 아이콘, 콘텐츠용 이미지 등 여러 유형의 일러스트를 제작할 수 있습니다. · 생성된 이미지를 수정·보완하고 개선하는 과정을 통해 결과물의 완성도를 높일 수 있습니다. · AI 일러스트 제작 과정을 전반적으로 이해하고, 개인 창작, SNS 콘텐츠, 간단한 디자인 작업 등에 능동적으로 활용할 수 있습니다.", "target": "· AI 기능이 탑재된 최신 Illustrator 2025를 체계적으로 배우고 싶은 초중급 학습자 · 아이콘, 그래픽 요소, 패턴, 포스터 등 실무에 활용 가능한 벡터 디자인을 직접 제작하고 싶은 예비 디자이너 · AI 기반 디자인 자동화와 효율적인 작업 방식으로 생산성을 높이고자 하는 크리에이터 및 마케터", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "처음 배우는 생성형AI 프로그램개발(LLM)", "duration": "2:53:33", "contents": "8", "instructor": "허정준", "summary": "LLM 애플리케이션이 사람들의 관심을 끌 수밖에 없는 이유는 무엇일까요? 현재까지 수많은 기술들이 등장했다 사라져 갔는데, 오늘날에도 여전히 사용되고 있는 주요 기술은 개발이나 사용 패러다임을 크게 발전시켰다는 특징이 있습니다. LLM 애플리케이션이 주력으로 자리 잡아 개발자 두뇌 속의 필수 공구상자에 들어갈지를 판단하기 위해, 우선 어떤 변화가 일어나고 있는지를 전문 강사님의 강의를 통해 알아봅시다!", "goal": "- LLM 아키텍처에 대해 기초를 다질 수 있다.\n- RAG라는 LLM의 대표적인 애플리케이션을 만드는 방법에 대해 파악할 수 있다.\n- 멀티 모달과 에이전트 심화 주제 다루는 기술까지 확인할 수 있다. ", "target": "- 기업체 전 임직원\n- LLM을 배우고 싶은 직장인\n- LLM을 활용해 AI 애플리케이션을 개발하려는 개발자", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "움직이는 지능, 피지컬 AI 시대", "duration": "2:54:33", "contents": "8", "instructor": "박종성", "summary": "피지컬 AI는 더 이상 스크린 속에서만 작동하는 인공지능이 아니라, 로봇·자율주행차·드론처럼 ‘몸’을 얻어 현실을 감지하고 판단하며 직접 움직이는 AI로 빠르게 확장되고 있습니다. 제조 현장의 휴머노이드 로봇, 도로 위 완전 자율주행, 정밀 농업 드론 사례를 통해 피지컬 AI가 산업과 일상을 어떻게 바꾸고 있는지 살펴보고, 감지–인식–행동의 작동 원리와 디지털 트윈·강화학습 기반 학습 방식, 그리고 체화된 데이터가 만들어내는 새로운 경쟁 구도까지 이해해봅니다. 이를 통해 피지컬 AI 시대의 핵심 개념과 흐름을 한 번에 정리하고, 앞으로 우리가 준비해야 할 변화의 방향을 함께 탐색해보겠습니다.\n피지컬 AI의 개념부터 미래까지 연결하는 흐름 중심 구성\n스크린 속 AI를 넘어 현실로 확장된 피지컬 AI의 등장 배경부터 작동 원리, 산업 적용, 미래 변화까지를 하나의 흐름으로 정리하여, 기술의 맥락을 단계적으로 이해할 수 있도록 구성\n기술 설명을 넘어 산업·노동·국가 경쟁까지 확장한 관점 제시\n개별 기술에 국한되지 않고, 산업 현장과 인간의 노동 변화, 글로벌 기술 경쟁과 국가 전략까지 함께 다루어 피지컬 AI가 만들어내는 구조적 변화를 종합적으로 조망\n사례와 개념을 통해 피지컬 AI 시대의 핵심 질문을 제시하는 과정\n로봇·자율주행·제조 현장 사례를 통해 ‘왜 피지컬 AI가 중요한가’, ‘우리는 무엇을 준비해야 하는가’라는 질문을 자연스럽게 연결하며 이해  중심의 학습 경험 제공", "goal": "- 피지컬 AI의 핵심 개념과 작동 원리를 이해하고 파악할 수 있다.\n- 산업·기업·기술 구조를 통해 글로벌 트렌드를 설명할 수 있다.\n- 체화된 데이터(Embodied Data)의 중요성을 이해하고 활용 방향을 탐색할 수 있다.", "target": "- 제조업, IT, R&D, 기술기획 직무 종사자\n- AI·로봇·자동화 분야 기초 지식이 필요한 일반 직장인\n- 피지컬 AI의 기술·산업·정책 동향을 한눈에 파악하려는 실무자", "level": "Seed"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 코딩없이 데이터 분석! Orange3로 설득력 있는 문서 만들기", "duration": "2:56:57", "contents": "9", "instructor": "김진", "summary": "코딩을 몰라도 할 수 있는 데이터 분석 머신 러닝 도구 Orange3! 드래그 앤드 드롭으로 데이터 분석 쉽게 하기!\n\nOrange3는 코딩없이 드래그 앤드 드롭 기능으로 누구나 쉽게 데이터 분석을 할 수 있는 머신 러닝 도구이다. 보고서 작성을 위해 꼭 필요한 데이터 분석, 아직도 엑셀 밖에 모른다면 Orange3를 활용해보자.\n\n본 과정은 데이터 분석 및 인공지능 기반 분석에 대한 실질적인 업무 역량을 향상할 수 있도록 다양한 예제와 실습을 제공한다. Orange3를 활용한 데이터 분석 기법을 습득하고, 실제 업무에 적용하는 능력을 향상해 보자.", "goal": "- 노코딩 인공지능 데이터분석 도구인 Orange3 활용 방법을 설명할 수 있다.\n- 머신 러닝 데이터 분석의 기본 개념을 설명할 수 있다.\n- 데이터를 활용하여 인사이트를 얻는 데이터 분석 기법을 설명할 수 있다.", "target": "- 복잡한 코딩 없이 인공지능을 생산적인 도구로 사용하고 싶은 직장인\n- 인공지능 사용법을 익혀 업무 효율성을 향상하고 싶은 직장인\n- 데이터 분석 역량을 향상하고자 하는 직장인", "level": "고급"}, {"cat1": "리더십", "cat2": "변화관리", "title": "AI 시대의 생존 전략과 리빌딩 인사이트", "duration": "2:58:21", "contents": "12", "instructor": "이중학", "summary": "인공지능이 인간의 업무를 빠르게 대체하는 시대, 어떻게 살아남아야 할까?\nAI 분야에서 가장 핫한 동국대학교 이중학 교수가 AI 시대 생존 전략과 리빌딩 인사이트를 생생하게 전달한다.", "goal": "- AI 시대 일의 본질을 재정의하고, 변화에 대응하기 위한 생존형  성장 전략을 수립할 수 있다.\n- AI와의 협업 및 공동작업 환경을 효과적으로 설계할 수 있다.\n- AI 도입 이후 기술변화 속에서도 인간 고유의 강점과 윤리적 기준을  유지할 수 있다.", "target": "- AI와 협업하여 팀의 생산성을 높이고 싶은 팀 리더와 관리자\n- AI 도입 이후 조직 혁신과 인재 전략을 고민하는 모든 리더\n- AI 기반 업무 변화에 적응하고자 하는 모든 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "AI-POT (AI 프롬프트활용능력) 1급 Part.1", "duration": "2:58:30", "contents": "5", "instructor": "강태안", "summary": "· 본 강좌를 통해 AI 플랫폼에 대한 이해와 개념을 학습할 수 있다. \n· 본 강좌를 통해 AI-POT 1급 자격증을 취득할 수 있다.", "goal": "· AI 프롬프트 활용능력에 대한 학습 및 여러가지 실습에 대한 이론 · 대화형 인공지능인 chatGPT에 대한 이해, 사용 방법에 대한 학습", "target": "· 남녀노소 누구나 학습 가능", "level": "Seed"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "딥러닝 개발자에게 꼭 필요한 기초 수학", "duration": "20:08:09", "contents": "8", "instructor": "조준우", "summary": "세상에서 가장 꼼꼼한 딥러닝, 그 시작에 필요한 수학 지식부터 딥러닝의 기반을 단단하게 다져드립니다!", "goal": "- 딥러닝 활용의 기초가 되는 수학 지식을 이해할 수 있다.\n- 수학 지식을 기반으로 딥러닝 알고리즘의 원리를 파악하여 업무에 활용할 수 있다.", "target": "- 딥러닝에 관심이 있는 SW 개발자\n- 딥러닝 활용의 기초가 되는 수학 지식이 궁금한 모든 임직원", "level": "고급"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "[DS Class] 딥러닝을 위한 기초 수학", "duration": "3:00:20", "contents": "4", "instructor": "김진숙", "summary": "누구나 딥러닝에 쉽게 입문할 수 있도록 강의를 통해 딥러닝의 개념과 작동 원리를 알려드립니다.\n그야말로 혁명적인 생산성 향상을 가져오기 위해, 당신도 딥러닝에 입문해보세요!", "goal": "- 딥러닝의 기초 개념과 머신러닝과의 차이를 알 수 있다.\n- 딥러닝의 인공지능 학습 원리를 이해할 수 있다.\n- 회귀, 분류 등 딥러닝의 모델 구현을 위한 수학적 원리를 이해할 수 있다.", "target": "- 인공지능으로 혁신적인 생산성을 확보하고 싶은 실무자\n- IT업계로 창업/이직/입사 등 커리어를 쌓고 싶은 모든 사람\n- 이미 딥러닝을 활용하고 있지만, 작동 원리에 대해서는 모르는 실무자", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "Claude Code: 바이브 코딩으로 웹앱 기획부터 배포까지", "duration": "3:00:23", "contents": "7", "instructor": "송태영", "summary": "개발 지식, 경험 없어도 웹앱 완성! Claude Code로 기획부터 배포까지, 프롬프트 한 줄로 끝내는 차세대 개발 패러다임 ‘바이브 코딩’ 입문하기", "goal": "- 자연어 명령만으로 AI가 코딩을 수행하는 방식인 바이브 코딩에 대해 이해할 수 있다.\n- AI가 효율적으로 명령을 처리하여 올바른 결과를 출력하도록 프롬프팅 할 수 있다.\n- Claude Code를 통해 실제 프로그램을 개발하는 역량을 획득할 수 있다.", "target": "- AI 시대, 새로운 개발 방식을 익혀 경쟁력을 갖추고 싶은 직장인\n- 개발자 도움 없이 AI를 활용하여 프로그램을 완성하고 싶은 기획자 및 마케터", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "Chat GPT 질문법, 똑똑한 사람은 어떻게 생각하고 질문하는가?", "duration": "3:00:46", "contents": "8", "instructor": "이시한", "summary": "생성형 AI의 시대, 제대로 된 질문이 정답보다 중요합니다. ", "goal": "- 생성형 AI를 업무에 활용하기 위한 다양한 사고법과 질문하는 방법을 학습합니다.", "target": "-  전 임직원", "level": "Seed"}, {"cat1": "IT", "cat2": "IT 기획", "title": "모두를 위한 AI 데이터 시각화 수업", "duration": "3:02:10", "contents": "6", "instructor": "최재원", "summary": "데이터 시각화는 단순히 예쁘게 보이는 그래프를 만드는 작업일까요? 아닙니다! 데이터 시각화는 예술이자 과학입니다. 과학적으로 정확하면서 미적으로 흉하지 않아야 하며, 또한 미적으로 탁월하면서도 과학적으로 오류를 용납하지 않는 결과물을 만들어야 합니다. 이 과정은 통계적 본질에 기반해 데이터를 과학적으로 정확하게, 동시에 시각적으로도 명확하게 전달하는 방법을 다룹니다.", "goal": "- 데이터를 명확하게 전달하는 색상 및 기호화 원칙을 이해하고, 실무 문서나 보고서에서 정보 전달력을 높일 수 있다.\n- 주요 시각화 유형과 그 특성을 파악하여, 직무 목적에 맞는 적절한 그래프를 선택하고 구성할 수 있다.\n- 좋은 그래프와 잘못된 예시를 비교 분석함으로써, 실무에서 신뢰성과 설득력을 갖춘 시각화 자료를 제작할 수 있다.", "target": "- 기업체 전 임직원\n- AI에 관심있는 학습자\n- 빅데이터와 데이터베이스에 관심있는 개발자 및 종사자", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 트렌디한 검색 AI 퍼플렉시티(Perplexity)로 출처 기반 리서치 완성하기", "duration": "3:03:23", "contents": "6", "instructor": "오복실", "summary": "실시간 검색과 확실한 출처 기반 인사이트 도출에 강한 퍼플렉시티(Perplexity) AI로 완성하는 리서치 자동화!", "goal": "- 퍼플렉시티 정보 탐색부터 자동화 적용까지의 업무를 이해할 수 있다.\n- 텍스트 분석, 이미지 제작, 반복 업무 자동화를 아우르는 실무 중심 워크플로우를 구성할 수 있다.\n- 다양한 실무 상황에서 퍼플렉시티를 활용한 리서치를 활용할 수 있다.", "target": "- 검색 결과를 신뢰할 수 있는 요약본과 출처로 정리하고 싶은 리서처\n- 방대한 자료를 빠르게 분석해 인사이트를 도출해야 하는 기획자\n- AI를 활용해 콘텐츠 제작과 정보 큐레이션을 고도화하려는 크리에이터\n- ChatGPT 이후의 리서치 도구를 고민하는 AI 기반 정보 활용자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "생성형 AI 완전정복! 업무 효율화부터 보안윤리까지", "duration": "3:04:35", "contents": "6", "instructor": "김덕진", "summary": "AX 시대 생존을 위한 필수 전략을 알려 드립니다!", "goal": "1. 단순 AI에 대한 소개가 아닌 AGI, 인터페이스의 변화 등 AI의 미래와 해외 기업의 AI 적용 사례를 통한 인사이트를 제공할 수 있습니다.\n2. 직장인들이 AI를 업무에 효과적으로 활용할 수 있도록 실무 중심의 적용방법을 학습할 수 있습니다.\n3. AI 활용 과정에서 반드시 고려해야 할 윤리적 이슈도 함께 다뤄 균형 잡힌 관점을 제공할 수 있습니다.", "target": "- 생성형AI를 똑똑하게 활용하고 싶은 모든 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "IT 기획", "title": "엑셀보다 쉬운 파이썬 2시간에 완성하기", "duration": "3:07:25", "contents": "4", "instructor": "김계철", "summary": "파이썬과 판다스 라이브러리의 주요 기능과 활용법을 익히고, 이를 통해 실제 데이터를 가공하고 분석하는 능력을 키울 수 있습니다. 데이터 정제, 변환 등 다양한 분석 기법을 익혀 데이터에서 유용한 정보를 추출하고, 이를 바탕으로 의사 결정을 지원할 수 있도록 합니다.", "goal": "- 파이썬을 활용한 데이터 분석을 위한 환경을 성공적으로 구축하고, 필요한 라이브러리 및 도구를 설치하고 설정하는 방법을 이해한다.\n- 주피터 노트북의 기능과 사용법을 익혀, 코드 실행 및 데이터 분석을 효율적으로 수행할 수 있는 능력을 배양한다.", "target": "- 공공기관 근무자\n- 데이터를 기반으로 의사결정하고 행정서비스을 제공하고자 하는 자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "일하는 방식, 생성형 AI로 갈아탔습니다", "duration": "3:07:52", "contents": "10", "instructor": "서판규", "summary": "이제는 피할 수 없는 생성형 AI 활용\n엑셀, 코딩, 앱 개발까지—AI와 함께라면 누구나 쉽게 시작할 수 있습니다. ChatGPT, 퍼플렉시티 등 생성형 AI 도구를 활용해 엑셀 자동화부터 파이썬 기초, 앱 만들기까지 실습 중심으로 익힙니다. 비개발자도 따라 할 수 있는 실전형 AI 업무 혁신 과정을 지금 만나보세요. ", "goal": "- 생성형 AI 도구를 활용해 엑셀 업무를 자동화하고 실무 효율을 높일 수 있다.\n- AI의 도움으로 파이썬 기초와 앱 개발을 쉽게 체험하며 디지털 역량을 강화할 수 있다.", "target": "전 구성원", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "너도 나도 데이터사이언스", "duration": "3:08:08", "contents": "8", "instructor": "전익진", "summary": "‘나는 뼈문과생이라 데이터 분석같은 것 못해!’라고 하는 여러분들에게 너도 나도 데이터사이언스에 관심을 갖고 쉽게 접근할 수 있다는 이야기를 진솔하게 들어봅시다.", "goal": "데이터사이언스의 개념을 이해하고 데이터와 친숙해질 수 있다.", "target": "데이터사이언스에 대한 개념을 알고 데이터분석의 세계에 들어가보고자 하는 직장인", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "AI 에이전트로 시작하는 바이브 코딩 : 데이터 분석 도구 마스터", "duration": "3:11:36", "contents": "7", "instructor": "신성진", "summary": "본 과정은 AI 에이전트를 기반으로 엑셀, 구글 시트, 파이썬을 연계한 자동 데이터 분석 전 과정을 다루는 실무 중심 과정으로, 실제 업무 데이터를 활용한 종합 실습을 통해 현업 적용력을 강화하는 과정이다.", "goal": "AI 에이전트 기반 데이터 분석 흐름을 이해할 수 있다.\n다양한 도구를 연계하여 자동 분석과 시각화를 수행할 수 있다.\n실무 데이터를 기반으로 분석 결과 보고서를 완성할 수 있다.", "target": "데이터 분석이 필요한 기업 실무자\n엑셀이나 구글 시트를 활용하지만 분석에 어려움을 느끼는 직장인\nAI 기반 업무 자동화와 데이터 분석 역량을 강화하고자 하는 학습자", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "[Get it Trend] 인공지능, 제4차 산업혁명을 리드하라!", "duration": "3:16:31", "contents": "8", "instructor": "조성배", "summary": "SF영화 속 인공지능이 이제는 우리의 일상생활 속에 공존한다! 영화속에서만 존재했던 인공지능, 지금은 현실세계에서 이뤄지고 있다.", "goal": "- 인공지능의 등장배경 및 개념을 설명할 수 있다\n- 인공지능의 구현기술과 종류를 이해할 수 있다\n- 인공지능의 적용사례를 통해 미래 시장과 기술 트렌드를 이해할 수 있다", "target": "- 인공지능에 관심이 있는 모든 직장인\n- 인공지능 관련 산업분야의 현업 담당자\n- 기업체 전 임직원", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "금융 X AI : 실무 가이드", "duration": "3:16:34", "contents": "8", "instructor": "김태헌", "summary": "AI 기술이 금융 산업 전반에 가져온 변화를 핀테크, 투자, 신용 리스크, 사기 탐지 등 다양한 사례를 통해 살펴보고, 파이썬 라이브러리를 활용한 실습으로 금융 AI의 적용 방식과 전략적 인사이트를 이해하는 과정입니다. 본 과정은 금융 전반의 주요 영역에서 AI가 어떻게 활용되고 있는지를 사례 중심으로 이해하고, 실습을 통해 금융 AI의 구조와 활용 전략을 함께 익힐 수 있도록 설계되었습니다.", "goal": "- 금융과 AI의 본질·필연성을 이해하고 산업 구조를 큰 그림에서 설명할 수 있다.\n- 금융 AI의 핵심 응용 영역을 문제 중심으로 분석할 수 있다.\n- 금융 AI 개발의 전 과정을 4-Layer Framework로 설계할 수 있다.\n- 최신 생성형 AI(LLM, RAG, 파인튜닝, 에이전트)를 금융 서비스에 안전하게 통합할 수 있는 지식을 갖출 수 있다.", "target": "- 금융 실무자\n- 금융 문제에 적용해 보고 싶은 분석가·개발자\n- 금융 분야에서 AI 활용을 배우려는 학습자", "level": "고급"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "빅데이터가 별건가, 알고 보면 쉬운 통계상식", "duration": "3:16:58", "contents": "12", "instructor": "김진호", "summary": "이번 과정을 통해, 누가 언제 어디서 무엇을 어떻게 왜 하는지에 대한 정보를 담고 있는 데이터에서 고객과 시장에 대한 통찰력(insight)을 추출할 수 있는 능력과 데이터로부터 추출한 통찰력을 활용할 수 있는 기본적인 통계상식에 대해 살펴봅니다", "goal": "통계학적 용어의 정의를 인식하고, 올바른 정보를 추출할 수 있는 데이터 분석 능력을 갖출 수 있다.", "target": "- 빅데이터가 궁금한 직장인\n- 통계 상식을 업무에 활용하고자 하는 직장인 ", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 퍼플렉시티 딥 리서치 마스터 - AI 랩스로 압도적 시장 분석과 대시보드 완성", "duration": "3:17:17", "contents": "6", "instructor": "정옥선", "summary": "퍼플렉시티라는 AI 도구의 단순한 사용법 학습을 넘어, \n데이터를 수집, 분석하고, 이를 바탕으로 더 나은 의사결정할 수 있도록 돕는 \n전략적 보고서 작성, 데이터 시각화, 그리고 업무 자동화 능력 등 \n비즈니스 인텔리전스 역량을 배양할 수 있다.\n단순 검색 도구를 넘어 아이디어를 실현하는 강력한 파트너, \n퍼플렉시티를 마스터할 수 있는 기회!\n- 답변의 문장마다 명확한 출처를 각주 형태로 제공해 정보의 투명성을 보장하여 팩트 체크가 필수적인 시장 조사나 업무용 보고서 작성에  활용 가능한 퍼플렉시티\n- '딥 리서치' 기능을 통해 서론, 본론, 결론, 표, 그래프가 포함된 종합 분석 리포트를 자동으로 생성 가능\n- 'Labs' 기능을 활용하여 프롬프트만으로 데이터를 분석하고,  전문가 수준의 인터랙티브 대시보드와 PPT 슬라이드까지 제작할 수 있는 업무 생산성 향상 도구", "goal": "- 퍼플렉시티의 기능인 딥 리서치와 Labs 기능을 활용할 수 있다.\n- 복잡한 리서치 업무를 높은 신뢰도로 작성하고 시각화까지 도출할 수 있다.\n- Comet 브라우저와 함께 AI 에이전트 자동화를 수행할 수 있다.\n- 퍼플렉시티 활용에 최적화된 전략적 프롬프트 설계 공식을 적용할 수 있다. ", "target": "- 경쟁사 분석, 신시장 진입 전략 등 보고서를 빠르게 완성하고 싶은 직장인\n- AI와 데이터를 기반으로 대시보드를 만들고 싶은 실무자\n- 신뢰성과 성과가 증명되는 퍼플렉시티를 마스터하고 싶은 직장인\n- AI 리서치의 속도와 퀄리티를 동시에 올리고 싶은 직장인", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "ChatGPT 더 잘 사용하기, 프롬프트 엔지니어링", "duration": "3:20:21", "contents": "15", "instructor": "서승완", "summary": "AI 활용을 위한 실전 필수 역량, 프롬프트 엔지니어링\n빠르게 변화하는 산업 환경에 따라 업무 프로세스 또한 빠르게 변화하고 있습니다. \n생성형 AI의 활용은 이러한 변화에 대응하는 핵심 도구로 부상하고 있으며, 프롬프트 엔지니어링은 AI를 활용하기 위한 필수 역량입니다.\n올바르고 정확한 프롬프트를 통해 업무 생산성을 강화하고 비즈니스의 경쟁력을 강화할 수 있는 핵심 역량을 학습해 보세요. ", "goal": "- 프롬프트 엔지니어링에 대한 기본 개념과 원칙을 이해하여 AI툴을 단순히 이용하는 사용자가 아닌, 프롬프트 엔지니어링을 통해 효과적인 AI툴 활용으로 업무 효율성을 높일 수 있습니다. \n- 강의에서 설명되는 총 12가지의 기법을 통해 효과적으로 AI툴과 상호 작용하여 학습자가 원하는 정확하고 높은 품질의 답변을 얻을 수 있습니다.", "target": "- 업무에서 AI를 효과적으로 사용하여 시간을 효율적으로 사용하길 원하는 학습자", "level": "심화"}, {"cat1": "Biz. Skill", "cat2": "기획력", "title": "100% 챗GPT 실전 가이드 : 일 잘하는 사람들의 AI 활용비법 step2", "duration": "3:21:02", "contents": "19", "instructor": "프롬프트 크리에이터", "summary": "ChatGPT 200% 활용법!\nChatGPT가 비즈니스 뿐만 아니라 라이프 스타일에서도 확실한 트렌드가 된 시대에, 보다 효과적으로 유용하게 사용할 수 있는 정보를 다루는 과정입니다. \n\nChat와 함께 일하기!\n이 과정은 인공지능과 대화하고 편안하게 활용할 수 있도록 도움을 주며, ChatGPT와 놀라울 정도로 친해질 수 있는 방법을 쉽게 설명하고 있습니다. \n\n실습 위주의 강의로 바로 활용 가능!\n처음부터 끝까지 실제 프롬프트 작성화면과 도출되는 결과를 볼 수 있기 때문에 바로 활용 가능합니다.", "goal": "① 업무에서 자기 계발까지 폭넓은 범위에서 ChatGPT를 활용할 수 있다.\n② ChatGPT 프롬프트를 여러 상황과 주제에 맞게 적절하게 적용할 수 있다. \n③ ChatGPT를 실제 업무에 바로 활용할 수 있다.", "target": "1. ChatGPT를 어떻게 활용해야 할지 모르는 모든 학습자 \n2. ChatGPT를 보다 폭넓은 범위에서 활용하고 싶은 학습자 \n3. ChatGPT의 프롬프트를 좀 더 고급하여 작성해 보고 싶은 학습자", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 구글 데이터 스튜디오 데이터 시각화 입문", "duration": "3:21:06", "contents": "6", "instructor": "김진", "summary": "데이터 시각화 입문을 위한 기본 내용부터 엑셀 파일을 포함한 다양한 이기종 데이터(GA4 서비스 데이터, 구글 시트 데이터, 회사 내부 보유 데이터 등)를 포함한 자동화된 사용자 상호작용을 지원하는 대시보드 형태의 시각화 보고서를 무료 서비스인 구글 데이터 스튜디오 기반으로 작성해서 비즈니스 인사이트를 도출해내거나 도출한 인사이트를 공유하는 방법을 배워보세요!", "goal": "- 데이터 시각화를 이해하고, 탐색적 시각화를 지원하는 사용자 상호작용 시각화 대시보드를 제작할 수 있다.\n- 이기종 데이터 연동을 통한 의사결정 실무 시각화 대시보드를 제작할 수 있다.\n- 비즈니스 의사결정을 지원하는 통합 데이터 대시보드를 제작할 수 있다.", "target": "- 데이터 분석 및 비즈니스 인텔리전스 분야 초보자\n- 대화형 자동화 대시보드 시각화 프로젝트를 구축하는 방법을 배우고자 하는 사람들\n- 구글 데이터 스튜디오를 활용해서 데이터 시각화 분야에 입문하고자 하는 분들", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[슬기로운 통계생활] 엑셀로 배우는 기초통계 part2", "duration": "3:21:36", "contents": "11", "instructor": "이삭", "summary": "엑셀을 사용한 기초 통계 과정! \n통계의 기초지식을 학습하고, 데이터가 주어졌을 때 통계적으로 시각화하는 방법을 학습합니다.\n또한 데이터의 특성을 나타내는 통계 지표들을 학습하면서 엑셀의 기능을 자연스럽게 익힐 수 있는 강의입니다.", "goal": "- 표본 평균의 이론을 통해 통계 지표에 대해 이해할 수 있다.\n- 가설 검정의 개념에 대해 이해하고 엑셀을 활용하여 예제 문제를 직접 풀어볼 수 있다.", "target": "- 통계를 처음 배우는 분들\n- 데이터 분석을 처음 공부하는 분들\n- 엑셀을 활용하여 통계를 처음 사용하는 분들", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI 치트키] 업무 순삭의 비밀, Agentic AI", "duration": "3:22:08", "contents": "10", "instructor": "김환", "summary": "업무 효율성과 창의성의 혁신 – Agentic AI \n\nAI는 이제 단순한 자동화를 넘어, 스스로 판단하고 실행하는 새로운 단계로 진화하고 있습니다. Agentic AI는 이러한 변화의 중심에서, 비즈니스와 조직이 더 스마트하게 움직일 수 있도록 돕는 핵심 기술입니다. 이 과정에서는 Agentic AI가 어떻게 의사결정과 실행을 연결하고, 실무에 적용될 수 있는지 명확하고 쉽게 이해할 수 있도록 정리했습니다. 미래를 준비하는 모든 실무자에게 꼭 필요한 지식을 지금 만나보세요.", "goal": "- Agentic AI 개념과 활용 방법을 이해할 수 있다. \n- 다양한 AI 플랫폼을 활용하여 업무 효율을 높일 수 있다. \n- AI 플랫폼 활용 시 발생할 수 있는 보안 이슈를 이해하고, 보다 안전하고 효율적인 AI 활용 전략을 수립할 수 있다. ", "target": "- AI를 활용해 업무 효율을 높이고 싶은 실무자\n- 디지털 전환을 추진하는 기획·전략 담당자\n- AI 기반 자동화에서 한 단계 더 나아가고 싶은 개발자·PM", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 나만의 AI 에이전트 펠로(Felo)를 활용한 리서치부터 시각화까지", "duration": "3:23:28", "contents": "6", "instructor": "정옥선", "summary": "검색도, 문서 작성도 AI로 하는 시대, 리서치와 시각화에 강한 Felo AI로 만드는 업무 자동화 워크플로우! ", "goal": "- Felo AI의 소스별 검색 기능을 활용하여 정보 탐색의 효율성을 높일 수 있다.\n- AI 에이전트를 설계하여 업무 목적에 맞게 프로세스를 최적화할 수 있다.\n- 효과적인 템플릿을 활용해 리서치 인사이트 기반의 기획서/보고서/PPT 제작 속도 효율화 및 완성도를 높일 수 있다.\n- Notion 및 Canva 등과의 연동을 통해 효율적인 업무 환경을 구축할 수 있다.", "target": "- AI로 수집한 자료를 바로 정리하고, 요약 문서로 전환하고 싶은 직장인\n- 바로 활용할 수 있는 수준 높은 리서치 기획서를 만들고 싶은 실무자\n- 마인드맵부터 PPT까지 폭넓은 시각화 자료를 제작하고자 하는 실무자\n- Notion 연동부터 협업 문서 관리 기능까지 활용하고 싶은 실무자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "AI 에이전트로 끝내는 바이브 코딩 : 내 PC 제어와 실전 프로젝트", "duration": "3:26:08", "contents": "7", "instructor": "신성진", "summary": "본 과정은 AI 에이전트를 기반으로 엑셀, 구글 시트, 파이썬을 연계한 자동 데이터 분석 전 과정을 다루는 실무 중심 과정으로, 실제 업무 데이터를 활용한 종합 실습을 통해 현업 적용력을 강화하는 과정이다.", "goal": "AI 에이전트 기반 데이터 분석 흐름을 이해할 수 있다.\n다양한 도구를 연계하여 자동 분석과 시각화를 수행할 수 있다.\n실무 데이터를 기반으로 분석 결과 보고서를 완성할 수 있다.", "target": "데이터 분석이 필요한 기업 실무자\n엑셀이나 구글 시트를 활용하지만 분석에 어려움을 느끼는 직장인\nAI 기반 업무 자동화와 데이터 분석 역량을 강화하고자 하는 학습자", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "[구글 올인원 AI] 아날로그 업무 현장, AI 자동화로 시스템 구축하기", "duration": "3:26:15", "contents": "7", "instructor": "이광희", "summary": "구글 환경 구축에서 출발해 Gemini 활용, 검색 고도화, 메모·할 일·일정 관리, 드라이브·포토 활용, Gmail·Meet·Chat 협업, 문서·스프레드시트·슬라이드 실무, 이미지·영상 제작, 설문지·사이트 구축, NotebookLM 기반 자료 분석, Colab·Apps Script를 활용한 업무 자동화까지 단계적으로 익히는 실무형 과정이다. 단순 기능 소개가 아니라 실제 업무 장면에 바로 적용할 수 있도록 검색, 문서 작성, 데이터 정리, 발표 자료 제작, 신청 접수, 규정집 챗봇, 일정 등록, 설문 자동 생성 같은 실습 중심으로 구성되었다.", "goal": "1. 구글 생태계의 핵심 서비스와 AI 기반 스마트워크 흐름을 이해한다.\n2. Gemini와 구글 문서도구를 활용해 검색, 문서 작성, 데이터 정리, 프레젠테이션 제작, 설문 구축을 할 수 있다.\n3. NotebookLM, 예약 페이지, Colab, Apps Script를 활용해 반복 업무를 자동화하는 방법을 알 수 있다.", "target": "1. 구글과 AI를 업무에 체계적으로 적용하려는 직장인\n2. 문서, 일정, 협업, 데이터 업무를 효율화하려는 실무자\n3. 코딩 경험 없이도 자동화와 AI 활용을 배우려는 입문자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] AI 이미지 생성의 대세, 나노바나나로 디자인 마스터하기", "duration": "3:28:58", "contents": "6", "instructor": "양솔지", "summary": "AI 이미지 생성의 핵심 도구로 부상한 나노바나나, \n디자인이 필요한 모든 환경에서 누구나 완성도 있는 결과물을 낼 수 있는 AI 고품질 이미지 생성 마스터 클래스\n입력한대로 생성만 하는 AI 도구가 아니다! 사용자가 필요로하는 이미지와 장면의 맥락을 이해하는 똑똑한 이미지 생성 AI ‘나노바나나’를 알려주는 강의\n- 단일 이미지 생성이 아닌, 나노바나나를 통해 동일한 인물·스타일·분위기를 유지한 채 반복적인 이미지 생성 가능\n- 사물·인물·공간의 관계를 인식해 부자연스러운 합성이나 어색한 부분을 최소화하는 방법 학습\n- 시리즈 콘텐츠, 브랜드 비주얼, 캠페인 이미지처럼 컨셉의 일관성이 중요한 작업에 최적화된 이미지 생성 AI에 대한 모든 것을 알려주는 강의", "goal": "- AI 이미지 생성 툴 나노바나나를 활용하여 매력적인 결과물을 만들 수 있다.\n- 이미지 프롬프트 설계법을 습득하여 정확한 지시를 수행할 수 있다.\n- 원하는 디자인 요소가 구현되도록 하는 핵심 명령어를 익힐 수 있다.\n- 실제 광고에 사용할 수 있는 수준의 디자인 결과물을 실습을 통해 만들어낼 수 있다.", "target": "- 툴 숙련도와 상관없이 AI로 아이디어를 시각화하고 싶은 직장인\n- 나노바나나로 콘텐츠 디자인 역량을 키우고 싶은 모든 직장인\n- 콘텐츠 제작에 쫓기지 않고 업무 효율을 확실히 올리고 싶은 직장인\n- 모델 섭외나 촬영 없이도 실제 광심화 비주얼을 직접 만들고 싶은 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "Cursor AI (커서) 입문에서 실전 웹사이트 만들기까지 Part.3 실습 (웹사이트 만들기 2)", "duration": "3:32:55", "contents": "8", "instructor": "김동준", "summary": "본 과정은 커서 AI 인공지능 툴에 대한 기초 사용법과 이를 사용한 실전 웹사이트 만들기에 대해서 배우는 동영상 과정입니다.", "goal": "- 최신 AI 인공지능 툴을 사용하여 모던한 웹사이트 구축 과정을 학습합니다.", "target": "- 커서 AI 인공지능 툴을 사용하여 실전 웹사이트를 만드는 과정을 배우고자 하는 사람", "level": "고급"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "AI시대, 일잘러를 위한 데이터 사고와 분석법", "duration": "3:33:12", "contents": "10", "instructor": "최재원", "summary": "먼지 쌓인 데이터, 여러분의 조직은 잘 활용하고 있습니까?\n데이터와 통계를 모르고, AI 시대의 기술과 비즈니스를 논할 수 없습니다! 통계적 사고를 위해 데이터를 대하는 태도와 소양을 기르고, 프로젝트와 조직의 성공을 위해 데이터 리드가 해야 할 일에 대해 자세하게 알 수 있을 것입니다.\n변동성으로 가득한 세상, 그 이면의 패턴을 찾아내봅시다!", "goal": "1. 현업에서 통계와 분석 결과에 대해 적절한 의견을 제시할 수 있는 데이터 리터러시 역량을 키울 수 있다.\n2. 머신러닝, 텍스트 분석, 딥러닝 AI의 이면에 숨은 기본 원리와 지식을 파악할 수 있다.", "target": "1. 기업체 전 임직원\n2. AI에 관심있는 학습자\n3. 빅데이터와 데이터베이스에 관심있는 개발자 및 종사자", "level": "Seed"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "SQL, 어디까지 알고 있니? (실무과정)", "duration": "3:33:45", "contents": "15", "instructor": "모원서", "summary": "SQL, 실무에선 어떻게 활용해야 할까? (실습노트 제공)\n‘SQL, 업무 효율성을 높여준다고 해서 배우긴 배웠는데… 대체 실무에서는 어떻게 활용해야 할까?’ \n고민하는 분들을 위한 실습 중점 과정!\nSQL의 기본적인 부분에 대해 간략히 Remind 후 실제 어떻게 활용할 수 있는지 알아봅니다. \n코드가 입력되어 있는 실습노트도 함께 제공하니, 다양하게 응용해보세요!", "goal": "- SQL의 기본적인 사용법에 대해 Remind 할 수 있다.\n- SQL 실무 활용법에 대해 알아보고, 실전에서 다양하게 활용할 수 있다.", "target": "- SQL의 기본적인 사용법을 알고 있는 학습자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI 치트키] 오늘부터 당신도 피지컬 AI 좀 아는 사람", "duration": "3:33:51", "contents": "12", "instructor": "박종성", "summary": "AI, 드디어 몸을 갖다 - 로봇 시대, 나의 생존 전략은?\n\n피지컬 AI는 단순한 로봇이 아닙니다. 인공지능, 로봇공학, 에너지 기술의 대융합이 만들어낸 경제 패러다임의 전복입니다. 본 과정은 피지컬 AI의 등장 배경부터 글로벌 빅테크의 전략, 하드웨어 주권, 그리고 로봇세, 기본소득, 글로벌 불평등 등 미래 사회 이슈까지, 다양한 관점으로 확인할 수 있습니다. ", "goal": "- 피지컬 AI로 인한 주요 산업 구조의 변화를 이해하고, 새로운 비즈니스 기회를 모색할 수 있다.\n- 피지컬 AI가 야기하는 사회적/윤리적 이슈를 이해하고, 이에 대한 합리적인 대응 방안을 모색할 수 있다.\n- 다가올 피지컬 AI 시대를 대비해 개인이 취해야 할 커리어 생존 방향을 설계할 수 있다.", "target": "- 피지컬 AI 시대에 대비해야 하는 기획, 전략, 신사업 담당자\n- 피지컬 AI 시대의 사회적, 경제적 변화를 깊이 있게 이해하고 싶은 직장인 L5", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "처음 배우는 딥러닝(Deep Learning)", "duration": "3:34:22", "contents": "10", "instructor": "노태상", "summary": "AI, 머신러닝, 딥러닝의 주요 개념과 구조 이해하고 딥러닝의 활용방법을 학습한다.", "goal": "- AI, 머신러닝, 딥러닝 주요 개념과 구조 이해할 수 있다.\n- 딥러닝의 활용 사례 학습을 통해서 현업에 활용할 수 있다.", "target": "- 소프트웨어개발자\n- 시스템 엔지니어 등", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "AI 마케터 시대, 생성형 AI와 팀플레이하기", "duration": "3:35:32", "contents": "8", "instructor": "노준영", "summary": "AI가 일상에 완전히 들어온 '베타세대' 시대의 마케팅 성공을 위해 생성형 AI는 필수적인 협력 대상입니다.\n예측하기 어려운 대중의 마음과 마케팅 프로젝트의 높은 리스크를 AI를 통해 보완하고, 전략 부재로 인한 실패를 방지하는 새로운 패러다임을 제안합니다.\n브랜딩과 개인화 마케팅을 통해 세상에 하나뿐인 브랜드와 콘텐츠를 제작하는 방법을 제시합니다.", "goal": "- 생성형 AI의 기본적인 개념과 마케팅 영역에서의 역할 및 중요성을 이해할 수 있다.\n- 생성형 AI를 활용한 마케팅 전략 수립 및 실무 적용 방안을 습득할 수 있다.\n- 브랜딩, 개인화 마케팅, 콘텐츠 제작 등 다양한 마케팅 활동에 AI를 효과적으로 접목하는 방법을 배울 수 있다.\n- 생성형 AI와의 효율적인 소통을 위한 프롬프트 활용 기초 기술을 익힐 수 있다.", "target": "- 마케팅/기획 분야에서 생성형 AI 활용법에 대한 기초 지식이 필요한 실무자\n- 마케팅 효율을 높이고, 리스크를 줄이며 전략적인 접근을 원하는 담당자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "업무시간을 단축하는 스마트한 문서작성, 한컴독스 AI(Web ver) Part.2 실무 (完)", "duration": "3:35:48", "contents": "7", "instructor": "강다빈", "summary": "본 과정은 직장인들이 한컴독스 AI를 활용하여 문서 작성의 심리적 장벽을 낮추고, 반복적인 업무 프로세스를 획기적으로 개선하여 업무 시간을 단축하는 방법을 다룹니다. \n- AI를 황용한 문서 초안 작성부터 실무 기획서, 보고서, 보도자료 생성까지 현업에서 즉시 활용 가능한 실무 위주의 문서 템플릿을 중심으로 진행합니다. \n- 한컴독스 AI의 핵심 사용법과 한셀, 한쇼 연계 방법을 익힘으로써, 문서 품질은 높이되 제작 시간은 단축하여 업무의 생산성을 극대화할 수 있습니다.", "goal": "한컴독스 AI의 전반적인 기능을 습득하고, 다양한 AI 도구를 능숙하게 활용하여 고품질의 비즈니스 문서를 제작할 수 있다. - AI를 활용한 문장 생성 및 편집 기술을 실무에 적용하여, 초안 작성 및 내용 고도화에 소요되는 시간을 효율적으로 관리할 수 있다. - 표·이미지 생성 및 대화형 탐색 기능을 통해 복잡한 정보 취합 과정을 자동화하고, 실무 중심의 스마트한 사무자동화 환경을 구축할 수 있다.", "target": "최신 AI 기술을 문서 작성 실무에 도입하여 업무 생산성을 높이고자 하는 직장인 - 한컴독스 AI 및 생성형 AI 오피스 도구를 체계적으로 학습하여 문서 작성 효율을 극대화하고자 하는 사용자 - 기획서, 보고서, 공문서 등 텍스트 기반의 비즈니스 문서 제작 비중이 높은 실무자 및 공공기관 종사자", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "설득의 핵심 Key, 시각적 데이터 스토리텔링", "duration": "3:38:27", "contents": "8", "instructor": "전익진", "summary": "이제 구구절절 설명하지 않고 내가 전하려는 핵심 메시지를 스토리로 담아 설득할 수 있습니다. ", "goal": "1. 구구절절 설명하지 않고 내가 전하려는 핵심 메시지를 스토리로 담아 설득할 수 있다.\n2. 스토리를 데이터에 담아, 더 시각적으로 전달할 수 있는 능력을 향상 시킬 수 있다.", "target": "전 구성원", "level": "Seed"}, {"cat1": "Biz. Skill", "cat2": "기획력", "title": "100% 챗GPT 실전 가이드 : 일 잘하는 사람들의 AI 활용비법 step1", "duration": "3:39:26", "contents": "20", "instructor": "프롬프트 크리에이터", "summary": "ChatGPT 200% 활용법!\nChatGPT가 비즈니스 뿐만 아니라 라이프 스타일에서도 확실한 트렌드가 된 시대에, 보다 효과적으로 유용하게 사용할 수 있는 정보를 다루는 과정입니다. \n\nChat와 함께 일하기!\n이 과정은 인공지능과 대화하고 편안하게 활용할 수 있도록 도움을 주며, ChatGPT와 놀라울 정도로 친해질 수 있는 방법을 쉽게 설명하고 있습니다. \n\n실습 위주의 강의로 바로 활용 가능!\n처음부터 끝까지 실제 프롬프트 작성화면과 도출되는 결과를 볼 수 있기 때문에 바로 활용 가능합니다.", "goal": "① 업무에서 자기 계발까지 폭넓은 범위에서 ChatGPT를 활용할 수 있다.\n② ChatGPT 프롬프트를 여러 상황과 주제에 맞게 적절하게 적용할 수 있다. \n③ ChatGPT를 실제 업무에 바로 활용할 수 있다.", "target": "① ChatGPT를 어떻게 활용해야 할지 모르는 모든 학습자 \n② ChatGPT의 기본 기능과 기본 프롬프트를 습득하고 싶은 학습자\n③ ChatGPT의 프롬프트를 쉽고 간단하게 배우고 싶은 학습자", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "전혀 다른 생성형 AI", "duration": "3:39:49", "contents": "10", "instructor": "심영환", "summary": "문학, 영화, 음악, 역사 등 다양한 시각에서 생성형 AI의 개념과 기술을 탐구하고, 개인과 기업이 AI의 변화에 어떻게 대응할 수 있을지에 대한 통찰을 제공합니다. 생성형 AI의 세계를 탐험하면서 그 변화를 이해하고 경험할 수 있습니다. 또한, 인문학적 사고와 비즈니스 관점에서 AI가 가져올 삶의 변화와 문화적 영향을 다각도로 분석하면서 개인과 기업이 AI로 인한 변화를 어떻게 준비해야 할지를 통찰할 수 있습니다. ", "goal": "- 인문학적 관점에서 생성형 AI의 개념과 원리를 좀 더 쉽게 이해하고 파악할 수 있다. \n- AI의 변화에 개인과 기업의 대응방법을 설명할 수 있다.", "target": "- 기업체 전 임직원\n- 스마트한 업무 역량 향상을 위해 생성형 AI의 필요성을 느끼는 직장인", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "업무시간을 단축하는 스마트한 문서작성, 한컴독스 AI(Web ver) Part.1 기초", "duration": "3:40:49", "contents": "7", "instructor": "강다빈", "summary": "본 과정은 직장인들이 한컴독스 AI를 활용하여 문서 작성의 심리적 장벽을 낮추고, 반복적인 업무 프로세스를 획기적으로 개선하여 업무 시간을 단축하는 방법을 다룹니다. \n- AI를 황용한 문서 초안 작성부터 실무 기획서, 보고서, 보도자료 생성까지 현업에서 즉시 활용 가능한 실무 위주의 문서 템플릿을 중심으로 진행합니다. \n- 한컴독스 AI의 핵심 사용법과 한셀, 한쇼 연계 방법을 익힘으로써, 문서 품질은 높이되 제작 시간은 단축하여 업무의 생산성을 극대화할 수 있습니다.", "goal": "한컴독스 AI의 전반적인 기능을 습득하고, 다양한 AI 도구를 능숙하게 활용하여 고품질의 비즈니스 문서를 제작할 수 있다. - AI를 활용한 문장 생성 및 편집 기술을 실무에 적용하여, 초안 작성 및 내용 고도화에 소요되는 시간을 효율적으로 관리할 수 있다. - 표·이미지 생성 및 대화형 탐색 기능을 통해 복잡한 정보 취합 과정을 자동화하고, 실무 중심의 스마트한 사무자동화 환경을 구축할 수 있다.", "target": "최신 AI 기술을 문서 작성 실무에 도입하여 업무 생산성을 높이고자 하는 직장인 - 한컴독스 AI 및 생성형 AI 오피스 도구를 체계적으로 학습하여 문서 작성 효율을 극대화하고자 하는 사용자 - 기획서, 보고서, 공문서 등 텍스트 기반의 비즈니스 문서 제작 비중이 높은 실무자 및 공공기관 종사자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "두근두근 인공지능 - 실습편 -", "duration": "3:41:42", "contents": "11", "instructor": "유재명", "summary": "인공지능, 나도 한번 만들어 보고 싶지 않나요?\n자율주행차, 챗봇, AI스피커등 우리 현실 속 많은 인공지능제품들\n어떤 원리로 작동하고, 어떻게 만들수 있는지 궁금하지 않으셨나요?\n노코드와 로우코드로 따라하다보면 쉽게 인공지능을 만들어 볼 수 있습니다.", "goal": "인공지능 개발을 위한 머신러닝의 절차를 이해한다\n머신러닝의 각 단계를 간단히 수행할 수 있다", "target": "인공지능을 직접 만들어보고 싶은 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "[DS Class] 딥러닝 입문", "duration": "3:41:52", "contents": "6", "instructor": "김진숙", "summary": "본 강의는 누구나 딥러닝에 쉽게 입문할 수 있도록 딥러닝의 개념과 작동 원리를 배웁니다.\n그야말로 혁명적인 생산성 향상을 가져오기 위해, 당신도 딥러닝에 입문해보세요!", "goal": "- 딥러닝 개념과 퍼셉트론 개념을 알 수 있다.\n- 딥러닝의 학습 원리인 순전파와 역전파에 대해 이해할 수 있다.\n- 딥러닝을 실습할 수 있다.", "target": "- 인공 지능의 업무 활용을 시도하고 싶은 실무자\n- 사업에 인공지능을 도입하고 싶은 경영자, 실무자\n- 딥러닝 역량을 갖춰 창업/이직/취업 등을 달성하고 싶은 모든 사람", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "[구글 올인원 AI] 아날로그 업무 습관, AI 업무 한 끝으로 교체하기", "duration": "3:41:58", "contents": "8", "instructor": "이광희", "summary": "구글 환경 구축에서 출발해 Gemini 활용, 검색 고도화, 메모·할 일·일정 관리, 드라이브·포토 활용, Gmail·Meet·Chat 협업, 문서·스프레드시트·슬라이드 실무, 이미지·영상 제작, 설문지·사이트 구축, NotebookLM 기반 자료 분석, Colab·Apps Script를 활용한 업무 자동화까지 단계적으로 익히는 실무형 과정이다. 단순 기능 소개가 아니라 실제 업무 장면에 바로 적용할 수 있도록 검색, 문서 작성, 데이터 정리, 발표 자료 제작, 신청 접수, 규정집 챗봇, 일정 등록, 설문 자동 생성 같은 실습 중심으로 구성되었다.", "goal": "1. 구글 생태계의 핵심 서비스와 AI 기반 스마트워크 흐름을 이해한다.\n2. Gemini와 구글 문서도구를 활용해 검색, 문서 작성, 데이터 정리, 프레젠테이션 제작, 설문 구축을 할 수 있다.\n3. NotebookLM, 예약 페이지, Colab, Apps Script를 활용해 반복 업무를 자동화하는 방법을 알 수 있다.", "target": "1. 구글과 AI를 업무에 체계적으로 적용하려는 직장인\n2. 문서, 일정, 협업, 데이터 업무를 효율화하려는 실무자\n3. 코딩 경험 없이도 자동화와 AI 활용을 배우려는 입문자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "AI Vibe(바이브) 코딩으로 게시판(WebBoard) 하루 만에 만들기 Part.2 게시판 기능구현", "duration": "3:44:28", "contents": "8", "instructor": "김동준", "summary": "본 과정은 커서 AI 인공지능 Cursor AI 툴을 사용하여 게시판(WebBoard) 앱을 질문만으로 만들어보는 동영상 과정입니다.", "goal": "최신 AI 인공지능 툴을 사용하여 웹 프로그램을 개발합니다.", "target": "커서 AI 인공지능 툴을 사용하여 질문만으로 애플리케이션 만드는 과정을 배우고자 하는 사람", "level": "고급"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "실무비법전수! 한 방에 파이썬", "duration": "3:46:31", "contents": "10", "instructor": "박정은", "summary": "파이썬을 배우면 웹에서 머신러닝/딥러닝 개발까지 무엇이든 할 수 있는 시대, 파이썬 기초 문법을 통해 마음껏 아이디어를 실현해보자!", "goal": "- 프로그래밍 언어의 자료형, 기초 문법에 대해 설명할 수 있다.\n- 파이썬의 기초 문법 핵심 요소를 알고, 실습 코드에 적용할 수 있다.\n- 파이써닉한 코드 사용법을 습득할 수 있다.", "target": "- 프로그래밍이 처음인 비개발자\n- 프로그래밍 언어 입문으로 파이썬을 경험하고자 하는 직장인\n- 프로그래밍 개념과 트렌드에 대해 알고자 하는 모든 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "일잘러가 알아야 할 AI 비즈니스 이야기", "duration": "3:46:32", "contents": "12", "instructor": "현경민", "summary": "더 이상 미룰 수 없는 AI, 내 업무에 대한 인사이트를 얻어갈 수 있는 다양한 비즈니스 이야기를 준비했습니다.", "goal": "1. AI와 IT 기술이 비즈니스에 접목되는 큰 흐름을 파악할 수 있다.\n2. 비즈니스에 AI 활용 시 실무에서 고려할 사항을 학습하고 적용할 수 있다.", "target": "1. AI/IT 트렌드에 관심 있는 직장인\n2. 미래 역량을 갖추고 싶은 직장인", "level": "Seed"}, {"cat1": "Biz. Skill", "cat2": "기획력", "title": "[마케팅 아카이브] 생성형 AI를 활용한 뉴미디어 마케팅", "duration": "3:49:03", "contents": "8", "instructor": "황정운", "summary": "마케팅의 판도를 바꾸다! AI(ChatGPT) 활용 마케팅 실무!", "goal": "- 생성형 AI의 주요개념과 기능을 이해할 수 있다. \n- 생성형 AI를 활용한 콘텐츠 마케팅을 기획할 수 있다. \n- 다양한 생성형 AI를 업무에 활용할 수 있다.", "target": "- 새로운 기술을 활용한 차세대 마케팅에 관심이 있는 마케팅 담당자\n- AI를 효과적으로 활용하는 방법을 학습하고 마케팅 실무에 적용하고 싶은 관련 실무자\n- 뉴미디어 콘텐츠 개발 담당자", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "빅데이터 개발자를 위한 아파치 스파크 프로그래밍", "duration": "3:53:27", "contents": "10", "instructor": "노태상", "summary": "아파치 스파크 입문자를 위해서 개념, 구조에 대해서 알기 쉽게 설명한다.", "goal": "- 아파치 스파크의 콤포넌트, 동작 구조,  프로그래밍 모델, 설치 및 환경설정 등을 학습한다.\n- 스파크 머신러닝(Spark Machine Learning) 추천 시스템 실습을 통해서 현업에 활용한다.\n- 스파크 머신러닝(Spark Machine Learning)을 활용한 ELK 데이터 분석 실습을 통해서 현업에 활용한다.", "target": "- 소프트웨어개발자\n- 시스템 엔지니어등", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "두근두근 인공지능 - 개념편 -", "duration": "3:55:22", "contents": "11", "instructor": "유재명", "summary": "인공지능이 가져올 미래에 두근두근 하신가요?\nAI! AI! AI! 인공지능의 세상이 다가오고 있습니다.\n인공지능이 바꿀 우리의 미래가 기대되시나요? 두려우신가요?\n인공지능을 제대로 학습하고 인공지능을 맞이해 봅시다!", "goal": "인공지능과 머신러닝, 딥러닝의 개념을 이해할 수 있다\n인공지능이 분야별 적용 방법과 사례를 이해할 수 있다\n인공지능의 최근 동향 및 쟁점에 대한 이해할 수 있다", "target": "인공지능에 대한 관심이 있는 직장인", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "그림 못 그려도 OK! AI로 만드는 일러스트 (Illustrator AI)", "duration": "3:55:27", "contents": "8", "instructor": "김기민", "summary": "· 그림 실력이 없어도 누구나 시작할 수 있도록, AI 일러스트 제작의 기본 개념부터 실제 활용까지 단계적으로 학습합니다. · 텍스트 입력만으로 이미지를 생성하는 프롬프트 작성법을 익히고, 원하는 스타일과 분위기를 효과적으로 표현하는 방법을 이해합니다. · 다양한 AI 이미지 생성 도구를 활용해 캐릭터, 배경, 콘텐츠용 일러스트 등을 제작하며 창작 경험을 확장합니다. · 생성된 이미지를 수정·보완하는 방법을 함께 익혀, 개인 창작물, SNS 콘텐츠, 굿즈 제작 등 실생활에 바로 활용 가능한 결과물을 완성합니다.", "goal": "· AI 이미지 생성 도구의 기본 원리와 활용 방법을 이해하고, 스스로 원하는 이미지를 생성할 수 있습니다. · 목적에 맞는 프롬프트를 작성하여 스타일, 분위기, 구도 등을 구체적으로 제어할 수 있습니다. · 다양한 AI 도구를 활용해 캐릭터, 배경, 아이콘 등 여러 유형의 일러스트를 제작할 수 있습니다. · 생성된 이미지를 수정·보완하는 과정을 통해 완성도를 높이고, 실사용 가능한 결과물을 만들 수 있습니다. · AI 일러스트 제작 과정을 이해하고 개인 창작, 콘텐츠 제작, 간단한 디자인 작업에 능동적으로 활용할 수 있습니다.", "target": "· AI 기능이 탑재된 최신 Illustrator 2025를 체계적으로 배우고 싶은 초중급 학습자 · 아이콘, 그래픽 요소, 패턴, 포스터 등 실무에 활용 가능한 벡터 디자인을 직접 제작하고 싶은 예비 디자이너 · AI 기반 디자인 자동화와 효율적인 작업 방식으로 생산성을 높이고자 하는 크리에이터 및 마케터", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "처음 배우는 머신러닝(Machine Learning)", "duration": "3:55:45", "contents": "8", "instructor": "양진호", "summary": "머신러닝 초급자와 중급자를 위해서 자세한 개념과 실제 프로그램 코드를 통한 학습을 알아보자!", "goal": "1. AI, 머신러닝, 딥러닝 주요 개념과 구조를 이해하여 설명할 수 있다.\n2. 머신러닝의 활용 사례 학습을 통해서 현업에 활용할 수 있다.", "target": "- S/W 개발자\n- 시스템 엔지니어 등", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 노코드 RAG 끝판왕, 노트북LM으로 지식 관리 마스터하기", "duration": "3:56:35", "contents": "7", "instructor": "조은이", "summary": "LLM의 한계(최신성·정확성·신뢰성)를 극복하는  RAG(검색–증강–생성) 기술이 적용된 노트북LM으로,  신뢰도 높은 최신 지식을 관리하고 생성하자!", "goal": "1. 노코드 RAG 개념과 NotebookLM 핵심 기능을 이해하고 활용한다.\n2. 노트북LM을 활용하여 텍스트·영상·웹사이트 등 다양한 자료를 통합 분석하고, 이를 기반으로 신뢰성 있는 지식 관리를 수행한다.\n3. 단순 요약을 넘어 보고서·콘텐츠 제작 등 실제 업무에 적용 가능한 결과물을 AI로 생산한다.", "target": "1. 회의·프로젝트 자료가 쌓이지만 정리가 안 돼 매번 같은 정보를 다시 찾는 직장인\n2. 보고서·기획서 작성 시 출처 확보와 인용 검증에 시간을 허비하는 기획·분석 담당자\n3. AI 답변의 정확성을 믿지 못해 업무 전반에서 반복 검증과 재편집에 지친 마케터·기획자", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "ChatGPT 실전 활용법, 사례로 배우는 정보 수집에서 문서작성까지", "duration": "3:56:39", "contents": "9", "instructor": "김진", "summary": "ChatGPT로 업무 시간을 줄이고 중요한 것에 집중하고 싶다면, 딱 이만큼만 알아두자!\n누구나 가능한 Chat GPT로 업무는 빠르고 쉽게, 내 워라벨은 높이 상승하는 마법!", "goal": "- 생성형AI의 기본 개념과 생성형AI 툴을 활용하여 구체적인 성과를 창출하는 프롬프트 엔지니어링 역량을 확보할 수 있다.\n- ChatGPT 사용법과 질문법을 확실하고 제대로 파악하고 사용할 수 있다.\n- 모든 업무에 ChatGPT 스킬을 활용하여 효율성을 높이고 업무시간을 단축시킬 수 있다. ", "target": "- 인공지능 시대에 꼭 필요한 생성형AI의 이론만 간단히 알고 싶은 직장인\n- 확실하고 제대로 된 ChatGPT 사용법과 질문법을 익혀 업무 효율을 높이고 싶은 직장인\n- ChatGPT를 내 업무에 활용하여 성과를 극대화하고 싶은 직장인", "level": "심화"}, {"cat1": "OA", "cat2": "포토샵", "title": "포토샵과 일러스트로 배우는 그래픽 디자인, 생성형 AI", "duration": "30:11:03", "contents": "50", "instructor": "신현숙", "summary": "* 2D 그래픽의 대표적인 비트맵 이미지 프로그램인 포토샵의 기본 기능을 이해하고, 이미지 편집과 합성, 다양한 그래픽 효과를 적용한 이미지 제작과 AI 기능을 활용한 시각 표현 확장으로 상상력과 재미를 더하는 시각이미지를 생성하여 디자인 분야에 다양하게 응용할 수 있도록 전문적인 이미지 제작 기술을 익히는데 그 목표를 둔다.\n* 2D 그래픽의 대표적인 벡터 드로잉 프로그램인 일러스트레이터의 기본적인 사용법을 이해하고 이를 활용한 이미지 제작과 AI 기능을 통한 이미지 표현를 극대화하여 창의적인 디자인 작업에 자유롭게 적용할 수 있는 전문적인 시각 표현 기술을 익히는데 그 목표를 둔다.", "goal": "1. 포토샵의 기본 기능을 이해하고 실습예제를 통해 사용법을 익힌다.\n2. 이미지 합성에 필요한 마스크 기능을 이해하고 여러 이미지에 적용할 수 있도록 한다.\n3. 이미지에 다양한 그래픽스타일을 적용하여 섬세하면서 감각적인 시각 효과를 높일 수 있도록 한다.\n4. AI 기능을 통한 새로운 이미지 생성과 불필요한 부분 제거,이미지 확장 등을 통해 새롭고 우연한 이미지 표현과 상상력을 채워주는 획기적인 이미지를 제작,창의적이며 전문적인 이미지 표현기술을 디자인에 활용할 수 있도록 한다.\n5. 일러스트레이터의 기본적인 도구 사용법을 익힌다.\n6. 다양한 벡터이미지를 제작할 수 있도록 여러 가지 형태를 실습한다.\n7. 일러스트레이터의 그래픽 효과를 이미지에 적용하여 표현력을 높이도록 한다.\n8. AI 기능을 활용하여 아이디어에 맞는 적합한 이미지를 빠르게 생성하고 퀄리티 높은 결과물을 제작하도록 한다.", "target": "- 포토샵, 일러스트 입문자 \n- 포토샵, 일러스트 기존버전 학습자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "업무에 따라 골라 쓰는 생성형 AI 실전 매뉴얼", "duration": "4:00:03", "contents": "10", "instructor": "신성진", "summary": "업무에 따라 골라 쓰는 생성형 AI. 실전 활용법으로 업무 효율화 극대화하기!", "goal": "- 생성형 AI의 원리와 주요 도구의 특징을 설명할 수 있다.\n- 엑셀, 문서, 보고서 등 실무에 AI를 적용하는 방법을 알 수 있다.\n- 프롬프트 설계와 업무 자동화를 실천하고 AI 도입 시 유의점과 조직 내 활용 전략을 설명할 수 있다.", "target": "- 업무에 생성형 AI를 활용하고자 하는 모든 직장인\n- LLM, 생성형 AI의 실전 활용을 단기간에 이해하고 싶은 직장인\n- 조직의 업무 생산성 혁신을 고민하는 팀 리더와 관리자", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "데이터는 답을 알고 있다! 데이터 기반 의사결정 DDDM", "duration": "4:05:18", "contents": "12", "instructor": "신경식", "summary": "데이터 기반 의사결정을 하려면 무엇을? 어떻게? 시작해야 하는가?\n\n데이터를 기반으로 의사결정을 내리면 주관적인 판단과 직관에 의한 결정으로 인한 오류를 최소화할 수 있으며, 다양한 리스크를 사전에 예측하고 빠르게 대처할 수 있습니다. 따라서 데이터 기반 의사결정은 기업이나 조직이 더 나은 의사결정을 내리고 경쟁 우위를 유지할 수 있도록 중요한 요소이기에 해당 과정을 통해 이러한 역량을 강화 시킨다면 데이터를 전략적 무기로 사용할 수 있을 것입니다. ", "goal": "1. 데이터 기반 의사결정의 필요성과 기초 개념을 알아본다.\n2. 데이터 기반 의사결정을 위한 데이터 및 시각화 분석 방법에 대한 이해도를 높인다.\n3. 데이터 기반 의사결정을 위한 데이터 모델링, 알고리즘에 대해 파악한다.", "target": "1. 데이터를 활용하는 방법을 알고 싶은 분\n2. 객관적이고 합리적인 의사결정을 하고 싶은 모든 직장인\n3. 데이터를 활용한 혁신과 경쟁력을 확보하고 싶은 모든 임직원", "level": "Seed"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[슬기로운 통계생활] R과 Python을 이용한 문서작성 자동화", "duration": "4:09:09", "contents": "11", "instructor": "이삭", "summary": "알고나면 절대 그 전으로는 못 돌아가는 문서자동화!\nR의 reticulate 패키지를 이용하여 R과 Python 코드를 문서에 삽입해 문서를 프로그래밍 하듯 작성해보자.", "goal": "- 마크다운을 사용하여 기본적인 문서 작성을 할 수 있다.\n- R과 Python 프로그래밍 코드를 사용한 문서 프로그래밍에 대해 이해할 수 있다.", "target": "- R을 활용해 어떤 다양한 분야의 업무를 수행할 수 있는지 궁금한 직장인\n- R마크다운에 대한 기본적인 지식을 쌓고 싶은 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "AI Vibe(바이브) 코딩으로 게시판(WebBoard) 하루 만에 만들기 Part.1 Cursor AI 기초, 게시판디자인", "duration": "4:11:29", "contents": "10", "instructor": "김동준", "summary": "본 과정은 커서 AI 인공지능 Cursor AI 툴을 사용하여 게시판(WebBoard) 앱을 질문만으로 만들어보는 동영상 과정입니다.", "goal": "최신 AI 인공지능 툴을 사용하여 웹 프로그램을 개발합니다.", "target": "커서 AI 인공지능 툴을 사용하여 질문만으로 애플리케이션 만드는 과정을 배우고자 하는 사람", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "AI Vibe(바이브) 코딩으로 TodoList App 하루 만에 만들기 Part.2 TodoList 앱 실습", "duration": "4:13:07", "contents": "8", "instructor": "김동준", "summary": "본 과정은 커서 AI 인공지능 Cursor AI 툴을 사용하여 TodoList 앱을 질문만으로 만들어보는 동영상 과정입니다.", "goal": "최신 AI 인공지능 툴을 사용하여 웹 프로그램을 개발합니다.", "target": "커서 AI 인공지능 툴을 사용하여 질문만으로 애플리케이션 만드는 과정을 배우고자 하는 사람", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "AI-POT (AI 프롬프트활용능력) 1급 Part.2", "duration": "4:14:07", "contents": "7", "instructor": "강태안", "summary": "· 본 강좌를 통해 AI 플랫폼에 대한 이해와 개념을 학습할 수 있다. \n· 본 강좌를 통해 AI-POT 1급 자격증을 취득할 수 있다.", "goal": "· AI 프롬프트 활용능력에 대한 학습 및 여러가지 실습에 대한 이론 · 대화형 인공지능인 chatGPT에 대한 이해, 사용 방법에 대한 학습", "target": "· 남녀노소 누구나 학습 가능", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] AI 에이전트 스킬 업 - 초지능 에이전트 입문에서 실전까지", "duration": "4:19:14", "contents": "8", "instructor": "김진", "summary": "업무 비서를 넘어선 초지능 AI 에이전트 5가지 유형별 에이전트 사용 전략과 툴, 워크플로우 자동화까지!", "goal": "- AI 트렌드의 최전선에 있는 다양한 에이전트 기술을 이해할 수 있다.\n- 다양한 실제 업무에 AI 에이전트를 활용할 수 있다.\n- 코딩 에이전트를 활용하여 코딩 없이 AI 서비스를 개발할 수 있다.", "target": "- 반복적인 엑셀·보고서·자료 수집 업무로 하루가 빠르게 소모되는 실무자\n- 시장·경쟁사·고객 리서치를 더 깊이 있게 수행해야 하는 리서치 담당자\n- 코드 없이도 AI 서비스를 만들고 싶은 1인 기획자·PM/PO\n- 사내 AI 도입·자동화 프로젝트를 기획·리드해야 하는 팀장 및 실무 리더", "level": "고급"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "빅데이터 분석 및 검색 시스템 구축을 위한 엘라스틱서치", "duration": "4:22:43", "contents": "10", "instructor": "노태상", "summary": "검색 분야에서 큰 주목을 받고 있고 많이 활용되고 있는 엘라스틱서치를 학습한다.", "goal": "- ELK(Elasticsearch+Logstash+Kibana)의 구조, 주요 개념 및 특징을 이해할 수 있다.\n- ELK의 구축 사례 학습을 통해서 현업에 활용할 수 있다.\n- Data Dashboard Workflow 사례, 빅데이터 모니터링 시스템 구축, 머신러닝 기반 ELK 시스템 구축 방법에 대해 이해할 수 있다.", "target": "- 소프트웨어개발자\n- 시스템 엔지니어 등", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 제미나이로 끝내는 구글 워크스페이스 업무 자동화 A to Z", "duration": "4:23:07", "contents": "7", "instructor": "서지연", "summary": "제미나이(Gemini)로 메일 관리부터 심층 보고서 작성까지, \n수많은 클릭 대신 프롬프트 한 줄로 끝내는 구글 워크스페이스 업무 자동화\n여러 앱을 오갈 필요 없이, 제미나이 하나로 끝내는 구글 워크스페이스 업무 자동화 A to Z\n- 제미나이와 구글 워크스페이스 앱을 연동하여 일정 관리, 보고서 작성, 데이터 분석, 영상 제작까지 AI로 업무 효율을 극대화하는 방법 제시\n- Gmail·Docs·Sheets·Drive 등에서 흩어져 반복적으로 하던 업무를 한 번의 명령으로 통합 처리하는 실무 자동화 방법 학습\n- 나만의 업무 챗봇 생성(Gem), 심층 보고서 작성(Deep Research), 노코드 워크플로우 시스템 구축(Opal) 등 고급 기능까지 다루는 실무 중심 과정\n- 강의에서 사용한 모든 핵심 프롬프트와 실습 자료를 그대로 업무에 적용할 수 있도록 제공", "goal": "- 메일 및 파일 관리, 보고서 작성, 영상 제작까지 Google AI 기능을 통합하여 활용할 수 있다.\n- Drive에서 바로 실행되어 Workspace 앱을 관통하는 AI 에이전트 체계를 활용할 수 있다.\n- Gems와 Opal을 활용한 코딩 없는 자동화 워크플로우를 설계할 수 있다.", "target": "- Gmail, Docs, Drive 등 구글 워크스페이스를 활용한 주요 업무를 효율화하고 싶은 직장인\n- 제미나이 하나로 워크스페이스 전체를 통합 제어하고 싶은 직장인\n- 디자인 기술 없이도 전문가 수준의 발표 자료와 영상을 만들고 싶은 직장인\n- 나만의 AI 시스템을 만들어 업무를 자동화하고 싶은 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "Next Level 기획자_AI 서비스 기획의 기술", "duration": "4:25:07", "contents": "16", "instructor": "민규식", "summary": "AI 시대, 기획자의 역량은 다시 정의되고 있습니다. AI, 구경만 하는 기획자로 남으시겠습니까? \n기존 서비스에 AI를 입히고, 전혀 다른 혁신 서비스를 기획할 수 있는 역량이 필요한 모든 기획자에게 이 과정이 ‘실현 가능한 방법과 길’을 안내합니다. ", "goal": "- AI 적용 사례를 통해 현업에서 기획 가능 영역을 파악한다.\n- 직접 학습·API·오픈소스·상용 모델 등 상황별 적용 방법을 이해하고 적절한 모델을 선택할 수 있다.\n- AI 모델 최적화 및 최신 기술 동향, 비용 등 현실적 요소를 반영해 실무적 의사결정을 내릴 수 있다.\n- 윤리·보안 관점을 반영하여 기획을 수행할 수 있다.", "target": "- 서비스〮제품〮플랫폼 등 모든 비즈니스 영역에 AI를 도입하고자 하는 기획 실무자 및 관리자\n- 개발자, 개발자 모두 가능\n- 사전 지식 필요 없음", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "챗 GPT로 만드는 주식&암호화폐 자동매매 시스템", "duration": "4:30:31", "contents": "10", "instructor": "설근민", "summary": "코딩을 모르는 사람도 프로그램을 개발할 수 있습니다. 챗GPT에 질문하고, 챗GPT가 만든 코드를 복사해서 붙여넣기만 해도 프로그램이 뚝딱 만들어지는데 중요한 것은 프로그래밍 언어를 아는 것이 아니라, 문제 해결 방식을 떠올리는 것입니다. 어떤 데이터를 어떻게 수집하고, 어떤 모듈로 예측 모델을 만들고, 어떤 조건으로 종목 추천을 받을지 생각했다면, 챗GPT를 이용해 자동매매 시스템으로 조합하는 것은 더 이상 어렵지 않습니다. 증권사 트레이더에게 챗GPT를 활용하는 방식을 배우고, 초보자도 이해하기 쉬운 파이썬으로 직접 프로그램을 만들면서 자연스럽게 코딩 지식과 금융 지식을 익혀보시기 바랍니다. ", "goal": "- 챗GPT를 활용하여 주식과 암호화폐를 자동으로 매매하는 시스템을 만들 수 있다. \n- 시스템 구축 과정을 실습하면서 데이터 처리부터 프로그램 개발까지 \n전 과정을 간접 경험할 수 있다. ", "target": "- 코딩을 몰라도 프로그래밍을 해보고 싶은 사람\n- 주식과 암호화폐를 자동으로 매매하는 시스템을 직접 구축해 보고 싶은 사람", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 회사가 원하는 효율적인 AI활용 - AI 구조화 프롬프트로 엑셀 정복하기", "duration": "4:31:21", "contents": "7", "instructor": "최정아", "summary": "코딩 걱정 NO! 보안 걱정 NO! AI 구조화 프롬프트로 엑셀 정복!\n데이터 업로드 없이 엑셀 수식/함수/매크로VBA 만들기!", "goal": "1. 회사 데이터를 안전하게 묘사하여 정확한 엑셀 수식과 VBA 매크로를 생성할 수 있다.\n2. 복잡한 엑셀 업무에 맞춰 TCI 프레임워크를 적용할 수 있다.\n3. AI를 활용하여 복잡한 함수 업무를 대체하고 실무 테크닉을 구사할 수 있다.\n4. 코딩 지식 없이 AI가 생성한 VBA/매크로를 실행하여 엑셀 업무 자동화를 실현할 수 있다.", "target": "1. 보안 상 회사 데이터를 AI에 그대로 업로드하기 곤란한 직장인\n2. 함수는 어렵고 VBA는 더 어려워서 엑셀 자동화를 포기한 실무자\n3. 팀의 엑셀 업무 효율을 높여 성과를 끌어올리고 싶은 팀장/관리자", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "[DS Class] DNN, CNN, RNN을 활용한 딥러닝 실무", "duration": "4:35:00", "contents": "7", "instructor": "김진숙", "summary": "딥러닝의 전반적인 개발 과정을 살펴보고 다양한 알고리즘으로 딥러닝 모델을 개발해보는 학습 과정을 자세히 다루며, 각 모델별 장단점 및 적용 사례 실습을 알아보고, 실제 코드를 입력하며 각 모델간 차이를 확인하고 딥러닝 알고리즘을 활용해보세요!", "goal": "- 딥러닝의 알고리즘 종류인 DNN을 활용한 글씨 분류 프로젝트에 대해 알 수 있다.\n- CNN(합성곱 신경망)을 활용한 글씨 분류 프로젝트를 알고 활용할 수 있다.\n- RNN(순환 신경망)을 활용한 영화 리뷰 분석을 수행할 수 있다.", "target": "- 딥러닝의 기초 활용을 넘어 실제 IT기업들이 활용하고 있는 심화 인공지능 분석 역량을 갖추고 싶은 실무자\n- 리뷰 및 시장조사 등 방대한 인터넷 안의 데이터를 효과적으로 활용하고 싶은 마케터", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "텐서플로로 배우는 딥러닝", "duration": "4:36:28", "contents": "10", "instructor": "양진호", "summary": "딥러닝 초/중급자를 위해서 자세한 개념과 실제 프로그램 코드를 통한 학습이 가능하다.", "goal": "- AI, 머신러닝, 딥러닝 주요 개념과 구조를 이해하여 설명할 수 있다.\n- 실제 딥러닝 프로그램 코드를 작성할 수 있다.", "target": "- 소프트웨어개발자\n- 시스템 엔지니어 등", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "AI에게 좋은 답을 얻으려면, AI처럼 생각하라! 컴퓨팅 사고력", "duration": "4:36:49", "contents": "12", "instructor": "전수진, 박주연, 김수환", "summary": "인공지능이 사람의 영역을 대체해 가고 있는 시대, 복잡한 문제를 단순화하고 논리적으로 해결하는 컴퓨터 문제 해결 능력 이해가 필수! \n직장인 일잘러의 기본은 효율적인 일처리! 이를 위해서는 업무 내용을 빠르게 파악하고, 복잡한 업무를 알기 쉽게 쪼개고, 업무에 꼭 필요한 정보를 분석해서 단계적으로 처리하는 능력입니다. 이게 바로 컴퓨팅 사고력(Computational Thinking)으로 복잡하고 어려운 문제를 분해, 추상화, 패턴인식, 알고리즘 등 컴퓨터 과학의 기본 원리를 적용하여 창의적이고 논리적으로 문제를 해결하고자 하는 사고방식입니다.", "goal": "1. 컴퓨팅 사고력의 필요성과 개념을 이해할 수 있다.\n2. 컴퓨팅 사고력의 하위요소인 문제해결, 패턴인식, 추상화, 알고리즘, 자동화 기법을 활용하여 다양한 문제 상황에 적용해 볼 수 있다. ", "target": "컴퓨팅 사고력에 기반한 문제해결에 관심있는 구성원", "level": "Seed"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 데이터 분석 전처리 실무, 파워쿼리 Part.1", "duration": "4:37:55", "contents": "7", "instructor": "최정아", "summary": "데이터 분석의 시작, 데이터 전처리! 파워쿼리(PowerQuery)로 더욱 손쉽게 배워보자.", "goal": "1. 업무에 실질적인 성과를 가져다주는 데이터 전처리 방법을 습득할 수 있다.\n2. 다양한 데이터를 쉽고 빠르게 연결하고 가져오기 기능을 익힐 수 있다. \n3. 각종 자료의 수집, 편집 가공을 손쉽게 자동화할 수 있다.", "target": "- 데이터 전처리가 중요한 업무를 담당하는 직장인\n- 함수보다 쉽고 직관적인 엑셀 데이터 분석을 하고 싶은 직장인\n- 길어지는 컴퓨터 작업에 거북목이 된 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 데이터 사이언스 실무 고급 분석", "duration": "4:38:12", "contents": "8", "instructor": "김진", "summary": "업무 시간 줄여주는 효율적인 엑셀 100% 활용하기!", "goal": "1. 반복 작업을 파워쿼리로 자동화하여 업무 효율을 높일 수 있다. \n2. 파워피벗을 통해 데이터간 관계를 설정하고 데이터 모델링 역량을 기를 수 있다. \n3. 엑셀 데이터 분석 결과를 심화 시각화 도구인 파워BI로 더 다양하고 강력하게 시각화할 수 있다. ", "target": "- 방대한 양의 데이터를 엑셀로 분석, 처리, 관리하고 싶은 분\n- 데이터 전처리를 쉽게 오류 없이 해내고, 엑셀 업무를 자동화하여 업무 효율을 높이고 싶은 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "시간 도둑 데이터 분석, 빠르게 끝내는 파이썬 활용법", "duration": "4:38:53", "contents": "12", "instructor": "정선경", "summary": "데이터 분석 완전정복, 아직 늦지 않았다!\n 본 과정을 통해 파이썬을 통한 데이터 분석의 기본 이론부터 심화 실습까지 한 번에 마스터 가능하며, 파이썬을 통한 데이터의 생성부터 데이터 추출까지 업무 효율을 높이는 파이썬 데이터 분석의 A to Z 제공한다.", "goal": "- 파이썬의 설치부터 가상 환경을 이용한 업무 환경 구축 방법을 배울 수 있다. \n- 파이썬 데이터 분석 프로세스의 기본 개념을 배울 수 있다. \n- 데이터 구조 파악부터 실전 분석 프로젝트까지의 파이썬 실무 실습을 할 수 있다.\n- 엑셀 데이터를 파이썬으로 손쉽게 처리하는 업무자동화 역량을 강화할 수 있다.", "target": "- 파이썬을 통한 데이터 분석에 관심있는 직장인\n- 파이썬 사용법을 익혀 높은 업무 효율을 경험하고 싶으신 분\n- 데이터 분석 역량을 키우고 싶은 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 데이터 사이언스 입문 부트캠프 Part.1", "duration": "4:40:19", "contents": "9", "instructor": "김진", "summary": "어렵고 복잡한 통계는 그만, 데이터 분석에 핵심이 되는 통계 지식만 추려내어 실무에 바로 적용하자! 엑셀을 활용해 다양한 예제와 시뮬레이션, 실습을 통해 몸으로 느끼며 이해하는 통계를 학습한다. ", "goal": "1. 데이터 사이언스에 대한 기본적인 이해를 통해 데이터 중심적 사고와 일하는 역량을 강화할 수 있다.\n2. 목적에 맞게 데이터를 가공하고 데이터 처리 시 알아야 할 핵심 통계 방법에 대해 설명할 수 있다.", "target": "- 데이터 기반의 업무를 하고 있는 직장인\n- 데이터 분석에 대한 전반적인 이해가 필요한 직장인", "level": "Seed"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 비즈니스 애널리틱스, 데이터 기반 전략 수립 실무 마스터 클래스", "duration": "4:44:05", "contents": "7", "instructor": "최정아", "summary": "실습을 통해 데이터 기반의 전략 수립 실무 마스터하기!", "goal": "1. 비즈니스 설득력을 극대화하는 최적의 데이터 시각화를 진행할 수 있다. \n2. 데이터의 논리적 연결, 점 추정과 구간 추정의 필수 개념을 익힐 수 있다. \n3. 데이터 표를 활용한 상품 할인률과 판매수량의 민감도 분석, 시나리오 관리자를 활용한 다중 변수의 민감도 분석 방법을 실행할 수 있다. ", "target": "- 여러 비즈니스 문제를 데이터로 해결해보고 싶은 직장인\n- 엑셀을 활용한 비즈니스 데이터 분석을 진행하고 싶은 직장인\n- 실무 의사결정에 전략적 통찰력을 가지고 싶은 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "[ITⓔ코칭] 파이썬으로 시작하는 친절한 코딩클래스", "duration": "4:45:48", "contents": "10", "instructor": "김영아", "summary": "프로그래밍 언어 중 가장 많이 활용되고 있는 파이썬! 다양한 분야에 활용되고 있는 만능 언어 파이썬으로 프로그래밍을 시작해보자.", "goal": "1. 파이썬의 용어, 수행방법 등 파이썬의 기본기를 다질 수 있다.\n2. 파이썬을 수행하는 데 있어 핵심적인 지식과 함께 실무 능력을 쌓을 수 있다.\n3. 다양한 분야의 실무에서 파이썬을 활용할 수 있다.", "target": "- 파이썬에 관심 있거나 파이썬을 처음 접하는 직장인(개발자)\n- 파이썬의 용어, 수행방법 등에 대한 기본기를 탄탄히 다지고, 실무 능력을 향상시키고 싶은 현업 종사자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "왕초보를 위한 ChatGPT로 배우는 파이썬", "duration": "4:46:49", "contents": "10", "instructor": "윤근식", "summary": "디지털 시대, 왜 직장인에게 코딩 리터러시가 필요할까요?\n\nChatGPT와 같은 생성형 AI가 업무 방식을 혁신하고 있는 지금, 코딩 리터러시(Coding Literacy)는 더 이상 개발자만의 전유물이 아닙니다. \n모든 직장인에게 중요한 경쟁력으로 자리 잡고 있습니다. 코딩 리터러시는 단순히 프로그램을 개발하는 능력을 의미하지 않습니다. 데이터와 시스템이 어떻게 작동하는지 이해하고, 문제를 논리적으로 해결하며, 자동화된 솔루션을 활용하는 사고 방식을 포함합니다.", "goal": "- AI 시대, 컴퓨터와 사람의 상호작용을 이해하고, 컴퓨터와 직접 소통할 수 있는 도구인 코딩과 이를 읽는 능력을 향상시킬 수 있습니다.\n- ChatGPT에게 받는 맞춤형 가이드(단계별 프롬프트와 예제)를 통해 쉽게 따라할 수 있으며, 구체적인 질문과 내용 설명으로 파이썬을 학습할 수 있습니다.\n- 학습 내용을 바탕으로 간단한 프로그램을 만들어 볼 수 있도록 구성할 수 있습니다.", "target": "- 나이나 배경에 관계없이 프로그래밍을 처음 배우고 싶은 성인학습자\n- 챗GPT와 같은 AI 도구를 활용해 새로운 기술을 배우고자 하는 사람\n- 업무 자동화, 데이터 분석 등 실질적인 목적으로 파이썬을 배우고자 하는 일반인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 일잘러 장피엠과 ChatGPT 업무 300% 활용하기", "duration": "4:47:01", "contents": "16", "instructor": "장병준", "summary": "ChatGPT를 나만의 AI Agent로 만들기 위한 실습 마스터 클래스!", "goal": "- 체계적이고 구조화된 프롬프트를 작성할 수 있다.\n- ChatGPT로 전문적이고 완성도 높은 업무 문서를 작성할 수 있다.\n- 업무 프로세스를 자동화 및 고도화 하여 업무 효율성을 극대화할 수 있다.", "target": "- 체계적이고 구조화된 프롬프트를 작성하고자 하는 재직자\n- ChatGPT로 다양한 종류의 업무 관련 문서를 전문성 있게 작성하고자 하는 재직자\n- ChatGPT를 API 또는 외부 애플리케이션에 연동하여 업무 프로세스를 자동화 및 고도화 하고자 하는 재직자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 문서, 이미지, 영상 제작부터 바이브 코딩까지 한 번에! AI 통합 플랫폼, 구글 AI 스튜디오 완전정복", "duration": "4:48:36", "contents": "9", "instructor": "정옥선", "summary": "문서·이미지·영상·앱 제작까지 한 번에 끝내는\n실무형 구글 AI 스튜디오 완전정복 과정", "goal": "- 구글 AI 스튜디오의 핵심 기능과 사용 목적을 단계별로 설명할 수 있다.\n- 구글 AI 스튜디오를 활용하여 하나의 플랫폼에서 업무 환경을 구성할 수 있다.\n- Streaming Responses(실시간 응답 기능)을 활용하여 AI와의 상호작용 효율을 향상시킬 수 있다.\n- 전문 기술이 필요한 업무를 AI 기능(App Builder·자동화 기능 등)을 활용해 수행할 수 있다.", "target": "- 구독료는 늘어나는데 결과물은 여전히 불만족스러운 직장인\n- 코딩 없이 나만의 AI 앱을 만들어보고 싶은 기획자/PM\n- 마케팅 이미지와 영상 콘텐츠를 빠르게 만들어야 하는 마케터", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "AI와 플러그인으로 Figma에 날개 달기", "duration": "4:49:08", "contents": "11", "instructor": "김대일", "summary": "디자이너들에게 가장 각광받는 툴, Figma\nAI활용과 무료 플러그인으로 남들보다 쉽고, 빠르고, 퀄리티 있게 디자인하자! \n본 과정을 통해 Figma의 기초 개념부터 바로 사용할 수 있는  툴 사용법까지. 실제 실무에서 작업하는 방식을 따라하며, 원하는 결과물을 빠르게 뽑아낼 수 있는 피그마 A to Z를 배울 수 있다.", "goal": "- Figma의 기본 기능과 플러그인 활용 방법을 알 수 있다.\n- 인공지능 플러그인을 활용한 고효율 작업 방식을 경험할 수 있다.\n- 최종 프로젝트를 통한 실제 앱 화면을 디자인할 수 있다. ", "target": "- Figma를 배우고 싶은 직장인\n- UI/UX 디자인 기술을 향상시키고 싶은 디자이너\n- 인공지능을 활용하여 작업 효율을 높이고자 하는 프로덕트 디자이너 및 웹 디자이너\n- AI를 활용한 디자인 시스템과 컴포넌트 관리에 관심 있는 모든 디자인 관련 직군의 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 데이터 기반 디지털 트랜스포메이션(DT) 전략 마스터 클래스", "duration": "4:51:44", "contents": "9", "instructor": "김진", "summary": "현실적인 데이터로 전략적 의사결정 실무 마스터하기!", "goal": "1. 디지털 환경 속 전략적 의사결정 과정에 대해 이해할 수 있다. \n2. 데이터가 조직의 DT 전략 수립에 적용되는 실질적인 방향성에 대해 이해할 수 있다. \n3. 업무 방식에 DT를 적용하고 비즈니스 모델의 변화를 이끌어내는 능력 함양할 수 있다. ", "target": "- 디지털 환경의 경영진에게 필요한 전략적 의사결정 과정을 배우고 싶은 분들\n- 심화 분석을 쉽게 활용하여 성과를 창출하고 분들\n- 실제 데이터를 통해 적절한 상황 판단과 모델링에 대해 배우고 싶은 분들", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "일센스 터진다 - 진짜 실무에 먹히는 노코드 AI 데이터분석(개발 업무편)", "duration": "4:55:48", "contents": "12", "instructor": "이기복", "summary": "코딩 몰라도 데이터는 읽는다, 일센스 터지는 노코드 AI 분석의 모든 것! 엑셀, PPT, 구글시트만 쓸 줄 알아도 이젠 데이터 분석, AI가 대신해드립니다.\n복잡한 통계나 코딩 없이도, 실무에 바로 써먹을 수 있는 노코드 AI 분석의 스킬과 감각을 동시에 챙겨보세요. 당신의 일센스, AI로 터지게 해드립니다.", "goal": "코딩 없이 AI 도구를 활용해 데이터 수집부터 분석·시각화까지 실무에 적용할 수 있는 역량을  기를 수 있습니다.", "target": "데이터를 활용하여 개발 업무를 하고 있는 구성원", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "일센스 터진다 - 진짜 실무에 먹히는 노코드 AI 데이터분석(비개발 업무편)", "duration": "4:56:49", "contents": "12", "instructor": "이기복", "summary": "코딩 몰라도 데이터는 읽는다, 일센스 터지는 노코드 AI 분석의 모든 것! 엑셀, PPT, 구글시트만 쓸 줄 알아도 이젠 데이터 분석, AI가 대신해드립니다.\n복잡한 통계나 코딩 없이도, 실무에 바로 써먹을 수 있는 노코드 AI 분석의 스킬과 감각을 동시에 챙겨보세요. 당신의 일센스, AI로 터지게 해드립니다.", "goal": "코딩 없이 AI 도구를 활용해 데이터 수집부터 분석·시각화까지 실무에 적용할 수 있는 역량을  기를 수 있습니다.", "target": "데이터를 활용하여 개발 업무를 하고 있는 구성원", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "Cursor AI (커서) 입문에서 실전 웹사이트 만들기까지 Part.2 실습 (웹사이트 만들기 1)", "duration": "4:57:49", "contents": "10", "instructor": "김동준", "summary": "본 과정은 커서 AI 인공지능 툴에 대한 기초 사용법과 이를 사용한 실전 웹사이트 만들기에 대해서 배우는 동영상 과정입니다.", "goal": "- 최신 AI 인공지능 툴을 사용하여 모던한 웹사이트 구축 과정을 학습합니다.", "target": "- 커서 AI 인공지능 툴을 사용하여 실전 웹사이트를 만드는 과정을 배우고자 하는 사람", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "업무 효율을 높이는 AI Microsoft Copilot Part.2 오피스365 자동화 활용 1", "duration": "4:58:05", "contents": "9", "instructor": "강다빈", "summary": "전통적인 업무 방식에서 AI 협업으로의 패러다임 전환을 통해 오피스 365 전 영역에 걸친 AI 자동화 솔루션을 학습합니다. 효과적인 프롬프트 엔지니어링 기법과 프롬프트 사례 분석을 통해 단순한 도구 사용법을 넘어 AI의 한계점 이해와 비판적 검토 능력까지 함양합니다. 실무 현장에서 즉시 적용 가능한  단계별 실습 예제를 통해 업무 효율성을 높이고, AI를 통해 업무 자동화 기능을 사용할 수 있습니다.", "goal": "Copilot을 통하여 보고서, 제안서, 회의록 등 다양한 비즈니스 문서를 자동 생성하고 맞춤형 편집할 수 있다. Excel Copilot을 활용하여 복잡한 데이터셋을 자동 분석하고, 피벗테이블, 고급 함수, 예측 모델을 생성할 수 있다. PowerPoint Copilot을 통해 아이디어 구상부터 슬라이드 구성, 디자인, 스토리텔링까지 전 과정을 자동화할 수 있다.", "target": "Microsoft 365를 업무에 활용하는 모든 직장인 AI 기반 업무 자동화에 관심 있는 실무자 및 관리자 교육 현장에서 AI 도구 활용이 필요한 교육자", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 마케터를 위한 Excel·Orange 실전: 고객 선택 분석부터 재구매 예측까지", "duration": "4:58:50", "contents": "12", "instructor": "최정아", "summary": "고객은 ‘무엇을’, ‘왜’ 선택할까? \n데이터를 통해 고객의 선택의 이유를 이해하고, 미래 행동까지 예측하는 과정!\n\n본 과정은 고객 분석을 단편적으로 배우는 것이 아니라, 고객 이해 → 추천 → 검증 → 선택 요인 분석 → 고객 가치 및 예측까지 하나의 흐름으로 구성되어 있다.\n연관상품 분석, 추천시스템, A/B 테스트, 회귀분석을 통해 고객의 선택 이유를 분석하고 검증하는 방법을 익히고, 이후 LTV, 이탈 리스크, 생존 확률 분석까지 확장하여 어떤 고객이 중요한 고객인지 판단하고 예측하는 방법까지 다룬다.", "goal": "1. 고객의 선택과 행동 패턴을 데이터 기반으로 이해하고 설명할 수 있다.\n2. 고객의 선택을 유도하는 요인을 분석하고 추천 및 전략으로 연결할 수 있다.\n3. 고객 가치와 이탈 가능성을 바탕으로 중요한 고객을 식별하고 미래 행동을 예측할 수 있다.", "target": "1. 다양한 직무에서 필수적인 고객 이해 역량이 필요한 직장인\n2. 단순 지표 분석을 넘어 의사결정에 쓰이는 데이터 분석을 하고 싶은 직장인\n3. 고객의 행동과 중요도를 데이터로 설명하고 싶은 직장인\n4. 통계나 분석 툴이 부담되지만, 개념과 해석 중심으로 분석 사고를 익히고 싶은 모든 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "AI-POT (AI 프롬프트활용능력) 2급 Part.2 프롬프트", "duration": "4:59:04", "contents": "8", "instructor": "강태안", "summary": "· 본 강좌를 통해 AI 플랫폼에 대한 이해와 개념을 학습할 수 있다. \n· 본 강좌를 통해 AI-POT 2급 자격증을 취득할 수 있다.", "goal": "· AI 프롬프트 활용능력에 대한 학습 · 대화형 인공지능인 chatGPT에 대한 이해, 사용 방법에 대한 학습", "target": "· 남녀노소 누구나 학습 가능", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "업무 효율을 높이는 AI Microsoft Copilot Part.2 오피스365 자동화 활용 2 (完)", "duration": "5:00:49", "contents": "9", "instructor": "강다빈", "summary": "전통적인 업무 방식에서 AI 협업으로의 패러다임 전환을 통해 오피스 365 전 영역에 걸친 AI 자동화 솔루션을 학습합니다. 효과적인 프롬프트 엔지니어링 기법과 프롬프트 사례 분석을 통해 단순한 도구 사용법을 넘어 AI의 한계점 이해와 비판적 검토 능력까지 함양합니다. 실무 현장에서 즉시 적용 가능한  단계별 실습 예제를 통해 업무 효율성을 높이고, AI를 통해 업무 자동화 기능을 사용할 수 있습니다.", "goal": "Copilot을 통하여 보고서, 제안서, 회의록 등 다양한 비즈니스 문서를 자동 생성하고 맞춤형 편집할 수 있다. Excel Copilot을 활용하여 복잡한 데이터셋을 자동 분석하고, 피벗테이블, 고급 함수, 예측 모델을 생성할 수 있다. PowerPoint Copilot을 통해 아이디어 구상부터 슬라이드 구성, 디자인, 스토리텔링까지 전 과정을 자동화할 수 있다.", "target": "Microsoft 365를 업무에 활용하는 모든 직장인 AI 기반 업무 자동화에 관심 있는 실무자 및 관리자 교육 현장에서 AI 도구 활용이 필요한 교육자", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 파이썬 데이터 분석 머신러닝, 머신러닝 본격 시작하기", "duration": "5:01:53", "contents": "9", "instructor": "김진숙", "summary": "머신러닝 학습을 통해 데이터 기반 의사결정 능력을 키워보자!", "goal": "- 파이썬 머신러닝 패키지 사이킷런을 이해하고 프레임 워크를 정리할 수 있다. \n- 실전 사례와 사이킷런 실습으로 실무에서 주요하게 쓰이는 알고리즘의 핵심을 이해하고 건강 진단 데이터 전처리, 주택가격예측, 와인데이터셋 분류를 직접 해낼 수 있다. ", "target": "- 데이터를 기반으로 다양하게 분석하고 미래를 예측하고 싶은 직장인\n- 빠르고 정확하게 분석된 예측과 결과로 의사결정을 효율적으로 하고 싶은 직장인", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "현직 AI 디자인 전문가가 알려주는 미드저니 클래스", "duration": "5:01:59", "contents": "10", "instructor": "양솔지", "summary": "이미지 생성형 인공지능의 대표 툴, Midjourney!\n기초 사용 방법부터 실제 디자인 프로젝트 실습을 통한 실무 적용까지 한번에!", "goal": "- 대표적인 이미지 생성 인공지능 도구인 미드저니에 대해 이해하고 입문할 수 있다.\n- 이미지 생성 방법과 미세 조정을 통해 원하는 이미지를 생성해내는 방법을 이해할 수 있다.\n- 다양한 대상에 맞게 여러 기능을 활용하여 적절한 이미지를 생성할 수 있다.\n- 실제 업무에서 활용 가능한 실무 디자인 이미지를 생성할 수 있다.", "target": "- 생성형 인공지능에 관심이 있는 누구나\n- 디자인 업무의 소요 시간과 비용을 획기적으로 단축하고 싶은 디자이너\n- 디자이너 채용으로 인한 비용과 외주 제작으로 인한 비용이 부담스러운 창업자\n- 높은 퀄리티의 이미지를 빠르게 생성하고 싶은 모든 실무자", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "[ICT 지식 큐브] 인공지능과 디지털보안", "duration": "5:03:53", "contents": "10", "instructor": "이정하/박수민/김준삼", "summary": "다양한 업무영역 크로스오버가 가능한 IT 전문 기술자를 양성하자.", "goal": "- ICT 기술 트렌드, 비즈니스 및 ICT 기술 융합 등 단순하고 명확한 개념설명과 사례를 기반으로 짧은 시간 내 내재화가 가능하도록 핵심 내용을 중심으로 학습한다. \n- 다양한 업무영역 크로스오버가 가능한 IT 전문 기술자 양성이 가능하며, 전문 자격 취득을 위한 에센스를 제공한다.", "target": "- 정보화에 관심이 있는 자\n- ICT 기술 관련 전문직 종사자, 시스템 및 소프트웨어 엔지니어 및 IT 전문 역량 강화 희망자\n- ICT 전문자격(정보관리/컴퓨터시스템응용기술사, 정보시스템감리사 등) 취득에 관심이 있는 분", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 다양한 실습 파일로 배우는 ChatGPT 실전 데이터 분석", "duration": "5:04:16", "contents": "9", "instructor": "이상미", "summary": "AI 기술 트렌드에서 엿볼 수 있는 비즈니스 기회 창출 인사이트", "goal": "- 데이터 분석 6단계 프로세스와 Zero-shot, Few-shot 프롬프트 작성법을 설명할 수 있다.\n- 데이터 크롤링부터 결측치, 이상치 자동 탐지까지 자연어로 데이터 정제 전반을 수행할 수 있다.\n- 빅데이터 분석 수행 결과를 활용하여 ChatGPT Canvas로 보고서 작성까지 완료할 수 있다.", "target": "- 짧은 시간에 효율적으로 데이터 기반의 분석과 보고를 수행해야 하는 실무자\n- 성과를 데이터로 관리하고 전략을 수립해야 하는 관리자\n- 데이터 분석 스킬로 업무 경쟁력을 높이고 싶은 모든 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[ICT 아카이브] 빅데이터 핵심과 비즈니스모델", "duration": "5:05:12", "contents": "8", "instructor": "장형석", "summary": "빅데이터 처리와 분석을 통한 Business Insight!", "goal": "- 빅데이터의 기본 개념과 필요성을 이해할 수 있다.\n- 빅데이터 분석을 위한 핵심 기술들을 이해할 수 있다.\n- 빅데이터 분석 기법과 머신러닝 알고리즘을 이해할 수 있다.  \n- 빅데이터를 실무에 적용하기 위한 전략과 준비 과정을 이해할 수 있다. ", "target": "- 빅데이터 분석을 통해 실무활용이 필요한 모든 임직원\n- IT 업종, 마케팅 및 통계, 정보처리, 전략 및 기획 담당자\n- 빅데이터 플랫폼 및 머신러닝 알고리즘에 관심있는 IT종사자\n- 빅데이터에 관심있는 모든 임직원", "level": "Seed"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 데이터 리터러시, 데이터 읽고 쓰기의 기술", "duration": "5:09:14", "contents": "10", "instructor": "김진", "summary": "초보자도 데이터 리터러시 역량을 얻을 수 있는 친절한 데이터 활용 가이드! ", "goal": "1. 데이터 자체의 상품성부터 비즈니스에서의 데이터 활용이라는 메가 트렌드를 이해하며 디지털 트랜스포메이션의 기반을 다질 수 있다.\n2. 비즈니스 문제를 데이터 분석 기반 인사이트로 해결하고 조직의 데이터 기반 전략 수립에 기여할 수 있다. \n3. 데이터 시각화 역량까지 습득하여 분석 결과를 효과적으로 커뮤니케이션할 수 있다.", "target": "- 데이터 분석 기반의 업무를 하고 있는 직장인\n- 데이터셋을 분석하며 실무에 바로 적용할 수 있는 역량을 높이고 싶은 직장인 ", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 디자인 자동화 끝판왕, Canva AI로 생성형 디자인 마스터하기", "duration": "5:17:07", "contents": "11", "instructor": "조은이", "summary": "디자인 비전문가도 OK! 압도적 세계 1위 디자인 플랫폼 Canva(캔바)로 완성하는 올인원 비주얼 업무\n기획부터 자동화까지 한 곳에서 해결하는 Canva의 핵심 기술과 실무 활용법\n- 세계 1위 디자인 플랫폼 Canva의 AI 매직 스튜디오 완전 정복\n- AI 트렌드와 실무 활용을 꿰뚫는 전문가, 조은이 강사의 명쾌한 최신 실무 스킬 강의\n- 따라만 하면 고퀄리티 결과물이 뚝딱, 실습용 데이터 및 프롬프트 템플릿 제공", "goal": "- Canva AI 3대 핵심 기능을 업무 상황별로 활용할 수 있다.\n- 로고·색상·폰트를 고정해 일관성 있는 스타일의 결과물을 산출할 수 있다.\n- 반복 제작을 자동화해 여러 결과물을 한번에 생성할 수 있다.", "target": "- PPT, 보고서, 홍보물 디자인이 어려운 비전공자 직장인\n- 작업 결과물 통일성 부족으로 고민인 마케터·기획자\n- 카드뉴스·배너·이벤트 홍보물처럼 반복 제작이 많은 업무를 담당하는 실무자", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 데이터 사이언스 입문 부트캠프 Part.2", "duration": "5:17:42", "contents": "10", "instructor": "김진", "summary": "현실에서 마주하는 다양한 비즈니스 문제를 데이터 분석 프레임워크에 따라 해결하며 직무에 바로 응용하자! 데이터 수집부터 전처리, 가설 도출부터 비즈니스 의사결정까지 데이터 분석 역량을 함양하고 머신러닝까지 입문해보자.", "goal": "1. 데이터 분석의 핵심인 데이터 전처리에 대해 알고 데이터 분석 도구를 활용할 수 있다.\n2. 분석 모델 기반의 실습을 통해 데이터를 효율적으로 관리하고 분석할 수 있다.", "target": "- 업무에서 데이터를 활용하고 싶은 직장인\n- 비즈니스 데이터 분석 능력을 키우고 싶은 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 비즈니스 애널리틱스, 데이터 기반 마케팅 영업 전략 실무 마스터 클래스", "duration": "5:19:16", "contents": "8", "instructor": "최정아", "summary": "콘텐츠 기반 추천과 유사한 사용자 기반 추천 알고리즘의 차이를 이해하고, 간단한 통계 함수를 통해 마케팅/세일즈에서 두루 활용되는 개념을 실제 데이터로, 가장 실용적인 도구로 원본 데이터에서 결론까지 도출해내자.", "goal": "1. 데이터 기반 프로젝트를 운영할 수 있는 역량을 확보할 수 있다. \n2. 고객 이탈을 방지하기 위한 코호트 분석 등 고객 세그먼트 분류 및 집중할 고객을 선별할 수 있다.\n3. 매출액을 기준으로 RFM 분석을 실시하고, RFM 세그먼트를 활용할 수 있다. ", "target": "- 여러 비즈니스 문제를 데이터로 해결해보고 싶은 직장인\n- 엑셀을 활용한 비즈니스 데이터 분석을 진행하고 싶은 직장인\n- 실제 데이터로 마케팅 영업 전략을 세우고 싶은 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 파이썬 NumPy와 Pandas 이해하기", "duration": "5:22:34", "contents": "10", "instructor": "김진숙", "summary": "NumPy, Pandas를 활용한 데이터 분석 실무를 직접 경험하자!", "goal": "1. Numpy를 활용하여 데이터 프레임을 분석 목표에 맞게 구성하고 조정할 수 있다. \n2. Pandas를 활용하여 삼성전자 주가를 시계열 분석으로 예측하고 서울시 인구 현황과 외국인 관광객 현황, 은행 고객을 직접 분석해볼 수 있다.", "target": "- 파이썬을 실무 업무에 바로 적용하고 싶은 직장인\n- 파이썬 데이터 분석 패키지로 손쉽게 코딩에 입문하고 싶은 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 코파일럿으로 MS365 핵심 기능 200% 활용하기", "duration": "5:24:48", "contents": "12", "instructor": "김종오", "summary": "코파일럿으로 업데이트하는 MS365 6개 툴별 실무 핵심 기능\n엑셀, 워드, 파워포인트, 아웃룩, 원노트, 팀즈까지,\n회사에서 매일 쓰는 툴의 활용능력이 코파일럿을 만나면 갑자기 레벨업 된다?\n많은 시간을 들여 기능을 하나하나 외워야 하는 OA 클래스가 없이도\n나만의 업무 비서 코파일럿의 도움을 받아 필요한 결과물을 쉽게 얻을 수 있다.\n본 과정은 코파일럿의 개념과 기본 사용법부터 시작하여, 업무 흐름에 따라 회의부터 자료 작성, 분석, 발표까지 업무 흐름에 따라 코파일럿을 활용해 업무 효율을 극대화할 수 있는 기능들을 안내한다. MS365 MVP 출신 전문가가 알려주는 툴별 맞춤형 프롬프트를 바로 실무에 적용할 수 있다.", "goal": "- Microsoft 365 코파일럿의 역할과 주요 기능을 이해할 수 있다.\n- 원노트, 아웃룩, 팀즈, 워드, 엑셀, 파워포인트에서 코파일럿을 활용하여 생산성을 증대시킬 수 있다.\n- 상황별 맞춤형 프롬프트를 작성하여 코파일럿의 효율을 극대화할 수 있다.", "target": "- Microsoft 365 코파일럿을 활용해 생산성을 높이는 방법을 알고 싶은 직장인\n- AI와 데이터를 업무에 적용하여 비즈니스 인사이트를 도출하고자 하는 실무자\n- 코파일럿 도입을 고려하고 있는 경영자", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 쉽고 빠르게 터득하는 SQL", "duration": "5:24:58", "contents": "8", "instructor": "최정아", "summary": "SQL 초보자들을 위해 SQL의 기본 개념부터 실제 SQL 사용법을 실습을 통해 소개!", "goal": "- 데이터베이스와 스키마의 기본 개념을 익힐 수 있다.\n- SQL에서 다양한 함수를 활용하여 원하는 데이터를 추출할 수 있다.\n- 깔끔한 데이터 추출을 위한 팁을 배우고 활용할 수 있다.", "target": "- SQL을 처음 배우는 모든 직장인\n- 필요한 데이터 추출을 스스로 하고 싶은 마케터, 기획자, 운영자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI 스킬링] 코딩 몰라도 ChatGPT+VBA+코랩으로 만드는 데이터 분석 자동화 루틴", "duration": "5:28:11", "contents": "20", "instructor": "안현수", "summary": "아직도 매번 AI에 파일을 직접 업로드하고 있다면, 당신의 업무 시간은 낭비되고 있다! 코드를 몰라도 간단하게 완성하는 나만의 데이터 분석 자동화 루틴 설계", "goal": "1. AI를 활용하여 비정형 데이터를 전처리하고 분석 결과를 도출할 수 있다.\n2. 데이터 분석 전 단계에 AI와 Python을 연계하여 적용할 수 있다.\n3. VBA와 구글 코랩을 활용하여 반복 분석 업무를 자동화할 수 있다.", "target": "1. 마케팅·영업·CS 등 비정형 데이터를 다루는 기획자\n2. 업무에 AI를 처음 도입하려는 데이터 담당자\n3. 반복되는 분석 업무를 자동화하고자 하는 비개발자", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 회사가 원하는 효율적인 AI 활용 - 구조화 프롬프트로 정복하는 실무 데이터 처리 비법", "duration": "5:29:59", "contents": "7", "instructor": "최정아", "summary": "AI가 데이터를 ‘이해’하게 만들고, 실무자는 프롬프트만으로 전처리·시각화를 끝낸다!", "goal": "- 인공지능 도구를 엑셀과 같은 기존 도구와 융합하여 활용할 수 있다.\n- TCI(Task-Context-Instruction) 프롬프트 설계 방식을 적용하여 프롬프트를 작성할 수 있다.\n- 데이터 분석, 정리, 시각화 전 과정을 AI의 도움을 받아 수행할 수 있다.\n코딩 지식이 필요한 자동화 업무를 AI의 도움을 받아 수행할 수 있다.", "target": "- 데이터 형태마다 달라지는 업무 방식에 AI 활용이 막막했던 실무자\n- 복잡한 함수식과 어려운 VBA 코드 공부에 지친 직장인\n- 더 빠르고, 더 쉬운 데이터 정리로 팀의 업무 효율을 극대화하고 싶은 관리자", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "[DS Class] 코딩 없이 유용하게 써먹는 엑셀 매크로", "duration": "5:31:17", "contents": "9", "instructor": "최정아", "summary": "마우스 클릭만으로 간단한 프로그램 생성, 코딩 없이 활용하기 좋은 엑셀 매크로!\n기본 설정부터 다양한 활용법까지, 초보자도 쉽게 따라할 수 있도록 실제 엑셀 사용 화면과 함께 학습!", "goal": "- 엑셀 매크로 개발도구의 정의와 기록 방법을 익힐 수 있다.\n- 실제 엑셀 매크로가 등장하고 수행하는 범위에 대해 살펴볼 수 있다.\n- VBA없이 양식 컨트롤로 간단하게 실무에서 활용할 수 있다.", "target": "- 엑셀 매크로를 처음 사용하는 모든 직장인\n- 엑셀 매크로를 활용하여 업무 속도를 높이고 싶은 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "파이썬을 활용한 데이터 분석 및 시각화", "duration": "5:36:07", "contents": "10", "instructor": "서진수", "summary": "파이썬을 활용하여 다양한 정형/비정형 데이터를 분석하는 통계 기법, 분석된 결과를 시각화하는 방법, 메일 보내기 자동화 방법을 학습합니다 다양한 예제를 통해 배우고 실습함으로써 실무적용 능력을 습득할 수 있습니다", "goal": "- Jupyter Notebook 프로그램을 사용할 수 있다.\n- 파이썬에서 사용되는 다양한 시각화 방법을 실행할 수 있다.\n- 다양한 텍스트 분석기법과 통계분석 기법 및 업무 자동화 기술을 기억하고 활용할 수 있다.", "target": "- 기획, 마케팅, MD, 영업 담당자\n- 데이터 분석이 필요한 전임직원", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "나만 알고 싶은 비법, 업무자동화(Feat. No코드)", "duration": "5:37:16", "contents": "12", "instructor": "이경록", "summary": "‘Power Automate’를 통해 코드 없이 업무를 자동화시켜보자!\n업무시간을 순삭하게 하는 단순/반복 업무, 물론 중요한 업무이지만, 좀더 효과적이고 생산적인 업무를 할 수 없을까 고민이 되는 직장인들에게 필수적인 과정입니다. 더군다나 업무 자동화라고 꼭 코딩을 활용해야 할까요? \n노코딩으로 실무에 바로 적용 가능한 업무자동화 프로그램을 함께 만들어봅시다.", "goal": "- Power Automate를 통해 단순 반복 업무를 자동화할 수 있다.", "target": "- 업무 중 단순 반복 업무가 있어 일과 시간의 할애를 많이 하는 직장인\n- 코딩에 대한 장벽이 있는 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "ChatGPT 활용 생성형 AI 프롬프트 엔지니어링 실무", "duration": "5:38:29", "contents": "11", "instructor": "황정운", "summary": "생성형 AI 활용을 위한 핵심! 프롬프트 엔지니어링으로 일하라!", "goal": "- 프롬프트 엔지니어링의 의미를 이해하고, 업무에 활용하는 기초 방법을 파악할 수 있다.\n- 정확한 답변을 얻어낼 수 있는 다양한 프롬프트 엔지니어링 기술을 익힐 수 있다.\n- 할루시네이션(Hallucination) 수치를 낮추는 프롬프트 작성방법을 익힐 수 있다. ", "target": "- 생성형 AI를 활용하여 업무를 진행하는 모든 부서의 임직원\n- ChatGPT 활용도가 높은 마케팅, 기획, 엔지니어링 등에 종사하는 모든 임직원 ", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 파이썬 데이터 분석 머신러닝, 파이썬 복습과 머신러닝 맛보기", "duration": "5:43:44", "contents": "10", "instructor": "김진숙", "summary": "머신러닝 개념부터 다양한 사례 학습을 통해 쉽게 입문하자!", "goal": "- 반복 작업을 파워쿼리로 자동화하여 업무 효율을 높일 수 있다. \n- 파워피벗을 통해 데이터간 관계를 설정하고 데이터 모델링 역량을 기를 수 있다. \n- 엑셀 데이터 분석 결과를 심화 시각화 도구인 파워BI로 더 다양하고 강력하게 시각화할 수 있다. ", "target": "- 데이터를 기반으로 다양하게 분석하고 미래를 예측하고 싶은 직장인\n- 빠르고 정확하게 분석된 예측과 결과로 의사결정을 효율적으로 하고 싶은 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "Orange로 하는 노코드 AI 데이터 분석(7) 시계열 분석과 연관 규칙", "duration": "5:45:54", "contents": "9", "instructor": "최정아", "summary": "코딩 없는 AI 데이터 사이언스, Orange3! 노코드 AI 프로그램으로 시계열 및 연관성 분석을 쉽고 빠르게!\n\nOrange3는 코딩 없이 드래그 앤드 드롭 기능으로 누구나 쉽게 데이터 분석을 할 수 있는 머신 러닝 도구이다. 시계열 및 연관성 분석, \n아직도 엑셀이나 파이썬 밖에 모른다면 Orange3를 활용해보자.\n\n본 과정을 통해 복잡한 프로그래밍의 벽을 허물고, 데이터 분석을 \n자신 있게 수행할 수 있는 심화 데이터 사이언티스트로 거듭나 보자.", "goal": "- Orange3를 활용한 시계열 및 연관성 분석 방법을 설명할 수 있다.\n- 시계열 및 연관성 분석으로 데이터 속 패턴과 연관 관계를 파악할 수 있다.\n- 다양한 실습을 통해 실무적 데이터 분석 기술을 강화할 수 있다.", "target": "- 노코드 프로그램으로 시계열 및 연관성 분석을 간단히 수행하고 싶은 직장인\n- 파이썬보다 더 간단한 심화 분석 도구 사용을 원하는 직장인\n- 데이터 분석 역량을 향상하여 업무 효율성을 향상하고자 하는 직장인", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "업무시간을 단축하는 스마트한 문서작성 - 한컴AI X 어시스턴트 (한컴오피스 한글 2024편)", "duration": "5:45:59", "contents": "10", "instructor": "강다빈", "summary": "복잡한 텍스트 교정과 반복적인 서식 지정 작업을 AI로 자동화함으로써, 단순 업무의 피로도를 낮추고 업무 생산성을 극대화할 수 있습니다. 방대한 자료를 빠르게 분석하는 AI 탐색 기능을 통해 정보 수집의 한계를 극복하고, 텍스트 편집 및 서식 제작 자동화로 문서의 완성도를 높이는 방법을 다룹니다. 표준화된 경영 문서와 전문적인 서식 제작 노하우를 AI로 구현하는 법을 습득함으로써, 급변하는 디지털 환경에서 경쟁력을 갖춘 스마트 행정 전문가로 거듭날 수 있습니다.", "goal": "한컴오피스 2024 AI 어시스턴트의 핵심 기능을 마스터하여, 기획부터 완고까지 이어지는 문서 작성 공정을 획기적으로 단축할 수 있습니다. AI가 생성한 문장을 실무 목적에 맞게 교정하고 고도화하는 편집 자동화 기법을 익혀, 문서 제작의 효율성을 극대화할 수 있습니다. 경영 문서 및 공문서 특유의 규격화된 서식을 AI로 자동 생성하고 관리하여, 대외 신뢰도가 높은 표준화된 문서를 제작할 수 있습니다.", "target": "한컴오피스 한글 2024의 AI 기능을 실무에 즉시 도입하여 반복적인 문서 행정 업무를 획기적으로 단축하고자 하는 직장인 텍스트 교정, 요약, 탐색 등 AI 기반의 문서 고도화 기술을 익혀 대외 문서의 완성도를 극대화하고 싶은 누구나 기획서, 보고서, 보도자료 등 비즈니스 문서 제작 비중이 높아 AI를 통한 원고 생성 및 편집 기술이 필요한 담당자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI 스킬링] AI로 세팅하는 제2의 뇌 - 옵시디언으로 설계하는 무한 확장 지식 엔지니어링", "duration": "5:47:45", "contents": "12", "instructor": "정우석", "summary": "데이터는 많은데 결과물이 없다면?!\n옵시디언(Obsidian)을 활용해 데이터를 연결하고 자동화해 실제 결과로 이어지는 지식 관리 시스템 구축", "goal": "1. 옵시디언의 작성 기준과 구조를 설계해 업무 기록이 누적되어도 쉽게 검색하고 활용할 수 있다.\n2. 다양한 업무 데이터를 연결하여 정보가 단절되지 않는 지식 네트워크를 구축할 수 있다.\n3. 대시보드와 AI 도구를 활용하여 업무 현황을 한눈에 파악할 수 있는 관리 구조를 만들 수 있다.\n4. 템플릿과 자동화 도구를 활용하여 반복 업무를 줄이고 효율적인 업무 환경을 구축할 수 있다. ", "target": "1. 회의·리서치·기획 기록을 남기지만, 다음 업무에서 다시 찾는 직장인\n2. 업무 히스토리가 길어질수록 “왜 이렇게 결정했지?”를 반복 확인하는 직장인\n3. 프로젝트 자료가 여기저기 흩어져 있어, 진행 상황을 한 눈에 파악하기 힘든 직장인\n4. 회의록·기획안·체크리스트를 매번 반복 작성하는 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "업무가 쉬워지는 순간, 엑셀로 데이터 분석하기", "duration": "5:52:12", "contents": "16", "instructor": "오경선", "summary": "엑셀의 함수 기능을 활용하여 데이터 분석을 방법을 알려준다.\n데이터 분석의 기본 개념을 다지고, 예제를 통해 차근차근 기능을 직접 따라 하면서 익힐 수 있는 과정으로 구성되어 있다.\n본 학습과정을 통해 엑셀을 이용하여 데이터를 수집하고, 엑셀을 활용하여 분석하는 도구로 자유롭게 활용할 수 있다.", "goal": "1. 데이터의 개념을 알고, 원하는 데이터를 수집하여 다듬는 방법을 알 수 있다.\n2. 가상분석을 설정하고, 다양한 검증 방법을 통해 주장의 참과 거짓을 파악할 수 있다.\n3. 데이터 간의 상관관계를 파악하고, 분석하여 미래를 예측할 수 있다.", "target": "엑셀로 데이터 분석하는 방법에 관심이 있는 구성원", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "처음 시작하는 MS Copilot, 나만의 업무 파트너 만들기", "duration": "5:52:26", "contents": "12", "instructor": "김진", "summary": "365일 쓰는 MS 오피스에 인공지능 비서가 온다! 생산성을 극대화할 새로운 도우미 Copilot\n\nChatGPT 등 생성형 AI 도구의 보급으로 개인의 편의성은 높아졌지만 아직 조직 전체의 생산성 향상이라는 결과로 이어지지는 못한 상황, 진정한 업무 변화의 두 번째 물결은 MS Copilot으로부터 시작된다!\n\n본 과정에서는 문서 작성, 디자인, 메일 자동 답변, 회의 자동 요약과 데이터 분석까지 다양한 업무 상황에서 MS Copilot을 활용하는 방법을 안내한다.", "goal": "- MS Copilot 서비스의 개념과 범위에 대해 설명할 수 있다.\n- Copilot의 효과적 활용을 위한 기초 역량을 키울 수 있다.\n- 다양한 비즈니스 상황에서 적절한 Copilot 도구를 효과적으로 활용할 수 있다.", "target": "- MS Copilot을 활용해 생산성을 높이고자 하는 직장인 및 경영인\n- MS Copilot의 최신 AI 기능을 업무를 활용하고자 하는 IT 전문가\n- AI와 데이터를 업무에 적용하여 비즈니스 인사이트를 도출하고자 하는 실무자\n- Copilot의 도입을 고려하고 있는 Microsoft MS 일반 사용자 및 조직", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 데이터 분석 전처리 실무, 파워쿼리 Part.2", "duration": "5:53:23", "contents": "9", "instructor": "최정아", "summary": "데이터 분석의 시작, 데이터 전처리! 파워쿼리(PowerQuery)로 더욱 손쉽게 배워보자.", "goal": "1. 데이터의 변경이 자동으로 반영되어 업무 효율을 증진시킬 수 있다.\n2. 방대한 양의 데이터를 손쉽게 다룰 수 있다. \n3. 파워쿼리 비정형 데이터를 통합하고 관리할 수 있다.", "target": "- 엑셀 작업으로 퇴근이 늦어지는 직장인\n- 상사에게 사랑받는 엑셀 스킬을 갖추고 싶은 직장인\n- 코딩없이 몇번의 클릭만으로 쉽고 빠르게 데이터 전처리를 하고 싶은 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "Orange로 하는 노코드 AI 데이터 분석(6) 텍스트와 이미지 분석", "duration": "5:55:05", "contents": "10", "instructor": "최정아", "summary": "코딩 없는 AI 데이터 사이언스, Orange3! 노코드 AI 프로그램으로 텍스트와 이미지 분석을 쉽고 빠르게!\n\nOrange3는 코딩 없이 드래그 앤드 드롭 기능으로 누구나 쉽게 데이터 분석을 할 수 있는 머신 러닝 도구이다. 텍스트 분석과 이미지 분석, 아직도 파이썬 밖에 모른다면 Orange3를 활용해보자.\n\n본 과정을 통해 복잡한 프로그래밍의 벽을 허물고, 텍스트/이미지와 같은 비정형 데이터 분석을 자신 있게 수행할 수 있는 심화 데이터 사이언티스트로 거듭나 보자.", "goal": "- Orange3를 활용하여 텍스트 및 이미지를 분석하는 방법을 설명할 수 있다.\n- 텍스트 마이닝과 이미지 분석으로 데이터 속 패턴 및 관계를 파악할 수 있다.\n- 다양한 실습을 통해 실무적 데이터 분석 기술을 강화할 수 있다.", "target": "- 노코드 프로그램으로 텍스트와 이미지 분석을 간단히 수행하고 싶은 직장인\n- 파이썬보다 더 간단한 심화 분석 도구 사용을 원하는 직장인\n- 데이터 분석 역량을 향상하여 업무 효율성을 향상하고자 하는 직장인", "level": "고급"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 비즈니스 애널리틱스, 전략적 의사결정 실무 마스터 클래스", "duration": "6:02:29", "contents": "9", "instructor": "최정아", "summary": "고객들의 선호도를 결정할 가장 중요한 요인이 무엇인지 알아보기 위한 다양한 비즈니스 분석법을 손 쉬운 도구인 엑셀로 실행하는 방법을 배워보자.", "goal": "1. 직감이 아닌 데이터 분석 기반 의사결정으로 비즈니스 성공률을 업그레이드할 수 있다.  \n2. 환률분포를 활용한 비즈니스 성과 향상 전략을 세울 수 있다. \n3. 컨조인트분석, 손익분기점 비율 분석, 시나리오 분석 등 다양한 전략적 의사결정을 위한 비즈니스 분석법을 실행할 수 있다. ", "target": "- 여러 비즈니스 문제를 데이터로 해결해보고 싶은 직장인\n- 엑셀을 활용한 비즈니스 데이터 분석을 진행하고 싶은 직장인\n- 확률 기반 비즈니스 의사결정을 내리고 싶은 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 파이썬 데이터 분석과 시각화", "duration": "6:02:49", "contents": "10", "instructor": "김진숙", "summary": "파이썬을 활용해 회사 업무에 대한 활용력을 높여보자!", "goal": "1. Matpolib과 Seaborn, Folium을 활용하여 데이터 특성, 분석 목표에 따라 다양한 방법으로 데이터를 시각화하고 인사이트를 발굴할 수 있다.\n2. 멀게만 느껴지는 머신러닝의 개념을 쉽게 이해하고 입문할 수 있다.", "target": "- 파이썬을 활용하여 유연하게 데이터를 분석하고 머신러닝까지 입문하고 싶은 직장인\n- Numpy와 Pandas를 활용하여 데이터 분석을 학습하고 싶은 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "[ITⓔ코칭] 파이썬으로 배우는 실전 프로그래밍_2020 개정판", "duration": "6:03:26", "contents": "12", "instructor": "김영아", "summary": "해외는 물론 국내까지 사용 영역이 넓어지고 있는 파이썬! 만능 언어 파이썬(Python)을 활용한 프로그래밍을 알아보자", "goal": "- 파이썬을 수행하는 데 있어 핵심적인 지식과 함께 실무 능력을 쌓을 수 있다.\n- 다양한 분야의 실무에서 파이썬을 활용할 수 있다.", "target": "- 파이썬에 관심 있거나 파이썬을 처음 접하는 직장인\n- 파이썬의 용어, 수행방법 등에 대한 기본기를 탄탄히 다지고 싶은 분 \n- 실무 능력을 향상시키고 싶은 현업 종사자", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 마케터를 위한 Excel 실전: 고객 분석부터 자동화 프레임워크까지", "duration": "6:07:36", "contents": "13", "instructor": "최정아", "summary": "마케터라면 누구나 겪는 고민, 데이터는 넘쳐나는데 성과는 안 보인다면?\n엑셀 하나로 고객을 꿰뚫는 상위 1%의 분석 프레임워크\n데이터 분석을 통해 핵심 고객을 찾고, 최적의 타겟팅 로직을 직접 설계하자!", "goal": "- 데이터 관리 기준을 정립하여, 데이터가 늘어나도 즉시 분석할 수 있는 환경을 조성할 수 있다.\n- RFM 모델과 파레토 분석으로 수익 기여도가 높은 핵심 타겟을 오차 없이 식별할 수 있다.\n- 고객 등급별 행동 변화와 마케팅 성과 지표를 시각화하여 의사결정 근거를 확인하고 설명할 수 있다.", "target": "- 방대한 고객 데이터를 쌓아만 두고 활용하지 못하는 마케팅 관련 직무 종사자\n- 어떤 타겟이 핵심 VIP인지 객관적 근거를 찾고 싶은 마케팅 실무자\n- 광고 효율은 떨어지는데, 고객을 어떻게 나누어 접근해야 할지 막막한 실무 담당자", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "[DS Class] 파이썬 시작하기, 파이썬 기본 개념", "duration": "6:13:43", "contents": "10", "instructor": "김진숙", "summary": "복잡해 보이는 파이썬 설치부터 기본개념, 자료구조를 파악하여 본격적으로 파이썬 시작해보자.", "goal": "1. 파이썬의 기본 분기문과 반복문을 이해할 수 있다.\n2. 자료구조와 딕셔너리 개념을 파악할 수 있다. ", "target": "- 파이썬의 기초부터 차근차근 학습하고 싶은 분\n- 파이썬의 기초 문법과 구조를 이해하여 객체 지향 프로그래밍에 대한 이해를 높이고 싶은 분\n- 데이터를 쉽고 빠르게 수집하여(크롤링) 업무 자동화를 실현하고 싶은 분", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "실무비법전수! 한 방에 파이토치(실전)", "duration": "6:18:51", "contents": "26", "instructor": "박정은", "summary": "실무에 바로 활용 가능한 딥러닝 프로젝트 중심으로 구성된 실전 트레이닝 과정!", "goal": "- 다양한 딥러닝 태스크를 다루며  데이터셋 유형(이미지, 영상, 텍스트)에 맞춘 모델을 학습한다.\n- 파이토치 기반 프로젝트의 설계부터 훈련,평가,배포까지 전 과정을 이해하고 직접 수행할 수 있다.\n-최신 딥러닝 기술을 현업 수준으로 구현하며, 실무 프로젝트 기반의 응용력과 문제 해결 능력을 강화한다.", "target": "-파이토치 기초를 이수한 중급 이상의 데이터 분석가 및 AI 엔지니어\n-파이토치를 활용하여 실무에 가까운 딥러닝 모델 설계를 학습하고 싶은 중급 개발자\n-딥러닝을 활용한 이미지/비디오/NLP 모델을 배우고 싶은 실무자", "level": "고급"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "3D 공간정보 데이터 취득과 빅데이터 시각화", "duration": "6:19:50", "contents": "15", "instructor": "김용돈", "summary": "모든 공간을 한 번에 볼 수 있는 3D 공간정보의 데이터 활용과 시각화 방법 제시!", "goal": "- 드론, 라이다 등을 활용한 3D 공간정보 데이터 취득 및 매핑방법을 이해할 수 있다. \n- 공간정보 및 빅데이터 시각화를 위한 3차원 데이터 수집 시스템의 개념, 기술 및 방법론을 파악할 수 있다.\n- 3D 공간정보 데이터의 활용분야에 따른 데이터 시각화 도구와 방법을 파악할 수 있다.\n- 3D 데이터 수집 시스템 및 빅데이터 처리를 통한 공간정보 습득 방법을 파악할 수 있다. ", "target": "- 건설현장 측량 기술자 및 관리자\n- 3D 공간정보 데이터, 드론매핑 3D모델링, 디지털트윈에 관심있는 자", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[슬기로운 통계생활] R로 배우는 기초통계학 part2", "duration": "6:24:02", "contents": "11", "instructor": "이삭", "summary": "R을 사용한 기초 통계 과정! \n통계의 기초지식을 학습하고, 데이터가 주어졌을때 통계적으로 시각화하는 방법을 학습합니다.\n또한 데이터의 특성을 나타내는 통계 지표들을 학습하면서 R의 기능을 자연스럽게 익힐 수 있는 강의 입니다.", "goal": "- 회귀분석 계수를 구하는 과정을 이해하고 통계에 활용할 수 있다.\n- 정규분포와 중심극한정리의 관계를 이해하고 통계에 활용할 수 있다.", "target": "- 통계를 처음 배우는 분들\n- 데이터 분석을 처음 공부하는 분들\n- R을 처음 배우는 분들", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] R로 배우는 데이터 분석 첫 걸음, 기초 문법으로 R 다지기", "duration": "6:24:55", "contents": "11", "instructor": "김진숙", "summary": "기초 통계 지식을 습득하여 평소 통계가 낯설거나 통계에 자신 없던 분들도 R을 활용하여 쉽게 데이터 분석할 수 있는 과정!", "goal": "1. 데이터 분석의 기본이 되는 데이터 구조를 실습과 함께 쉽게 이해할 수 있다.\n2. 데이터 분석을 위한 핵심 통계 지식을 친절한 설명과 함께 자연스럽게 습득할 수 있다. ", "target": "- 비전공자도 쉽게 데이터 분석할 수 있는 툴을 찾고 있는 직장인\n- 통계적 지식은 물론 기초 문법까지 습득하고 싶은 직장인", "level": "Seed"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "실무비법전수! 한 방에 파이토치(기본)", "duration": "6:28:33", "contents": "18", "instructor": "이애본", "summary": "딥러닝, 이론만으로 충분할까? 파이토치를 이해하면 딥러닝이 제대로 보이기 시작한다.", "goal": "- 파이토치 기반 딥러닝 기초 모델을 직접 구현하고 이해할 수 있다.\n-CNN, RNN, GAN 등 다양한 딥러닝 모델의 작동 원리를 이해하고,\n  이를 실제 문제에 적용하여 문제를 해결할 수 있다.\n-오버피팅과 같은 딥러닝 모델 학습 시 발생하는 문제점을 파악하고 해결 방안을\n  적용할 수 있다.", "target": "-파이토치 및 딥러닝 개념을 빠르게 이해하고  실무에 적용하고자 하는 직장인\n-파이토치를 이용한 딥러닝 모델 구현 능력을 향상시키고 싶은 개발자 및 직장인\n-AI 기술의 핵심 원리를 이해하고 개발자와의 협업 또는 AI 프로젝트를 기획에 \n 참여하고자 하는 기업 실무자", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 마케터가 원하는 효율적인 AI 활용 - 생성AI 브랜드 콘텐츠 제작 실무 A to Z", "duration": "6:30:49", "contents": "9", "instructor": "최정아", "summary": "AI가 데이터를 ‘이해’하게 만들고, 실무자는 프롬프트만으로 전처리·시각화를 끝낸다!", "goal": "- 인공지능 도구를 엑셀과 같은 기존 도구와 융합하여 활용할 수 있다.\n- TCI(Task-Context-Instruction) 프롬프트 설계 방식을 적용하여 프롬프트를 작성할 수 있다.\n- 데이터 분석, 정리, 시각화 전 과정을 AI의 도움을 받아 수행할 수 있다.\n코딩 지식이 필요한 자동화 업무를 AI의 도움을 받아 수행할 수 있다.", "target": "- 데이터 형태마다 달라지는 업무 방식에 AI 활용이 막막했던 실무자\n- 복잡한 함수식과 어려운 VBA 코드 공부에 지친 직장인\n- 더 빠르고, 더 쉬운 데이터 정리로 팀의 업무 효율을 극대화하고 싶은 관리자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 처음부터 차근차근 배우는 클로드 AI 실전 활용법", "duration": "6:49:57", "contents": "12", "instructor": "최정아", "summary": "초장문 텍스트 분석과 심화 추론 능력에 최적화된 차세대 생성형 AI, ‘클로드 AI’ 실전 활용법!\n자연스러운 대화력과 긴 문서 처리 능력을 갖춘, 비즈니스에 최적화된 생성형 AI ‘클로드 AI’\n\n본 과정을 통해 다양한 목적의 비즈니스 글쓰기, 자료 검토, 아이디어 도출, 데이터 분석 등 직무 불문 모든 직장인이 알아두면 \n반복 업무를 절반의 시간에 끝내는 클로드 AI 활용법을 제시한다.", "goal": "- 클로드 AI의 인터페이스부터 대화 스타일 셋팅까지 기초 지식을 이해할 수 있다.\n- 창의적 글쓰기, 기획, 코드 작성 등의 다양한 실무 활용법을 습득할 수 있다.\n- AI 모델 구조와 이미지 생성 등 멀티모달 기능을 활용한 응용을 수행할 수 있다.\n- 실전 연습을 통해 프롬프트 작성 노하우와 실제 사례에 대한 적용을 이해할 수 있다.", "target": "- 문서 작성이나 기획 업무의 효율을 높이고 싶은 직장인\n- 다양한 AI 도구에 대해 학습하고 활용법을 익히고 싶은 직장인\n- 데이터 분석이나 간단한 코드 작업에 AI를 접목해보고 싶은 직장인", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "Langchain & RAG: AI 챗봇 완전정복", "duration": "6:56:55", "contents": "17", "instructor": "윤성재", "summary": "Langchain과 RAG를 통해 AI 챗봇 시스템을 구축하는 실습 중심 강의\n\n생성형 AI 챗봇 시스템 제작 실습부터 LCEL 활용법까지 Langchain과 RAG 활용법 정복!\n\n본 과정을 통해 많은 분야에서 AI 기술이 필수적인 지금, Langchain과 RAG를 마스터하여 AI 솔루션 개발 역량과 경쟁력을 강화할 수 있다.", "goal": "- Langchain의 주요 개념을 이해하고, 이를 기반으로 RAG 파이프라인을 설계할 수 있다.\n- 실습을 통해 LCEL 기반 RAG 파이프라인을 설계, 구축, 최적화할 수 있다.\n- 프론트엔드(HTML/CSS, JavaScript)와 백엔드(FastAPI)의 통합을 통해 맞춤형 AI 챗봇 인터페이스를 구축할 수 있다.\n- 실제 비즈니스 성공 사례를 분석하여 RAG 서비스 도입을 위한 최적의 전략을 수립할 수 있다.", "target": "- AI 챗봇 시스템의 기초부터 구축 방법까지 배우고 싶은 모든 직장인\n- AI 챗봇과 RAG 서비스 구현에 관심 있는 개발자 및 엔지니어\n- 생성형 AI 기술을 실무에 적용하여 업무 효율을 높이고자 하는 모든 직장인", "level": "고급"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "처음 배우는 자연어 처리", "duration": "7:08:24", "contents": "10", "instructor": "양진호", "summary": "자연어 처리 초급자와 중급자를 위한 자세한 개념을 학습하자!", "goal": "1. 자연어 처리의 정의, 개념 등 기초 지식에 대한 학습할 수 있다.\n2. 자연어 처리 주요 기능에 대한 이론을 이해하고 실습을 할 수 있다", "target": "- SW개발자\n- 자연어 처리에 관심 있는 개발자", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "코알못을 위한 파이썬 입문", "duration": "7:19:10", "contents": "32", "instructor": "신동욱", "summary": "데이터 왕초보라면? 가장 핫한 언어/ 가장 쉬운 언어, 파이썬부터 직무가 무엇이든 데이터 분석이 필수인 시대! 하지만 막상 배워보려고 하면, 어/렵/다!\n그렇다면, 입문자에게 가장 사랑받는 언어, 파이썬부터 시작하면 어떨까요?  파이썬의 기초개념과 문법을 익히고, 데이터 분석의 자신감을 가져보세요.", "goal": "- 파이썬 기초 문법과 코딩을 이해하여 나만의 프로그램을 제작할 수 있다. \n- 파이썬 언어를 활용하여 실무에서의 업무효율성을 높일 수 있다. ", "target": "- 코딩을 처음 접하는 구성원\n- 파이썬을 업무에 활용하고 싶은 구성원", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 마케터가 원하는 효율적인 AI 활용 - 이미지, 영상, 음악까지 감각적인 비주얼 콘텐츠 생성하기", "duration": "7:19:20", "contents": "10", "instructor": "최정아", "summary": "프롬프트 몇 줄로 이미지·영상·음악까지! AI로 마케터가 원하는 비주얼 콘텐츠 완성하기", "goal": "- 이미지, 영상, 음악까지 완성하는 AI 콘텐츠 업무 방식을 습득할 수 있다.\n- 브랜드 감성을 담아내는 크리에이티브 프롬프트 설계법을 익힐 수 있다.\n- 누구나 복잡한 툴 사용 없이 전문적인 수준의 제작 환경을 구성할 수 있다.\n- AI 콘텐츠 사용자 윤리를 체득하여 올바른 개념을 확립할 수 있다.", "target": "- 머릿속에 구상은 있지만, 비주얼로 표현하는 방법이 막막한 직장인\n- 디자인 툴 숙련 없이 감각적인 이미지, 영상, 음악을 제작하고 싶은 직장인\n- 브랜드 톤앤매너를 유지하며 일관된 콘텐츠를 만들고 싶은 직장인\n- 팀 내 콘텐츠 퀄리티를 높이고, 크리에이티브 방향을 주도하고 싶은 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "인공지능을 위한 텐서플로2 + 케라스 라이브러리 실전 적용", "duration": "7:21:09", "contents": "27", "instructor": "김일한", "summary": "텐서플로우 라이브러리는 가장 많은 커뮤니티와 방대한 논문이 존재 하며 가장 많이 사용하는인공지능 라이브러리이다. 개발환경 설치와 텐서플로우 2의 문법 케라스 라이브러리를 실습중심으로 쉽게 익혀보자.", "goal": "- 파이썬 언어의 인공지능 라이브러리인 텐서플로우 케라스를 활용해 각종 데이터를 예측 및 분류 개발할 수 있는 방법에 대해 학습한다.", "target": "- 현업에서 데이터에 대해 인공지능을 개발하고자 하는 분", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 회사가 원하는 효율적인 AI 활용 - 고품질 데이터 분석 기법과 엑셀 업무 자동화", "duration": "7:21:27", "contents": "12", "instructor": "최정아", "summary": "브랜드 콘텐츠는 이제 ‘감’이 아니라 ‘AI 기반 설계 능력’에서 완성된다.", "goal": "- 전문가 수준의 데이터 분석을 AI 구조화 프롬프트 활용으로 쉽게 수행할 수 있다.\n- 사례별 적절한 분석 기법을 선택하여 알맞은 분석 결과를 도출할 수 있다.\n- 숨겨진 데이터 인사이트 발굴과 전략 보고서 작성을 AI를 활용하여 수행할 수 있다.", "target": "- 파이썬 활용 없이 쉽게 데이터 기반 의사결정을 하고 싶은 기획자\n- 고객 세분화, 판매 예측 등 전략 수립에 데이터 활용이 필요한 영업 담당자\n- 데이터 기반 보고서 작성을 효율화하고 싶은 전략 담당자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "200% 활용하는 챗 GPT 질문법", "duration": "7:24:57", "contents": "16", "instructor": "김대중", "summary": "<200% 활용하는 챗 GPT 질문법>은 ‘챗 GPT에게 어떻게 질문해야 원하는 답을 얻을 수 있는가?’에 초점을 맞춘 실습형 콘텐츠입니다. \n본 과정에서는 챗 GPT의 무료 버전을 기본으로 활용하고 있으며, 내용에 따라 일부 유료 버전도 함께 실습함으로써 학습자의 활용 환경에 맞춘 실습을 진행하고 있습니다.\n본 과정을 통해 학습자는 챗 GPT에 좋은 질문을 하는 방법을 터득하고, 다양한 확장 프로그램을 실제로 사용하여 업무 활용성을 높일 수 있습니다.\n", "goal": "- 챗 GPT에게 어떻게 질문하는 것이 효과적인지를 이해하고, 다양한 질문법을 활용할 수 있다.\n- 챗 GPT의 다양한 확장 프로그램을 설치하고 사용할 수 있다.\n- 모바일에 챗 GPT 앱을 설치하고 사용할 수 있다.", "target": "- 챗 GPT를 효과적으로 사용하고자 하는 자 \n- 챗 GPT에 관심이 있는 자", "level": "Seed"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[슬기로운 통계생활] R로 배우는 기초통계학 part1", "duration": "7:28:34", "contents": "10", "instructor": "이삭", "summary": "R을 사용한 기초 통계 과정! \n통계의 기초지식을 학습하고, 데이터가 주어졌을때 통계적으로 시각화하는 방법을 학습합니다.\n또한 데이터의 특성을 나타내는 통계 지표들을 학습하면서 R의 기능을 자연스럽게 익힐 수 있는 강의 입니다.", "goal": "- 주어진 자료의 특성을 잘 반영하는 통계적 시각화 과정을 R에서 구현 할 수 있다.\n- 통계 지표들의 특성을 이해하고, 분포의 특성에 따른 통계 지표 값의 행동 패턴을 이해할 수 있다.", "target": "- 통계를 처음 배우는 분들\n- 데이터 분석을 처음 공부하는 분들\n- R을 처음 배우는 분들", "level": "Seed"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "딥러닝과 데이터분석을 위한 기초수학 (w.파이썬)", "duration": "7:44:03", "contents": "16", "instructor": "이병준", "summary": "데이터 과학의 기본이 되는 과학적 모델링을 이해하기 위한 기초적인 수학적 지식을 학습합니다. 수학적 지식의 정확한 이해와 코딩능력 함양을 위한 다양한 예제 및 연습문제를 파이썬으로 실습해봅니다. ", "goal": "데이터 과학의 기본이 되는 과학적 모델링을 이해하기 위한 기초적인 수학적 지식 학습을 학습하고, 수학적 지식의 정확한 이해 및 코딩 능력 함양을 위한 다양한 예제 및 연습문제를 파이썬을 통해 실습해 볼 수 있다.", "target": "데이터 분석을 위한 기초적인 수학 개념 함양을 원하는 학습자\n(프로그래밍 경험 유무 관련X)", "level": "고급"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "구글 애널리틱스 GA4 실무 마스터 클래스", "duration": "7:44:49", "contents": "9", "instructor": "김진", "summary": "본 과정에서는 GA4의 기본적인 계정 생성 방법, 추적코드 삽입, GA4의 User Interface와 같은 기초 내용부터 심화분석을 가능하게 하는 목표 설정 방법까지 학습할 수 있습니다.\n\n구글 애널리틱스 GA4 실무 마스터 클래스는 지금 바로 실무에 적용할 수 있도록 핵심 내용만 담은 실습형 콘텐츠로 구성하였습니다.", "goal": "-  최신 버전 GA4 기반의 기본 기능과 세팅 방법을 익힐 수 있다.\n- GA4의 다양한 이벤트 추적 방식에 대해 살펴볼 수 있다.\n- 다양한 탐색적 데이터 분석으로 고객에 대한 이해를 높일 수 있다.  ", "target": "- 고객 데이터 기반 성과 분석이 필요한 마케터/기획자\n- 고객 데이터 수집 및 분석 툴, GA4를 처음 도입하는 리더", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] R로 배우는 데이터 분석 첫 걸음, 통계부터 데이터 마이닝 실습까지", "duration": "7:44:57", "contents": "12", "instructor": "김진숙", "summary": "R로 방대한 양의 데이터분석은 물론 데이터 시각화까지 한번에!", "goal": "1. 대량의 데이터셋을 처리할 수 있는 R의 여러 패키지를 실습하며 데이터를 분석, 시각화할 수 있다. \n2. 거대한 데이터도 이해하기 쉽게 시각화할 수 있다. \n3. 방대한 데이터 베이스에서 의미있는 정보를 추출하는 데이터 마이닝 기법을 익힐 수 있다. ", "target": "- 방대한 양의 데이터를 전문적이고 심층적으로 분석하고 싶은 직장인 \n- R을 활용하여 데이터를 분석하고 R 시각화를 통해 인사이트를 발견하고 싶은 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 커서 AI로 시작하는 바이브 코딩과 MCP", "duration": "7:48:23", "contents": "12", "instructor": "김진", "summary": "이제는 코딩 알못 기획자도 AI 비서 활용해서 리듬 타고 코딩한다?\n자연어로 명령하면 AI가 실행하는 바이브 코딩 시대, 요즘 가장 핫한 바이브 코딩 핵심 툴인 ‘커서(Cursor) AI’를 활용한 서비스 개발과 MCP 구축에 대해 알아본다. \n본 과정에서는  개발 입문자, 현업 개발자, 코딩 지식이 없는 서비스 기획자, 데이터 마케팅 담당자 등을 대상으로 바이브 코딩의 근간을 이해할 수 있도록 하며 MCP 연동을 통해 다양한 작업을 하는 방법을 안내한다.", "goal": "- 생성형 인공지능의 작동 원리와 프롬프트 기초를 다지며 바이브 코딩의 근간을 이해할 수 있다.\n- MCP 연동을 통해 기존 인공지능의 한계를 넘어 다양한 작업을 할 수 있다.\n- 유저 롤스와 프로젝트 롤스를 활용해서 요구 사항과 팀 규칙을 프롬프트에 녹여 인공지능 출력을 일관되게 관리할 수 있다.", "target": "- 웹 서비스 완주 경험이 필요한 개발 입문자\n- 최신 래그 MCP 프롬프트 기반 개발 룰 적용 감각이 필요한 현업 개발자\n- 코딩 지식 없이 아이디어를 즉시 MVP로 끌어올리고 싶은 서비스 기획자 \n- 자연어 기반 마케팅 자동화 서비스 구축이 필요한 데이터 마케팅 담당자", "level": "고급"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "업무에 바로 써먹는 데이터 마인드(데이터 리터러시) 향상 방법", "duration": "7:48:43", "contents": "13", "instructor": "구자룡", "summary": "기획자, 마케터가 데이터 분석가보다 더 나은 의사결정을 하는 법!", "goal": "1. 문제해결을 위한 데이터 수집, 분석 방법을 파악할 수 있다.\n2. 트렌드, 텍스트 데이터, A/B테스트, 시각화 데이터 분석방법을 파악할 수 있다.\n3. 데이터를 분석하여 문제를 해결하고, 전략을 수립할 수 있다.", "target": "1. 데이터 기반 의사결정이 필요한 실무자 및 관리자\n2. 시장조사, 트렌드 조사가 필요한 실무자 및 관리자\n3. 사업전략 수립을 위해 데이터 활용이 필요한 기획자, 마케터", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "Chat GPT, DALL-E로 배우는 생성형 AI의 핵심원리", "duration": "7:48:52", "contents": "16", "instructor": "유재명", "summary": "바야흐로 인공지능의 시대, 나만의 인공지능을 만들 수 있을까? 2007년 아이폰의 등장 이후 4차 산업혁명을 또다시 뒤흔든 OpenAI사의 Chat GPT와  DALL=E. 국내외 굴지의 기업들이 이 기술에 주목해 너도 나도 뛰어들고 있습니다. ", "goal": "- 자연어 처리/컴퓨터 비전의 개념과 다양한 응용 분야를 이해할 수 있다,\n- GPT모델을 통한 텍스트 생성/CLIP모델, 콜랩, 허깅페이스 등을 통해 이미지 생성을 할 수 있다.", "target": "- 생성형 인공지능(Chat GPT, Dall-E)의 원리에 대해 관심있는 구성원", "level": "심화"}, {"cat1": "경영일반", "cat2": "경영혁신", "title": "AI가 말했다 그건 네가 안 해도 돼 - 반복 업무 대신 AI가 일하는 업무 자동화 입문", "duration": "7:49:22", "contents": "16", "instructor": "이대성/장재현", "summary": "그냥 시켜. 일은 n8n이 하니까 - 자동화 툴로 하루 1시간 아끼는 실전 워크플로우\n엑셀, PPT, 구글시트만 쓸 줄 알아도, AI가 여러분 대신 데이터 분석도, 문서 작성도, 자동화도 해드립니다.\n3시간 회의를 30초로 요약하고, 메일 답장도 AI가 자동으로 대신 보내고, 회사 전 문서를 자동 정리하는 보고서 로봇까지! 16차시 동안 실제 업무에 바로 쓸 수 있는 자동화 프로젝트를 직접 기획·설계·구현합니다. AI 도구 활용법 + 프롬프트 엔지니어링 + 실무 자동화 감각을 한 번에 챙겨보세요.", "goal": "코딩 없이 AI 도구를 활용해 데이터 수집부터 분석·시각화·자동화까지 실무에 적용할 수 있는 역량을 기릅니다.", "target": "AX시대에 일하는 모든 구성원", "level": "고급"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 엑셀을 활용한 데이터 시각화 실무", "duration": "7:49:45", "contents": "11", "instructor": "최정아", "summary": "쉽게 접근할 수 있는 엑셀을 활용한 데이터 시각화", "goal": "1. 셀과 표의 기본 서식을 익히고, 조건부 서식을 활용한 다양한 서식 시각화할 수 있다.\n2. 활용도 높은 비즈니스 데이터 시각화 차트(중첩 막대 그래프, 덤벨 차트, 이격 차트, 간트 차트)를 만들 수 있다.\n3. 다중 시각적 개체를 포함하는 인터랙티브 대시보드를 구성해 봄으로써 엑셀의 심화 시각화 기술을 터득할 수 있다. ", "target": "- 엑셀 기본 서식을 배우고 싶은 분들\n- 정확한 수치를 바탕으로 데이터의 핵심을 전달하고 싶은 분들\n- 데이터를 일목요연하게 정리하고 싶은 분들", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 미드저니로 생성하고 포토샵으로 완성하는 디자인 마스터 클래스", "duration": "8:02:26", "contents": "30", "instructor": "양솔지", "summary": "AI 디자이너 필수 도구 Midjourney와 Photoshop을 한번에 끝내는 과정!\n다양한 미드저니 스타일 활용부터 포토샵 보정까지, 디자이너에게 배우는 실무 AI 디자인의 모든 것!", "goal": "- AI 도구를 활용하여 작업 속도와 완성도를 한 번에 잡는 독보적인 디자인을 수행할 수 있다.\n- 이커머스, 1인 사이트, SNS에서 마음을 사로잡는 상품 이미지를 제작할 수 있다.\n- 어디에 사용할 어떤 이미지라도 미드저니를 활용하여 자유자재로 만들고 포토샵으로 간단히 편집할 수 있다.\n- 햄버거 광고, 패션 룩북 등의 사례를 통해 AI 디자이너의 일하는 방법을 이해할 수 있다.", "target": "- 더 나은 디자인을 더 쉽게 작업하는 방법에 관심 있는 디자이너 및 크리에이터\n- 미드저니로 생성한 이미지가 실제 업무에 사용하기에 약간 아쉬웠던 분\n- 여러 가지 이유로 포기했던 디자인의 꿈을 AI 도구를 통해 이루고 싶은 모든 분\n- 외주 디자이너보다 저렴한 가격으로 더 나은 결과물을 만들고 싶은 창업자/경영자", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] 회사가 원하는 효율적인 AI 활용 - 회의 준비부터 기록까지", "duration": "8:05:13", "contents": "14", "instructor": "최정아", "summary": "반복되는 문서 작업과 비효율적인 회의 준비는 이제 그만! ChatGPT로 회의 준비부터 회의록 작성까지 쉽고 빠르게!\n\n회의로 시작해서 회의로 끝나는 하루 일과. 일잘러는 이미 회의 준비도 회의록 작성과 공유도 ChatGPT로 하고 있다는 사실!\n\n본 과정을 통해 생성형AI와 관련하여 꼭! 알아야 할 기본 개념을 이해하고, 실전 사례를 바탕으로 한 실습으로 보다 효율적이고 건설적인 회의를 위한 ChatGPT 활용법을 습득할 수 있다.", "goal": "- ChatGPT를 활용하여 회의 준비부터 회의록 작성까지의 전 과정의 효율성을 높일 수 있다.\n- ChatGPT를 활용하여 데이터 분석 및 시각화를 수행할 수 있다.\n- 단순 반복적인 업무를 줄이는 워크플로우를 구축할 수 있다.\n- 구글 워크스페이스와 VBA 등 AI를 보조하는 도구를 활용하여 업무 생산성을 극대화할 수 있다.", "target": "- 회의 준비부터 회의록 작성까지의 효율성을 높이고 싶은 직장인\n- 데이터 분석과 시각화를 효율적으로 수행하고 싶은 직장인\n- 반복된 업무의 자동화가 필요한 직장인\n- AI 활용을 통해 업무 생산성을 극대화하고자 하는 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 비즈니스 애널리틱스, 데이터 기반 실적 개선 프로젝트 마스터 클래스", "duration": "8:14:59", "contents": "11", "instructor": "최정아", "summary": "실습을 통해 데이터 기반의 실적 개선 프로젝트 마스터하기!", "goal": "1. 데이터의 전체적인 흐름을 파악하기 위한 분석적 사고를 함양할 수 있다. \n2. 확률분포를 활용한 비즈니스 성과 향상 전략을 세울 수 있다. \n3. 마소 전자마트의 비즈니스 상황을 통한 비즈니스 의사결정 속 데이터 분석의 역할을 탐구할 수 있다. ", "target": "- 여러 비즈니스 문제를 데이터로 해결해보고 싶은 직장인\n- 엑셀을 활용한 비즈니스 데이터 분석을 진행하고 싶은 직장인\n- 최적의 데이터 표현으로 설득력을 강화하고 싶은 직장인", "level": "심화"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "디지털 Skill-up 과정(파이썬 프로젝트)", "duration": "8:15:08", "contents": "10", "instructor": "권오성", "summary": "Jupiter Notebook프로그램을 활용하여 Python의 빠른 개발 속도, 높은 생산성의 특징을 이해하여, 장점을 살린 업무에 적용할 만한 프로그램을 개발할 수 있도록 구성했다.", "goal": "1. Jupiter Notebook을 설치하여 Python 언어 소스를 입력할 수 있다.\n2. Python의 풍부한 라이브러리를 활용하여 업무에 적용할 수 있다.\n3. Python을 통해 데이터 구조와 알고리즘을 분석하고 다룰 수 있다.\n4. 계산기(DTI계산기, DSR계산기 등)와 고객관리 프로그램을 만들 수 있다.", "target": "- 코딩의 고급을 익히고 싶은 전 임직원\n- 파이썬을 통해 프로젝트를 진행하고 싶은 전 임직원", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "Orange로 하는 노코드 AI 데이터 분석(4) 분류 머신러닝 분석", "duration": "8:29:18", "contents": "16", "instructor": "최정아", "summary": "코딩 없는 AI 데이터 사이언스, Orange3! 분류 머신러닝 분석 모델 구축부터 적용까지 쉽고 빠르게\n\nOrange3는 코딩 없이 드래그 앤드 드롭 기능으로 누구나 쉽게 데이터 분석을 할 수 있는 머신 러닝 도구이다. 분류 머신러닝 분석, 아직도 파이썬 밖에 모른다면 Orange3를 활용해보자.\n\n본 과정을 통해 복잡한 프로그래밍의 벽을 허물고, 머신러닝 기반 데이터 분석을 자신 있게 수행할 수 있는 심화 데이터 사이언티스트로 거듭나 보자.", "goal": "- Orange3을 활용하여 분류 머신러닝 모델을 구축할 수 있다.\n- 다양한 분류 모델의 활용과 평가 지표의 적용 방법을 설명할 수 있다. \n- 분류 머신러닝 모델 데이터 분석 과정의 유의점을 설명할 수 있다.", "target": "- 노코드 프로그램으로 분류 머신러닝 분석을 간단히 수행하고 싶은 직장인\n- 파이썬보다 더 간단한 심화 분석 도구 사용을 원하는 직장인\n- 데이터 분석 역량을 향상하여 업무 효율성을 향상하고자 하는 직장인", "level": "고급"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] New! ChatGPT 활용법 완벽 가이드", "duration": "8:41:31", "contents": "20", "instructor": "김진", "summary": "ChatGPT의 최신 버전과 핵심기술(4o, o1 mini, o1 등)의 성능을 모두 활용하여, 누구보다 빠른 실무 적용이 가능하도록 누구보다 빠르게 달리는 인공지능의 변화와 함께할 수 있도록 2025년 기준 가장 최신의, 남들보다 앞서갈 수 있게 더 실무와 결합된 완성형 커리큘럼을 제시합니다.  \n본 과정에서는 AI 언어 모델과의 소통을 가장 실무적합하게 활용하기 위하여 효과적으로 프롬프트를 설계하는 전략 이론에서부터, 기법 적용 여부에 따라 결과물 차이가 어떤지 직접 비교할 수 있는 실습 사례까지 모두 다루고 있습니다.", "goal": "- 맥락과 의도를 이해시키는 구조화/세분화된 프롬프트 설계를 통해 AI를 효과적으로 활용할 수 있다.\n- ChatGPT의 커스텀 설정, GPT Builder, Vision 등 다양한 기능을 학습할 수 있다.\n- AI를 SWOT 분석, 상품 홍보 기획 등 실무에서 활용할 수 있다.", "target": "- AI와 효과적으로 소통하는 기술을 배우고 싶은 분 \n- 생성형 AI 도구를 활용해 생산성을 높이고자 하는 비즈니스 실무자\n- 자신의 커리어에서 차별점으로 내세울 수 있는 업무스킬을 키우고자 하는 모든 직장인", "level": "Seed"}, {"cat1": "IT", "cat2": "IT 프로그래밍", "title": "[DS Class] 파이썬 시작하기, 함수와 주요 개념", "duration": "8:43:03", "contents": "13", "instructor": "김진숙", "summary": "복잡해 보이는 파이썬 설치부터 기본개념, 자료구조를 파악하여 본격적으로 파이썬 시작해보자.", "goal": "1. 파이썬의 기초 문법과 함수, 자료 구조를 이해할 수 있다.\n2. Beautiful Soup과 Selenium을 활용하여 웹에서 데이터를 쉽고 빠르게 가져오고 반복 업무에서 탈출할 수 있다.\n3. 텍스트 마이닝한 결과를 워드 클라우드로 시각화해볼 수 있다. ", "target": "- 파이썬의 기초부터 차근차근 학습하고 싶은 분\n- 파이썬의 기초 문법과 구조를 이해하여 객체 지향 프로그래밍에 대한 이해를 높이고 싶은 분\n- 데이터를 쉽고 빠르게 수집하여(크롤링) 업무 자동화를 실현하고 싶은 분", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 디지털 리터러시, 디지털 기술을 이해하고 실무에 적용하는 기술", "duration": "9:07:19", "contents": "12", "instructor": "김진/최정아", "summary": "디지털 리터러시로 디지털이 말하는 바를 ‘제대로’ 읽고 써보자!", "goal": "- 데이터의 개념과 종류부터 지식을 차근차근 쌓아가며 디지털 구축 환경과 컴퓨터, 네트워크에 대해 이해할 수 있다.\n- 클라우드 PC와 로컬 PC의 개념부터 특징까지 이해하고 설명할 수 있다.\n- 알고리즘의 설계, 적절한 상황 판단과 모델링, 인공지능의 원리와 기계를 똑똑하게 만드는 머신러닝 원리를 이해할 수 있다.", "target": "- 디지털 환경을 쉽고 빠르게 이해하고 싶은 직장인\n- 디지털 환경 속에서의 지혜로운 관계 형성과 효율적인 의사소통을 하고 싶은 직장인\n- 논리적 사고력을 기반으로 실무에 디지털 업무를 쉽게 접목해 나가고 싶은 직장인", "level": "Seed"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 통계 분석 마스터 클래스 Part.1", "duration": "9:14:51", "contents": "16", "instructor": "김진/최정아", "summary": "통계에 장벽을 느끼는 직장인을 위한 통계 입문 강의!", "goal": "1. 통계에 대한 기본적인 이해를 학습하고 데이터 분석의 결과에 대해 통계적 시각을 가지고 바라볼 수 있다.\n2. 통계 지식을 기반으로 각종 통계 자료에 대한 데이터 분석과 데이터 신뢰 여부에 대해 판단할 수 있다.", "target": "- 분석 기반의 업무를 하고 있는 직장인\n- 통계 분석에 대한 전반적인 이해가 필요한 직장인", "level": "Seed"}, {"cat1": "AI", "cat2": "", "title": "[AI Class] ChatGPT를 활용한 자료 분석과 딥리서치 보고서", "duration": "9:18:26", "contents": "14", "instructor": "최정아", "summary": "AI를 활용한 리서치 자동화로 업무 중 조사 시간을 줄이고, 깊이 있는 전략을 수립하라! 단계적 추론, 후속 질문, 시점 기반 필터링 등 정교한 리서치 수행 능력을 갖춘 ChatGPT의  ‘Deep Research(심층 리서치)’ 기능 본 과정을 통해 GPT 기반 생성형 AI 및 Deep Research 툴을 활용하여, 정형/비정형 데이터 기반의 신속한 자료 분석 및 전략 수립 역량을 강화할 수 있다.", "goal": "- 프롬포트만으로 자료 조사부터 정리까지 완성하는 리서치 스킬을 확보 할 수 있다.\n- 다양한 데이터를 기반으로 기획에 바로 활용할 수 있는 분석력을 얻을 수 있다.\n- 폭넓은 업무 과정을 AI로 자동화 하여 업무 속도와 완성도 모두 업그레이드 할 수 있다.", "target": "- 데이터 기반 의사결정의 모든 과정을 AI와 함께 효율적으로 수행하고자 하는 직장인\n- 시장 조사와 고객 분석 업무를 효과적으로 수행하고자 하는 직장인\n- AI의 활용을 통해 보고서와 자료 조사에 소요되는 시간을 줄이고 싶은 실무자", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 비즈니스 애널리틱스, 비즈니스 현황 분석 실무 마스터 클래스", "duration": "9:47:12", "contents": "11", "instructor": "최정아", "summary": "현실적인 데이터로 비즈니스 현황 분석 실무 마스터하기!", "goal": "1. 현실 데이터 세트를 다각도로 분석하고 판단할 수 있다. \n2. 데이터 취합과 전처리 탐색을 통한 비즈니스 현황을 파악할 수 있다. \n3. CAGR, 추세선, 회귀분석 함수를 활용한 비즈니스 미래 예측 방법에 대해 학습할 수 있다.", "target": "- 데이터를 분석해야 할지 막막한 직장인\n- 여러 비즈니스 문제를 데이터로 해결해보고 싶은 직장인\n- 엑셀을 활용한 비즈니스 데이터 분석을 진행하고 싶은 직장인", "level": "심화"}, {"cat1": "AI", "cat2": "", "title": "Orange로 하는 노코드 AI 데이터 분석(3) 예측 머신러닝 분석", "duration": "9:53:30", "contents": "19", "instructor": "최정아", "summary": "코딩 없는 AI 데이터 사이언스, Orange3! 예측 머신러닝 분석 모델 구축부터 적용까지 쉽고 빠르게\n\nOrange3는 코딩 없이 드래그 앤드 드롭 기능으로 누구나 쉽게 데이터 분석을 할 수 있는 머신 러닝 도구이다. 예측 머신러닝 분석, 아직도 파이썬 밖에 모른다면 Orange3를 활용해보자.\n\n본 과정을 통해 복잡한 프로그래밍의 벽을 허물고, 머신러닝 기반 데이터 분석을 자신 있게 수행할 수 있는 심화 데이터 사이언티스트로 거듭나 보자.", "goal": "- Orange3을 활용하여 예측 머신러닝 모델을 구축할 수 있다.\n- 머신러닝 모델 평가 및 최적화 기법을 설명할 수 있다.\n- 회귀 머신러닝 모델을 이해하고, 업무에 적용할 수 있다.", "target": "- 노코드 프로그램으로 예측 머신러닝 분석을 간단히 수행하고 싶은 직장인\n- 파이썬보다 더 간단한 심화 분석 도구 사용을 원하는 직장인\n- 데이터 분석 역량을 향상하여 업무 효율성을 향상하고자 하는 직장인", "level": "고급"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "R프로그램 이용한 데이터 분석과 머신러닝 기본개념 배우기", "duration": "9:56:16", "contents": "21", "instructor": "정훈희", "summary": "[SW교육특강]R프로그램 이용한 데이터분석과 머신러닝기본개념 배우기 과정을 수강합니다.", "goal": " - R프로그램을 이용한 데이터분석 방법에 대해 학습할 수 있다.", "target": "- R프로그램을 사용하고자 하는 자", "level": "심화"}, {"cat1": "IT", "cat2": "데이터 분석", "title": "[DS Class] 데이터 사이언스로 내리는 경영 의사결정 마스터 클래스", "duration": "9:59:47", "contents": "16", "instructor": "김진", "summary": "비즈니스 목표에 따라 최적의 데이터 표현하기!", "goal": "- 실무 데이터셋 앞에서 헤매지 않고 데이터 전처리, 분석하고 시각화할 수 있다. \n- 현실에서 마주하는 다양한 비즈니스 문제를 데이터 분석을 기반으로 해결하고 전략적 의사결정을 내릴 수 있다. ", "target": "- 데이터를 바탕으로 설득력을 강화하고 싶은 직장인\n- 실무 의사결정에 전략적 통찰력을 갖고 싶은 직장인", "level": "심화"}];
+
+const state = {
+  cat1: new Set(),
+  cat2: new Set(),
+  level: new Set(),
+  search: '',
+  sortKey: null,
+  sortDir: 'asc',
+  expanded: new Set()
+};
+
+const LEVEL_ORDER = ['Seed', '심화', '고급'];
+const LEVEL_CLASS = {'Seed':'level-seed', '심화':'level-deep', '고급':'level-advanced'};
+const BADGE_CLASS = {'Seed':'badge-seed', '심화':'badge-deep', '고급':'badge-advanced'};
+
+const LEVEL_INFO = {
+  'Seed': {
+    cls: 'seed',
+    def: 'AI·데이터 개념 이해, 리터러시, 기본 도구 사용, 질문법, 트렌드 이해, AI 시대 변화, 윤리, 리터러시 등 AI/AX 기초 이해와 기본 활용을 위한 입문 단계',
+    crit: 'AI 개념 이해, 기본 기능 체험, 기본 프롬프트, 전 구성원 대상 리터러시, AI 윤리, AI 트렌드, ChatGPT 기본 기능, 단일 AI 도구 사용법'
+  },
+  '심화': {
+    cls: 'deep',
+    def: '업무 생산성 향상, 직무별 적용, 프롬프트 엔지니어링, 노코드 분석, Copilot·ChatGPT·디자인 AI 등 실무 활용 단계. 업무·직무 맥락에 AI/데이터 도구를 적용해 산출물을 만드는 실무 적용 단계',
+    crit: 'ChatGPT/Claude/Gemini/Copilot, Figma/Midjourney, 노코드 AI 데이터분석 실무, 프롬프트 엔지니어링, 엑셀·PPT·리서치·콘텐츠 제작, 데이터 분석/시각화, 직무별 적용, AI 기반 기획·마케팅·CS·디자인·프레젠테이션, Python·SQL·크롤링·No-code 자동화 등 실무 도구 활용과 산출물 제작'
+  },
+  '고급': {
+    cls: 'advanced',
+    def: 'AI/데이터를 활용해 워크플로우·에이전트·모델·자동화 구조를 설계·구현하는 프로젝트/고도화 단계. AI 모델·데이터분석·개발·RAG·AI 코딩 등 기술 구현이나 고난도 분석을 다루는 단계',
+    crit: 'AI 에이전트, LangChain/RAG, Cursor AI 웹서비스 제작, 머신러닝/딥러닝, TensorFlow/Keras, 예측/분류/군집 분석, MCP, RAG/LLM, n8n 워크플로우, 바이브코딩, 챗봇 구축, 고급 데이터사이언스, 자동화 설계, 에이전트 구축, 머신러닝/텍스트분석, 다단계 프로젝트 구현, 업무 프로세스 개선'
+  }
+};
+
+function uniq(arr) { return [...new Set(arr)].filter(v => v && v.length); }
+
+function buildChips() {
+  // Build cat1 chips (with item counts)
+  const cat1Counts = new Map();
+  DATA.forEach(d => {
+    if (!d.cat1) return;
+    cat1Counts.set(d.cat1, (cat1Counts.get(d.cat1) || 0) + 1);
+  });
+  const cat1Vals = [...cat1Counts.entries()]
+    .map(([v, n]) => ({ value: v, count: n }))
+    .sort((a, b) => a.value.localeCompare(b.value, 'ko'));
+
+  // Build cat2 chips (with item counts)
+  const cat2Counts = new Map();
+  DATA.forEach(d => {
+    if (!d.cat2) return;
+    cat2Counts.set(d.cat2, (cat2Counts.get(d.cat2) || 0) + 1);
+  });
+  const cat2Vals = [...cat2Counts.entries()]
+    .map(([v, n]) => ({ value: v, count: n }))
+    .sort((a, b) => a.value.localeCompare(b.value, 'ko'));
+
+  renderCatChips('filter-cat1', cat1Vals, state.cat1, 'cat1');
+  renderCatChips('filter-cat2', cat2Vals, state.cat2, 'cat2');
+  renderLevelChips('filter-level', LEVEL_ORDER);
+}
+
+function renderCatChips(containerId, values, stateSet, kind) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  values.forEach(p => {
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.dataset.value = p.value;
+    chip.dataset.kind = kind;
+    chip.innerHTML = escapeHtml(p.value) + ' <span class="chip-count">' + p.count + '</span>';
+    chip.addEventListener('click', () => {
+      if (chip.classList.contains('disabled')) return;
+      if (stateSet.has(p.value)) stateSet.delete(p.value);
+      else stateSet.add(p.value);
+      chip.classList.toggle('active');
+      updateCat2Dimming();
+      render();
+    });
+    c.appendChild(chip);
+  });
+}
+
+// Dim cat2 chips that have no items under currently selected cat1 (and vice versa)
+function updateCat2Dimming() {
+  document.querySelectorAll('#filter-cat2 .chip').forEach(chip => {
+    const v = chip.dataset.value;
+    if (state.cat1.size === 0) {
+      chip.classList.remove('disabled');
+      return;
+    }
+    const hasMatch = DATA.some(d => state.cat1.has(d.cat1) && d.cat2 === v);
+    if (hasMatch) chip.classList.remove('disabled');
+    else {
+      chip.classList.add('disabled');
+      // Also unselect it if it was selected
+      if (state.cat2.has(v)) {
+        state.cat2.delete(v);
+        chip.classList.remove('active');
+      }
+    }
+  });
+  document.querySelectorAll('#filter-cat1 .chip').forEach(chip => {
+    const v = chip.dataset.value;
+    if (state.cat2.size === 0) {
+      chip.classList.remove('disabled');
+      return;
+    }
+    const hasMatch = DATA.some(d => state.cat2.has(d.cat2) && d.cat1 === v);
+    if (hasMatch) chip.classList.remove('disabled');
+    else {
+      chip.classList.add('disabled');
+      if (state.cat1.has(v)) {
+        state.cat1.delete(v);
+        chip.classList.remove('active');
+      }
+    }
+  });
+}
+
+function renderLevelChips(containerId, values) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  values.forEach(v => {
+    const chip = document.createElement('span');
+    chip.className = 'chip ' + (LEVEL_CLASS[v] || '');
+    chip.dataset.value = v;
+
+    const text = document.createElement('span');
+    text.textContent = v;
+    chip.appendChild(text);
+
+    const info = document.createElement('span');
+    info.className = 'info-icon';
+    info.textContent = 'i';
+    info.title = v + ' 설명 보기';
+    chip.appendChild(info);
+
+    // Click anywhere on chip toggles filter; ⓘ icon shows the level guide instead
+    chip.addEventListener('click', e => {
+      if (e.target === info || info.contains(e.target)) {
+        e.stopPropagation();
+        togglePopover(chip, v);
+        return;
+      }
+      e.stopPropagation();
+      closePopover();
+      if (state.level.has(v)) state.level.delete(v);
+      else state.level.add(v);
+      chip.classList.toggle('active');
+      render();
+    });
+
+    c.appendChild(chip);
+  });
+}
+
+let currentPopover = null;
+function closePopover() {
+  if (currentPopover) {
+    currentPopover.remove();
+    currentPopover = null;
+  }
+}
+function togglePopover(anchor, level) {
+  if (currentPopover && currentPopover.dataset.level === level) {
+    closePopover();
+    return;
+  }
+  closePopover();
+  const info = LEVEL_INFO[level];
+  if (!info) return;
+  const pop = document.createElement('div');
+  pop.className = 'popover';
+  pop.dataset.level = level;
+  pop.innerHTML =
+    '<div class="pop-head">' +
+      '<span class="pop-title ' + info.cls + '">' + level + ' 레벨(Level)</span>' +
+      '<span class="pop-close" aria-label="닫기">×</span>' +
+    '</div>' +
+    '<h5>정의</h5><p>' + escapeHtml(info.def) + '</p>' +
+    '<h5>주요 판단 기준</h5><p>' + escapeHtml(info.crit) + '</p>';
+  anchor.appendChild(pop);
+  currentPopover = pop;
+  // Flip horizontally if it overflows the viewport
+  const rect = pop.getBoundingClientRect();
+  if (rect.right > window.innerWidth - 16) {
+    pop.classList.add('flip-right');
+  }
+  pop.querySelector('.pop-close').addEventListener('click', e => {
+    e.stopPropagation();
+    closePopover();
+  });
+}
+document.addEventListener('click', e => {
+  if (!currentPopover) return;
+  if (!currentPopover.contains(e.target) && !e.target.classList.contains('info-icon')) {
+    closePopover();
+  }
+});
+
+function applyFilters() {
+  const q = state.search.trim().toLowerCase();
+  let rows = DATA.filter(d => {
+    if (state.cat1.size && !state.cat1.has(d.cat1)) return false;
+    if (state.cat2.size && !state.cat2.has(d.cat2)) return false;
+    if (state.level.size && !state.level.has(d.level)) return false;
+    if (q) {
+      const hay = (d.title + ' ' + d.instructor + ' ' + d.summary + ' ' + d.goal + ' ' + d.target).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  if (state.sortKey) {
+    const k = state.sortKey, dir = state.sortDir === 'asc' ? 1 : -1;
+    rows = [...rows].sort((a, b) => {
+      let va = a[k] || '', vb = b[k] || '';
+      if (k === 'contents') { va = parseInt(va) || 0; vb = parseInt(vb) || 0; }
+      else if (k === 'duration') { va = durToSec(va); vb = durToSec(vb); }
+      else if (k === 'level') { va = LEVEL_ORDER.indexOf(va); vb = LEVEL_ORDER.indexOf(vb); }
+      else { va = String(va); vb = String(vb); }
+      if (va < vb) return -1 * dir;
+      if (va > vb) return 1 * dir;
+      return 0;
+    });
+  }
+  return rows;
+}
+
+function durToSec(s) {
+  if (!s) return 0;
+  const p = s.split(':').map(n => parseInt(n) || 0);
+  if (p.length === 3) return p[0]*3600 + p[1]*60 + p[2];
+  if (p.length === 2) return p[0]*60 + p[1];
+  return 0;
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+function highlightSearch(text) {
+  const escaped = escapeHtml(text);
+  const q = (state.search || '').trim();
+  if (!q) return escaped;
+  const reSrc = escapeHtml(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  if (!reSrc) return escaped;
+  try {
+    const re = new RegExp(reSrc, 'gi');
+    return escaped.replace(re, m => '<mark class="hl">' + m + '</mark>');
+  } catch (e) {
+    return escaped;
+  }
+}
+
+function render() {
+  const rows = applyFilters();
+  document.getElementById('total-count').textContent = DATA.length;
+  document.getElementById('filtered-count').textContent = rows.length;
+  const tbody = document.getElementById('data-tbody');
+  tbody.innerHTML = '';
+  if (!rows.length) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td colspan="8" class="empty">조건에 맞는 과정이 없습니다.</td>';
+    tbody.appendChild(tr);
+    return;
+  }
+  rows.forEach((d, i) => {
+    const tr = document.createElement('tr');
+    const isExp = state.expanded.has(d.title);
+    if (isExp) tr.classList.add('expanded');
+    tr.innerHTML =
+      '<td class="col-seq">' + (i + 1) + '</td>' +
+      '<td class="col-cat">' + escapeHtml(d.cat1) + '</td>' +
+      '<td class="col-cat">' + escapeHtml(d.cat2) + '</td>' +
+      '<td class="col-title">' + highlightSearch(d.title) + '</td>' +
+      '<td class="col-num">' + escapeHtml(d.duration) + '</td>' +
+      '<td class="col-num">' + escapeHtml(d.contents) + '</td>' +
+      '<td class="col-inst">' + highlightSearch(d.instructor) + '</td>' +
+      '<td><span class="badge ' + (BADGE_CLASS[d.level] || '') + '">' + escapeHtml(d.level) + '</span></td>';
+    tbody.appendChild(tr);
+
+    const detail = document.createElement('tr');
+    detail.className = 'detail-row' + (isExp ? ' show' : '');
+    detail.innerHTML =
+      '<td colspan="8"><div class="detail-grid">' +
+        '<div class="detail-block"><h4>요약</h4><p>' + highlightSearch(d.summary) + '</p></div>' +
+        '<div class="detail-block"><h4>학습 목표</h4><p>' + highlightSearch(d.goal) + '</p></div>' +
+        '<div class="detail-block"><h4>학습 대상</h4><p>' + highlightSearch(d.target) + '</p></div>' +
+      '</div></td>';
+    tbody.appendChild(detail);
+
+    tr.querySelector('.col-title').addEventListener('click', () => {
+      if (state.expanded.has(d.title)) state.expanded.delete(d.title);
+      else state.expanded.add(d.title);
+      tr.classList.toggle('expanded');
+      detail.classList.toggle('show');
+    });
+  });
+}
+
+document.getElementById('search-input').addEventListener('input', e => {
+  state.search = e.target.value;
+  render();
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  state.cat1.clear(); state.cat2.clear(); state.level.clear();
+  state.search = ''; state.sortKey = null; state.expanded.clear();
+  document.getElementById('search-input').value = '';
+  document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.chip.disabled').forEach(c => c.classList.remove('disabled'));
+  document.querySelectorAll('th.sort-asc, th.sort-desc').forEach(t => {
+    t.classList.remove('sort-asc', 'sort-desc');
+    const ind = t.querySelector('.sort-ind');
+    if (ind) ind.textContent = '▼';
+  });
+  closePopover();
+  render();
+});
+
+document.getElementById('select-all-btn').addEventListener('click', () => {
+  // Select every cat1 and cat2 chip
+  state.cat1.clear();
+  state.cat2.clear();
+  document.querySelectorAll('#filter-cat1 .chip').forEach(chip => {
+    state.cat1.add(chip.dataset.value);
+    chip.classList.add('active');
+    chip.classList.remove('disabled');
+  });
+  document.querySelectorAll('#filter-cat2 .chip').forEach(chip => {
+    state.cat2.add(chip.dataset.value);
+    chip.classList.add('active');
+    chip.classList.remove('disabled');
+  });
+  // Include items with empty cat1/cat2 so "전체 선택" really means all 214
+  state.cat1.add('');
+  state.cat2.add('');
+  closePopover();
+  render();
+});
+
+document.getElementById('print-btn').addEventListener('click', () => window.print());
+
+document.getElementById('export-btn').addEventListener('click', () => {
+  const rows = applyFilters();
+  if (!rows.length) { alert('내려받을 데이터가 없습니다.'); return; }
+  const header = ['순번','카테고리1','카테고리2','과정명','학습시간','콘텐츠수','강사','요약','학습목표','학습대상','레벨(Level)'];
+  const aoa = [header, ...rows.map((d, i) => [i+1, d.cat1, d.cat2, d.title, d.duration, d.contents, d.instructor, d.summary, d.goal, d.target, d.level])];
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = [{wch:6},{wch:12},{wch:14},{wch:50},{wch:11},{wch:9},{wch:18},{wch:60},{wch:50},{wch:40},{wch:8}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'AX Academy 과정');
+  XLSX.writeFile(wb, '스마트러닝_AX_Academy 인증 과정 목록.xlsx');
+});
+
+document.querySelectorAll('th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    if (state.sortKey === key) state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+    else { state.sortKey = key; state.sortDir = 'asc'; }
+    document.querySelectorAll('th[data-sort]').forEach(t => {
+      t.classList.remove('sort-asc', 'sort-desc');
+      const ind = t.querySelector('.sort-ind');
+      if (ind) ind.textContent = '▼';
+    });
+    th.classList.add(state.sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+    const ind = th.querySelector('.sort-ind');
+    if (ind) ind.textContent = state.sortDir === 'asc' ? '▲' : '▼';
+    render();
+  });
+});
+
+buildChips();
+render();
+</script>
+</body>
+</html>
