@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>2026년 3분기 비상교육 북러닝 AX Academy 인정 도서 50선</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    background: #f5f6f8;
+    color: #1f2937;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  header.page-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    color: #fff;
+    padding: 28px 32px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  header.page-header h1 {
+    margin: 0 0 6px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  header.page-header .subtitle { font-size: 13px; opacity: 0.9; }
+  .container { padding: 24px 32px 80px; max-width: 1600px; margin: 0 auto; }
+
+  .panel {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid #e5e7eb;
+  }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: flex-start; }
+  .filter-group { min-width: 220px; }
+  .filter-group.flex-wide { flex: 1; min-width: 320px; }
+  .filter-group label.group-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .filter-group.highlight {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: -12px 0;
+    position: relative;
+  }
+  .filter-group.highlight label.group-label { color: #b91c1c; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 16px;
+    font-size: 12.5px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.12s;
+    color: #374151;
+    white-space: nowrap;
+    position: relative;
+  }
+  .chip:hover { background: #e5e7eb; }
+  .chip.active {
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
+  }
+  .chip-count {
+    display: inline-block;
+    padding: 0 6px;
+    margin-left: 4px;
+    background: rgba(0,0,0,0.08);
+    color: #6b7280;
+    border-radius: 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .chip.active .chip-count {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+  }
+  .chip.level-seed.active { background: #dcfce7; color: #166534; border-color: #86efac; }
+  .chip.level-deep.active { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+  .chip.level-advanced.active { background: #ede9fe; color: #5b21b6; border-color: #c4b5fd; }
+  .chip.level-seed.active .chip-count,
+  .chip.level-deep.active .chip-count,
+  .chip.level-advanced.active .chip-count { background: rgba(0,0,0,0.06); color: inherit; }
+  .chip.level-seed.active .info-icon,
+  .chip.level-deep.active .info-icon,
+  .chip.level-advanced.active .info-icon { background: #fff; color: #1f2937; border-color: rgba(0,0,0,0.15); }
+
+  .chip .info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.6);
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 700;
+    font-style: italic;
+    font-family: Georgia, serif;
+    cursor: pointer;
+    margin-left: 2px;
+    border: 1px solid #d1d5db;
+    line-height: 1;
+  }
+  .chip:not(.active) .info-icon { background: #fff; }
+  .chip.active .info-icon { background: rgba(255,255,255,0.85); color: #1f2937; border-color: rgba(255,255,255,0.7); }
+  .chip .info-icon:hover { background: #fbbf24; color: #1f2937; border-color: #f59e0b; }
+
+  .popover {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    z-index: 50;
+    width: 380px;
+    max-width: calc(100vw - 60px);
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    padding: 14px 16px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #1f2937;
+    white-space: normal;
+    box-sizing: border-box;
+  }
+  .popover.flip-right { left: auto; right: 0; }
+  .popover.flip-right::before { left: auto; right: 18px; }
+  .popover::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    left: 18px;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-left: 1px solid #d1d5db;
+    border-top: 1px solid #d1d5db;
+    transform: rotate(45deg);
+  }
+  .popover .pop-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+  .popover .pop-title { font-weight: 700; font-size: 14px; }
+  .popover .pop-title.seed { color: #166534; }
+  .popover .pop-title.deep { color: #991b1b; }
+  .popover .pop-title.advanced { color: #5b21b6; }
+  .popover .pop-close {
+    cursor: pointer;
+    color: #9ca3af;
+    font-size: 18px;
+    line-height: 1;
+    padding: 2px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .popover .pop-close:hover { background: #f3f4f6; color: #374151; }
+  .popover h5 {
+    margin: 10px 0 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .popover p {
+    margin: 0;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+
+  .search-box-wrap { flex: 1; min-width: 240px; }
+  .search-box-wrap input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+  }
+  .search-box-wrap input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .count-info { font-size: 13px; color: #4b5563; }
+  .count-info strong { color: #111827; font-size: 15px; }
+  .actions { display: flex; gap: 8px; }
+  .btn {
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.12s;
+  }
+  .btn-primary { background: #2563eb; color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-secondary { background: #fff; color: #374151; border-color: #d1d5db; }
+  .btn-secondary:hover { background: #f3f4f6; }
+  .btn-ghost { background: transparent; color: #6b7280; border-color: #e5e7eb; }
+  .btn-ghost:hover { background: #f9fafb; color: #374151; }
+
+  .table-wrap {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid #e5e7eb;
+  }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+  thead th {
+    background: #f9fafb;
+    color: #374151;
+    font-weight: 700;
+    font-size: 12px;
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 2px solid #e5e7eb;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  thead th .sort-ind { color: #9ca3af; margin-left: 4px; font-size: 10px; }
+  thead th.sort-asc .sort-ind, thead th.sort-desc .sort-ind { color: #2563eb; }
+
+  tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+    font-size: 13px;
+  }
+  tbody tr:hover { background: #f9fafb; }
+
+  td.col-no { text-align: center; color: #9ca3af; font-size: 12px; white-space: nowrap; width: 50px; }
+  td.col-title { font-weight: 600; color: #1e3a8a; max-width: 360px; line-height: 1.45; }
+  td.col-title a { color: inherit; text-decoration: none; }
+  td.col-title a:hover { text-decoration: underline; }
+  td.col-author { color: #4b5563; font-size: 12.5px; max-width: 180px; }
+  td.col-pub { color: #6b7280; font-size: 12.5px; white-space: nowrap; }
+  td.col-date { color: #6b7280; font-size: 12.5px; white-space: nowrap; }
+  td.col-link { text-align: center; white-space: nowrap; }
+  td.col-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    color: #1e3a8a;
+    text-decoration: none;
+    font-size: 11.5px;
+    font-weight: 600;
+    transition: all 0.12s;
+  }
+  td.col-link a:hover { background: #e5e7eb; border-color: #9ca3af; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .badge-seed { background: #dcfce7; color: #166534; }
+  .badge-advanced { background: #ede9fe; color: #5b21b6; }
+  .badge-deep { background: #fee2e2; color: #991b1b; }
+
+  .empty { padding: 60px 20px; text-align: center; color: #9ca3af; font-size: 14px; }
+
+  mark.hl {
+    background: #fde68a;
+    color: #92400e;
+    padding: 0 2px;
+    border-radius: 3px;
+    font-weight: 700;
+    box-shadow: 0 0 0 1px #f59e0b inset;
+  }
+
+  @media print {
+    body { background: #fff; }
+    header.page-header { background: #1e3a8a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .panel.filter-panel, .toolbar .actions, .popover { display: none !important; }
+    .container { padding: 16px; max-width: 100%; }
+    .table-wrap { box-shadow: none; border: 1px solid #999; }
+    table { min-width: 0; font-size: 11px; }
+    thead th { position: static; }
+    tbody td { padding: 6px 8px; font-size: 11px; }
+    tr { page-break-inside: avoid; }
+    td.col-title { max-width: none; }
+    td.col-link a { background: transparent; border: none; padding: 0; }
+  }
+</style>
+</head>
+<body>
+<header class="page-header">
+  <h1>2026년 3분기 비상교육 북러닝 AX Academy 인정 도서 50선</h1>
+  <div class="subtitle">레벨·출판연도 필터와 검색으로 도서를 빠르게 찾고, 결과를 엑셀로 내려받거나 인쇄할 수 있습니다.</div>
+</header>
+
+<div class="container">
+
+  <div class="panel filter-panel">
+    <div class="filter-row">
+      <div class="filter-group flex-wide">
+        <label class="group-label">가나다순 (도서명 첫 글자)</label>
+        <div class="chips" id="filter-initial"></div>
+      </div>
+      <div class="filter-group highlight">
+        <label class="group-label">★ 난이도(Level) <span style="font-weight:500;color:#6b7280;font-size:11px;">(ⓘ 클릭 시 설명)</span></label>
+        <div class="chips" id="filter-level"></div>
+      </div>
+      <div class="filter-group search-box-wrap">
+        <label class="group-label">검색 (도서명·저자·출판사·ISBN)</label>
+        <input type="text" id="search-input" placeholder="키워드를 입력하세요…">
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="count-info">전체 <strong id="total-count">0</strong>권 중 <strong id="filtered-count">0</strong>권 표시 중</div>
+    <div class="actions">
+      <button class="btn btn-ghost" id="reset-btn">필터 초기화</button>
+      <button class="btn btn-secondary" id="print-btn">🖨 인쇄</button>
+      <button class="btn btn-primary" id="export-btn">⬇ 엑셀 다운로드</button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th data-sort="no">순번<span class="sort-ind">▼</span></th>
+            <th data-sort="title">도서명<span class="sort-ind">▼</span></th>
+            <th data-sort="author">저자<span class="sort-ind">▼</span></th>
+            <th data-sort="publisher">출판사<span class="sort-ind">▼</span></th>
+            <th data-sort="pubdate">출판일<span class="sort-ind">▼</span></th>
+            <th data-sort="level">난이도(Level)<span class="sort-ind">▼</span></th>
+          </tr>
+        </thead>
+        <tbody id="data-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = [{"no": 1, "title": "박태웅의 AI 강의 2025", "author": "박태웅", "isbn": "9791157847679", "publisher": "한빛비즈", "pubdate": "2024-09-30", "link": "https://product.kyobobook.co.kr/detail/S000214298857", "level": "Seed"}, {"no": 2, "title": "2025 AI 트렌드 100", "author": "Ai100연구소", "isbn": "9791194383314", "publisher": "골든래빗㈜", "pubdate": "2025-06-15", "link": "https://product.kyobobook.co.kr/detail/S000216681173", "level": "Seed"}, {"no": 3, "title": "2026 AI 사용법", "author": "송진혁 외", "isbn": "9791197840081", "publisher": "상상력집단", "pubdate": "2025-12-08", "link": "https://product.kyobobook.co.kr/detail/S000218880549", "level": "Seed"}, {"no": 4, "title": "AI 리터러시 교육 어떻게 할 것인가", "author": "권영부", "isbn": "9791199291935", "publisher": "지식프레임", "pubdate": "2026-03-10", "link": "https://product.kyobobook.co.kr/detail/S000219342172", "level": "Seed"}, {"no": 5, "title": "AI 리터러시: 인공지능 필수 지식부터 완벽 활용까지", "author": "김용성", "isbn": "9788965404026", "publisher": "프리렉", "pubdate": "2024-12-02", "link": "https://product.kyobobook.co.kr/detail/S000214845678", "level": "Seed"}, {"no": 6, "title": "AI 비즈니스 트렌드 2025", "author": "이예림 , 이소영 , 임종진 , 한지혜", "isbn": "9791164847297", "publisher": "매일경제신문사", "pubdate": "2024-11-15", "link": "https://product.kyobobook.co.kr/detail/S000214724356", "level": "Seed"}, {"no": 7, "title": "AI 상식 사전", "author": "김지현", "isbn": "9791192742502", "publisher": "크레타", "pubdate": "2025-06-27", "link": "https://product.kyobobook.co.kr/detail/S000216841231", "level": "Seed"}, {"no": 8, "title": "AI 최전선(AI First)", "author": "애덤 브로트먼, 앤디 색", "isbn": "9791155818961", "publisher": "윌북", "pubdate": "2026-04-05", "link": "https://product.kyobobook.co.kr/detail/S000219468791", "level": "Seed"}, {"no": 9, "title": "AI로 차트 그래프 인포그래픽 한 번에 끝내기", "author": "이현", "isbn": "9791193000861", "publisher": "천그루숲", "pubdate": "2026-01-30", "link": "https://product.kyobobook.co.kr/detail/S000219080761", "level": "Seed"}, {"no": 10, "title": "AI와 친한 아이가 살아남습니다", "author": "신재현 , 공혜정", "isbn": "9791164848485", "publisher": "매일경제신문사", "pubdate": "2026-01-25", "link": "https://product.kyobobook.co.kr/detail/S000219025064", "level": "Seed"}, {"no": 11, "title": "그림으로 배우는 생성형 AI", "author": "프리양카 베르가디아 외", "isbn": "9791175790476", "publisher": "한빛미디어", "pubdate": "2026-04-13", "link": "https://product.kyobobook.co.kr/detail/S000219713793", "level": "Seed"}, {"no": 12, "title": "먼저 온 미래", "author": "장강명", "isbn": "9788962626605", "publisher": "동아시아", "pubdate": "2025-06-26", "link": "https://product.kyobobook.co.kr/detail/S000216885989", "level": "Seed"}, {"no": 13, "title": "문과의 언어로 풀어낸 AI 필수 용어 56", "author": "남규택", "isbn": "9791199104747", "publisher": "파이돈", "pubdate": "2025-10-13", "link": "https://product.kyobobook.co.kr/detail/S000218055222", "level": "Seed"}, {"no": 14, "title": "민들레 Vol.159 : AI 시대, 교육과 인간의 길", "author": "민들레 편집부", "isbn": "9791191621259", "publisher": "민들레", "pubdate": "2026-03-01", "link": "https://product.kyobobook.co.kr/detail/S000219391237", "level": "Seed"}, {"no": 15, "title": "박태웅의 AI 강의 2026", "author": "박태웅", "isbn": "9791157848676", "publisher": "한빛비즈", "pubdate": "2026-03-20", "link": "https://product.kyobobook.co.kr/detail/S000219446416", "level": "Seed"}, {"no": 16, "title": "윤리적인 인공지능", "author": "안성진, 권정인 외", "isbn": "9791158087906", "publisher": "자유아카데미", "pubdate": "2026-01-02", "link": "https://product.kyobobook.co.kr/detail/S000218918178", "level": "Seed"}, {"no": 17, "title": "차별하는 데이터 : 상관관계, 이웃, 새로운 인식의 정치", "author": "엔디 희경 전", "isbn": "9791194232339", "publisher": "워크룸프레스", "pubdate": "2026-01-05", "link": "https://product.kyobobook.co.kr/detail/S000218964220", "level": "Seed"}, {"no": 18, "title": "처음 만나는 바이브 코딩 X MCP", "author": "김동한", "isbn": "9791130398051", "publisher": "박영사", "pubdate": "2026-03-30", "link": "https://product.kyobobook.co.kr/detail/S000219470421", "level": "Seed"}, {"no": 19, "title": "출근길에 읽고 퇴근길에 완성하는 바이브 코딩", "author": "노승헌", "isbn": "9788966265183", "publisher": "THE TIES", "pubdate": "2026-02-02", "link": "https://product.kyobobook.co.kr/detail/S000219071696", "level": "Seed"}, {"no": 20, "title": "클로드 코드를 활용한 바이브 코딩 완벽 입문", "author": "히라카와 토모히데", "isbn": "9791158396688", "publisher": "위키북스", "pubdate": "2026-03-12", "link": "https://product.kyobobook.co.kr/detail/S000219349783", "level": "Seed"}, {"no": 21, "title": "피지컬 AI 메가 트렌드", "author": "최홍섭 , 원미르", "isbn": "9791175910331", "publisher": "위즈덤하우스", "pubdate": "2026-01-28", "link": "https://product.kyobobook.co.kr/detail/S000219115073", "level": "Seed"}, {"no": 22, "title": "AGI 시대와 인간의 미래", "author": "맹성현", "isbn": "9791190000000", "publisher": "헤이북스", "pubdate": "2024-06-05", "link": "https://product.kyobobook.co.kr/detail/S000213398879", "level": "심화"}, {"no": 23, "title": "AI × 인간지능의 시대", "author": "김상균", "isbn": "9791192488653", "publisher": "베가북스", "pubdate": "2024-04-17", "link": "https://product.kyobobook.co.kr/detail/S000212923906", "level": "심화"}, {"no": 24, "title": "AI 디지털 교육 트렌드 리포트 2026", "author": "박기현 외", "isbn": "9791163467854", "publisher": "테크빌교육", "pubdate": "2026-01-09", "link": "https://product.kyobobook.co.kr/detail/S000218938609", "level": "심화"}, {"no": 25, "title": "AI 시대의 질문력, 프롬프트 엔지니어링", "author": "류한석", "isbn": "9791190488617", "publisher": "코리아닷컴", "pubdate": "2025-08-12", "link": "https://product.kyobobook.co.kr/detail/S000217048849", "level": "심화"}, {"no": 26, "title": "AI 시대의 팀장은 다르게 일합니다", "author": "김현", "isbn": "9788927813569", "publisher": "중앙북스", "pubdate": "2026-01-30", "link": "https://product.kyobobook.co.kr/detail/S000219080456", "level": "심화"}, {"no": 27, "title": "AI 코리아 2025", "author": "김상균 외", "isbn": "9791171520602", "publisher": "파지트", "pubdate": "2024-11-01", "link": "https://product.kyobobook.co.kr/detail/S000214614606", "level": "심화"}, {"no": 28, "title": "AI 트랜스포메이션", "author": "케이트리", "isbn": "9791194587057", "publisher": "제이펍", "pubdate": "2025-03-28", "link": "https://product.kyobobook.co.kr/detail/S000216042931", "level": "심화"}, {"no": 29, "title": "AI 프로덕트는 어떻게 만들어지는가", "author": "류인태 , 김예림 , 임나정", "isbn": "9791175790414", "publisher": "한빛미디어", "pubdate": "2026-04-10", "link": "https://product.kyobobook.co.kr/detail/S000219598383", "level": "심화"}, {"no": 30, "title": "AI 프로젝트 100% 성공을 위한 체크리스트 17", "author": "유진호 외", "isbn": "9791189909666", "publisher": "책만", "pubdate": "2026-01-30", "link": "https://product.kyobobook.co.kr/detail/S000219059344", "level": "심화"}, {"no": 31, "title": "AI워커스: 리디자인", "author": "김아람", "isbn": "9791193674369", "publisher": "스마트북스", "pubdate": "2026-03-06", "link": "https://product.kyobobook.co.kr/detail/S000219335705", "level": "심화"}, {"no": 32, "title": "AX 리더십", "author": "김경수", "isbn": "9791169582360", "publisher": "라온북", "pubdate": "2025-11-06", "link": "https://product.kyobobook.co.kr/detail/S000218278602", "level": "심화"}, {"no": 33, "title": "AX 전략 마스터클래스", "author": "원유현", "isbn": "9791157848362", "publisher": "한빛비즈", "pubdate": "2025-11-11", "link": "https://product.kyobobook.co.kr/detail/S000218305065", "level": "심화"}, {"no": 34, "title": "Dify AI, 코드 없는 미래", "author": "김정욱", "isbn": "9791199529823", "publisher": "한빛미디어", "pubdate": "2025-12-01", "link": "https://product.kyobobook.co.kr/detail/S000218643002", "level": "심화"}, {"no": 35, "title": "넥서스", "author": "유발 하라리", "isbn": "9791194330424", "publisher": "김영사", "pubdate": "2024-10-11", "link": "https://product.kyobobook.co.kr/detail/S000214465905", "level": "심화"}, {"no": 36, "title": "생성형 AI 시대 기업이 살아남는 법", "author": "박주원", "isbn": "9791199118072", "publisher": "바다위의정원", "pubdate": "2026-02-10", "link": "https://product.kyobobook.co.kr/detail/S000219188319", "level": "심화"}, {"no": 37, "title": "시민 개발자의 시대, 생성형 AI 업무 자동화", "author": "김우현(비현코)", "isbn": "9788931483727", "publisher": "영진닷컴", "pubdate": "2026-04-22", "link": "https://ebook-product.kyobobook.co.kr/dig/epd/ebook/E000012887333", "level": "심화"}, {"no": 38, "title": "업무 생산성을 확 높이는 AI 서비스", "author": "김종철", "isbn": "9788931586879", "publisher": "성안당", "pubdate": "2025-01-15", "link": "https://product.kyobobook.co.kr/detail/S000215097044", "level": "심화"}, {"no": 39, "title": "엔비디아 웨이", "author": "이덕주", "isbn": "9791140709908", "publisher": "더퀘스트", "pubdate": "2024-07-25", "link": "https://product.kyobobook.co.kr/detail/S000213805237", "level": "심화"}, {"no": 40, "title": "최고의 프롬프트 엔지니어링 강의", "author": "김진중", "isbn": "9791194084006", "publisher": "리코맨드", "pubdate": "2024-01-17", "link": "https://product.kyobobook.co.kr/detail/S000213362002", "level": "심화"}, {"no": 41, "title": "AGI 시대의 가추적 사유", "author": "서준호", "isbn": "9791143025128", "publisher": "커뮤니케이션북스", "pubdate": "2026-04-22", "link": "https://product.kyobobook.co.kr/detail/S000219751444", "level": "고급"}, {"no": 42, "title": "AI 에이전트 생태계", "author": "조쉬(이주환)", "isbn": "9791193229347", "publisher": "로드북", "pubdate": "2025-08-04", "link": "https://product.kyobobook.co.kr/detail/S000217098357", "level": "고급"}, {"no": 43, "title": "AI 에이전트, 초개인화 경험을 설계하라", "author": "안용일, 유성진, 최호규", "isbn": "9788925569451", "publisher": "알에이치코리아", "pubdate": "2026-04-10", "link": "https://product.kyobobook.co.kr/detail/S000219653338", "level": "고급"}, {"no": 44, "title": "AI 이후의 세계", "author": "헨리 키신저 외", "isbn": "9791155816066", "publisher": "윌북", "pubdate": "2023-05-22", "link": "https://product.kyobobook.co.kr/detail/S000201553092", "level": "고급"}, {"no": 45, "title": "AI시대 진로의 탄생", "author": "한민정", "isbn": "9791199663619", "publisher": "나이스에듀", "pubdate": "2026-03-25", "link": "https://product.kyobobook.co.kr/detail/S000219570492", "level": "고급"}, {"no": 46, "title": "AX 설계의 법칙: 기술을 넘어 구조로", "author": "박영용", "isbn": "예정", "publisher": "퍼플", "pubdate": "2026-05-01", "link": "https://product.kyobobook.co.kr/detail/S000219617100", "level": "고급"}, {"no": 47, "title": "가상 면접 사례로 배우는 생성형 AI 서비스 설계", "author": "알리 아미니안 외", "isbn": "9788966265213", "publisher": "인사이트", "pubdate": "2026-03-12", "link": "https://product.kyobobook.co.kr/detail/S000219386206", "level": "고급"}, {"no": 48, "title": "더 커밍 웨이브", "author": "무스타파 술래이만", "isbn": "9791160079982", "publisher": "한스미디어", "pubdate": "2024-01-11", "link": "https://product.kyobobook.co.kr/detail/S000211812703", "level": "고급"}, {"no": 49, "title": "생성형 AI를 위한 프롬프트 엔지니어링", "author": "제임스 피닉스 외", "isbn": "9791169213998", "publisher": "한빛미디어", "pubdate": "2025-06-23", "link": "https://product.kyobobook.co.kr/detail/S000216858506", "level": "고급"}, {"no": 50, "title": "신뢰할 수 있는 AI와 에이전트 RAG", "author": "정천수", "isbn": "9791143023353", "publisher": "커뮤니케이션북스", "pubdate": "2026-04-09", "link": "https://product.kyobobook.co.kr/detail/S000219615463", "level": "고급"}];
+
+const state = {
+  initial: new Set(),
+  level: new Set(),
+  search: '',
+  sortKey: null,
+  sortDir: 'asc'
+};
+
+const LEVEL_ORDER = ['Seed', '심화', '고급'];
+const LEVEL_CLASS = {'Seed':'level-seed', '심화':'level-deep', '고급':'level-advanced'};
+const BADGE_CLASS = {'Seed':'badge-seed', '심화':'badge-deep', '고급':'badge-advanced'};
+
+const LEVEL_INFO = {
+  'Seed': {
+    cls: 'seed',
+    def: 'AI·데이터 개념 이해, 리터러시, 기본 도구 사용, 질문법, 트렌드 이해, AI 시대 변화, 윤리 등 AI/AX 기초 이해와 기본 활용을 위한 입문 단계',
+    crit: 'AI 개념 이해, 기본 기능 체험, 기본 프롬프트, 전 구성원 대상 리터러시, AI 윤리, AI 트렌드, ChatGPT 기본 기능, 단일 AI 도구 사용법'
+  },
+  '심화': {
+    cls: 'deep',
+    def: '업무 생산성 향상, 직무별 적용, 프롬프트 엔지니어링, 노코드 분석, Copilot·ChatGPT·디자인 AI 등 실무 활용 단계. 업무·직무 맥락에 AI/데이터 도구를 적용해 산출물을 만드는 실무 적용 단계',
+    crit: 'ChatGPT/Claude/Gemini/Copilot, Figma/Midjourney, 노코드 AI 데이터분석 실무, 프롬프트 엔지니어링, 엑셀·PPT·리서치·콘텐츠 제작, 데이터 분석/시각화, 직무별 적용, AI 기반 기획·마케팅·CS·디자인·프레젠테이션, Python·SQL·크롤링·No-code 자동화 등 실무 도구 활용과 산출물 제작'
+  },
+  '고급': {
+    cls: 'advanced',
+    def: 'AI/데이터를 활용해 워크플로우·에이전트·모델·자동화 구조를 설계·구현하는 프로젝트/고도화 단계. AI 모델·데이터분석·개발·RAG·AI 코딩 등 기술 구현이나 고난도 분석을 다루는 단계',
+    crit: 'AI 에이전트, LangChain/RAG, Cursor AI 웹서비스 제작, 머신러닝/딥러닝, TensorFlow/Keras, 예측/분류/군집 분석, MCP, RAG/LLM, n8n 워크플로우, 바이브코딩, 챗봇 구축, 고급 데이터사이언스, 자동화 설계, 에이전트 구축, 머신러닝/텍스트분석, 다단계 프로젝트 구현, 업무 프로세스 개선'
+  }
+};
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+// 검색어와 일치하는 부분을 <mark>로 감싸 하이라이트한다.
+// HTML 이스케이프와 매칭은 원본 문자열 기준으로 처리해 인코딩 충돌이 없도록 한다.
+function highlight(s, q) {
+  s = String(s == null ? '' : s);
+  if (!q) return escapeHtml(s);
+  const lower = s.toLowerCase();
+  const qLower = q.toLowerCase();
+  if (!qLower) return escapeHtml(s);
+  let out = '';
+  let i = 0;
+  while (i < s.length) {
+    const idx = lower.indexOf(qLower, i);
+    if (idx === -1) { out += escapeHtml(s.slice(i)); break; }
+    out += escapeHtml(s.slice(i, idx));
+    out += '<mark class="hl">' + escapeHtml(s.slice(idx, idx + qLower.length)) + '</mark>';
+    i = idx + qLower.length;
+  }
+  return out;
+}
+
+const HANGUL_INITIALS = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+// Display order: 한글 14자(쌍자음은 평자음으로 묶음) → A-Z → 0-9
+const INITIAL_ORDER = ['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ',
+  'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+  '0-9'];
+
+function getInitial(s) {
+  if (!s) return '';
+  const ch = s.charAt(0);
+  const code = ch.charCodeAt(0);
+  if (code >= 0xAC00 && code <= 0xD7A3) {
+    let ini = HANGUL_INITIALS[Math.floor((code - 0xAC00) / 588)];
+    // 쌍자음은 평자음 칩에 묶음
+    if (ini === 'ㄲ') ini = 'ㄱ';
+    else if (ini === 'ㄸ') ini = 'ㄷ';
+    else if (ini === 'ㅃ') ini = 'ㅂ';
+    else if (ini === 'ㅆ') ini = 'ㅅ';
+    else if (ini === 'ㅉ') ini = 'ㅈ';
+    return ini;
+  }
+  if (/[A-Za-z]/.test(ch)) return ch.toUpperCase();
+  if (/[0-9]/.test(ch)) return '0-9';
+  return '';
+}
+
+function buildChips() {
+  const initCounts = new Map();
+  DATA.forEach(d => {
+    const ini = getInitial(d.title);
+    if (!ini) return;
+    initCounts.set(ini, (initCounts.get(ini) || 0) + 1);
+  });
+  const initVals = INITIAL_ORDER
+    .filter(v => initCounts.has(v))
+    .map(v => ({ value: v, count: initCounts.get(v) }));
+
+  const ic = document.getElementById('filter-initial');
+  ic.innerHTML = '';
+  initVals.forEach(p => {
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.dataset.value = p.value;
+    chip.innerHTML = escapeHtml(p.value) + ' <span class="chip-count">' + p.count + '</span>';
+    chip.addEventListener('click', () => {
+      if (state.initial.has(p.value)) state.initial.delete(p.value);
+      else state.initial.add(p.value);
+      chip.classList.toggle('active');
+      render();
+    });
+    ic.appendChild(chip);
+  });
+
+  const levelCounts = new Map();
+  DATA.forEach(d => {
+    if (!d.level) return;
+    levelCounts.set(d.level, (levelCounts.get(d.level) || 0) + 1);
+  });
+  const lc = document.getElementById('filter-level');
+  lc.innerHTML = '';
+  LEVEL_ORDER.forEach(v => {
+    const chip = document.createElement('span');
+    chip.className = 'chip ' + (LEVEL_CLASS[v] || '');
+    chip.dataset.value = v;
+
+    const text = document.createElement('span');
+    text.textContent = v;
+    chip.appendChild(text);
+
+    const count = document.createElement('span');
+    count.className = 'chip-count';
+    count.textContent = levelCounts.get(v) || 0;
+    chip.appendChild(count);
+
+    const info = document.createElement('span');
+    info.className = 'info-icon';
+    info.textContent = 'i';
+    info.title = v + ' 설명 보기';
+    chip.appendChild(info);
+
+    chip.addEventListener('click', e => {
+      if (e.target === info || info.contains(e.target)) {
+        e.stopPropagation();
+        togglePopover(chip, v);
+        return;
+      }
+      e.stopPropagation();
+      closePopover();
+      if (state.level.has(v)) state.level.delete(v);
+      else state.level.add(v);
+      chip.classList.toggle('active');
+      render();
+    });
+
+    lc.appendChild(chip);
+  });
+}
+
+let currentPopover = null;
+function closePopover() {
+  if (currentPopover) {
+    currentPopover.remove();
+    currentPopover = null;
+  }
+}
+function togglePopover(anchor, level) {
+  if (currentPopover && currentPopover.dataset.level === level) {
+    closePopover();
+    return;
+  }
+  closePopover();
+  const info = LEVEL_INFO[level];
+  if (!info) return;
+  const pop = document.createElement('div');
+  pop.className = 'popover';
+  pop.dataset.level = level;
+  pop.innerHTML =
+    '<div class="pop-head">' +
+      '<span class="pop-title ' + info.cls + '">' + level + ' 난이도(Level)</span>' +
+      '<span class="pop-close" aria-label="닫기">×</span>' +
+    '</div>' +
+    '<h5>정의</h5><p>' + escapeHtml(info.def) + '</p>' +
+    '<h5>주요 판단 기준</h5><p>' + escapeHtml(info.crit) + '</p>';
+  anchor.appendChild(pop);
+  currentPopover = pop;
+  const rect = pop.getBoundingClientRect();
+  if (rect.right > window.innerWidth - 16) {
+    pop.classList.add('flip-right');
+  }
+  pop.querySelector('.pop-close').addEventListener('click', e => {
+    e.stopPropagation();
+    closePopover();
+  });
+}
+document.addEventListener('click', e => {
+  if (!currentPopover) return;
+  if (!currentPopover.contains(e.target) && !e.target.classList.contains('info-icon')) {
+    closePopover();
+  }
+});
+
+function applyFilters() {
+  const q = state.search.trim().toLowerCase();
+  let rows = DATA.filter(d => {
+    if (state.initial.size) {
+      const ini = getInitial(d.title);
+      if (!state.initial.has(ini)) return false;
+    }
+    if (state.level.size && !state.level.has(d.level)) return false;
+    if (q) {
+      const hay = (d.title + ' ' + d.author + ' ' + d.publisher + ' ' + d.isbn).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  if (state.sortKey) {
+    const k = state.sortKey, dir = state.sortDir === 'asc' ? 1 : -1;
+    rows = [...rows].sort((a, b) => {
+      let va = a[k], vb = b[k];
+      if (k === 'no') { va = parseInt(va) || 0; vb = parseInt(vb) || 0; }
+      else if (k === 'level') { va = LEVEL_ORDER.indexOf(va); vb = LEVEL_ORDER.indexOf(vb); }
+      else { va = String(va || ''); vb = String(vb || ''); }
+      if (va < vb) return -1 * dir;
+      if (va > vb) return 1 * dir;
+      return 0;
+    });
+  }
+  return rows;
+}
+
+function render() {
+  const rows = applyFilters();
+  document.getElementById('total-count').textContent = DATA.length;
+  document.getElementById('filtered-count').textContent = rows.length;
+  const tbody = document.getElementById('data-tbody');
+  tbody.innerHTML = '';
+  if (!rows.length) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td colspan="6" class="empty">조건에 맞는 도서가 없습니다.</td>';
+    tbody.appendChild(tr);
+    return;
+  }
+  const q = state.search.trim();
+  rows.forEach((d, i) => {
+    const tr = document.createElement('tr');
+    const titleInner = highlight(d.title, q);
+    const titleHtml = d.link
+      ? '<a href="' + escapeHtml(d.link) + '" target="_blank" rel="noopener">' + titleInner + '</a>'
+      : titleInner;
+    tr.innerHTML =
+      '<td class="col-no">' + (i + 1) + '</td>' +
+      '<td class="col-title">' + titleHtml + '</td>' +
+      '<td class="col-author">' + highlight(d.author, q) + '</td>' +
+      '<td class="col-pub">' + highlight(d.publisher, q) + '</td>' +
+      '<td class="col-date">' + escapeHtml(d.pubdate) + '</td>' +
+      '<td><span class="badge ' + (BADGE_CLASS[d.level] || '') + '">' + escapeHtml(d.level) + '</span></td>';
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById('search-input').addEventListener('input', e => {
+  state.search = e.target.value;
+  render();
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  state.initial.clear(); state.level.clear();
+  state.search = ''; state.sortKey = null;
+  document.getElementById('search-input').value = '';
+  document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('th.sort-asc, th.sort-desc').forEach(t => {
+    t.classList.remove('sort-asc', 'sort-desc');
+    const ind = t.querySelector('.sort-ind');
+    if (ind) ind.textContent = '▼';
+  });
+  closePopover();
+  render();
+});
+
+document.getElementById('print-btn').addEventListener('click', () => window.print());
+
+document.getElementById('export-btn').addEventListener('click', () => {
+  const rows = applyFilters();
+  if (!rows.length) { alert('내려받을 데이터가 없습니다.'); return; }
+  const header = ['순번','도서명','저자','ISBN','출판사','출판일','링크','레벨'];
+  const aoa = [header, ...rows.map((d, i) => [i + 1, d.title, d.author, d.isbn, d.publisher, d.pubdate, d.link, d.level])];
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = [{wch:6},{wch:50},{wch:24},{wch:16},{wch:18},{wch:12},{wch:60},{wch:8}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '북러닝 50선');
+  XLSX.writeFile(wb, '북러닝_AX_Academy 도서 목록.xlsx');
+});
+
+document.querySelectorAll('th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    if (state.sortKey === key) state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+    else { state.sortKey = key; state.sortDir = 'asc'; }
+    document.querySelectorAll('th[data-sort]').forEach(t => {
+      t.classList.remove('sort-asc', 'sort-desc');
+      const ind = t.querySelector('.sort-ind');
+      if (ind) ind.textContent = '▼';
+    });
+    th.classList.add(state.sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+    const ind = th.querySelector('.sort-ind');
+    if (ind) ind.textContent = state.sortDir === 'asc' ? '▲' : '▼';
+    render();
+  });
+});
+
+buildChips();
+render();
+</script>
+</body>
+</html>
