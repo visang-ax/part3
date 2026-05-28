@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>2026년 3분기 비상교육 북러닝 AX Academy 인정 도서 50선</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    background: #f5f6f8;
+    color: #1f2937;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  header.page-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    color: #fff;
+    padding: 28px 32px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  header.page-header h1 {
+    margin: 0 0 6px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  header.page-header .subtitle { font-size: 13px; opacity: 0.9; }
+  .container { padding: 24px 32px 80px; max-width: 1600px; margin: 0 auto; }
+
+  .panel {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid #e5e7eb;
+  }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: flex-start; }
+  .filter-group { min-width: 220px; }
+  .filter-group.flex-wide { flex: 1; min-width: 320px; }
+  .filter-group label.group-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 16px;
+    font-size: 12.5px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.12s;
+    color: #374151;
+    white-space: nowrap;
+    position: relative;
+  }
+  .chip:hover { background: #e5e7eb; }
+  .chip.active {
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
+  }
+  .chip-count {
+    display: inline-block;
+    padding: 0 6px;
+    margin-left: 4px;
+    background: rgba(0,0,0,0.08);
+    color: #6b7280;
+    border-radius: 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .chip.active .chip-count {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+  }
+
+  .search-box-wrap { flex: 1; min-width: 240px; }
+  .search-box-wrap input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+  }
+  .search-box-wrap input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .count-info { font-size: 13px; color: #4b5563; }
+  .count-info strong { color: #111827; font-size: 15px; }
+  .actions { display: flex; gap: 8px; }
+  .btn {
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.12s;
+  }
+  .btn-primary { background: #2563eb; color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-secondary { background: #fff; color: #374151; border-color: #d1d5db; }
+  .btn-secondary:hover { background: #f3f4f6; }
+  .btn-ghost { background: transparent; color: #6b7280; border-color: #e5e7eb; }
+  .btn-ghost:hover { background: #f9fafb; color: #374151; }
+
+  .table-wrap {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid #e5e7eb;
+  }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+  thead th {
+    background: #f9fafb;
+    color: #374151;
+    font-weight: 700;
+    font-size: 12px;
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 2px solid #e5e7eb;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  thead th .sort-ind { color: #9ca3af; margin-left: 4px; font-size: 10px; }
+  thead th.sort-asc .sort-ind, thead th.sort-desc .sort-ind { color: #2563eb; }
+
+  tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+    font-size: 13px;
+  }
+  tbody tr:hover { background: #f9fafb; }
+
+  td.col-no { text-align: center; color: #9ca3af; font-size: 12px; white-space: nowrap; width: 50px; }
+  td.col-title { font-weight: 600; color: #1e3a8a; max-width: 360px; line-height: 1.45; }
+  td.col-title a { color: inherit; text-decoration: none; }
+  td.col-title a:hover { text-decoration: underline; }
+  td.col-author { color: #4b5563; font-size: 12.5px; max-width: 180px; }
+  td.col-pub { color: #6b7280; font-size: 12.5px; white-space: nowrap; }
+  td.col-date { color: #6b7280; font-size: 12.5px; white-space: nowrap; }
+  td.col-link { text-align: center; white-space: nowrap; }
+  td.col-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    color: #1e3a8a;
+    text-decoration: none;
+    font-size: 11.5px;
+    font-weight: 600;
+    transition: all 0.12s;
+  }
+  td.col-link a:hover { background: #e5e7eb; border-color: #9ca3af; }
+
+  .empty { padding: 60px 20px; text-align: center; color: #9ca3af; font-size: 14px; }
+
+  mark.hl {
+    background: #fde68a;
+    color: #92400e;
+    padding: 0 2px;
+    border-radius: 3px;
+    font-weight: 700;
+    box-shadow: 0 0 0 1px #f59e0b inset;
+  }
+
+  @media print {
+    body { background: #fff; }
+    header.page-header { background: #1e3a8a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .panel.filter-panel, .toolbar .actions { display: none !important; }
+    .container { padding: 16px; max-width: 100%; }
+    .table-wrap { box-shadow: none; border: 1px solid #999; }
+    table { min-width: 0; font-size: 11px; }
+    thead th { position: static; }
+    tbody td { padding: 6px 8px; font-size: 11px; }
+    tr { page-break-inside: avoid; }
+    td.col-title { max-width: none; }
+    td.col-link a { background: transparent; border: none; padding: 0; }
+  }
+</style>
+</head>
+<body>
+<header class="page-header">
+  <h1>2026년 3분기 비상교육 북러닝 AX Academy 인정 도서 50선</h1>
+  <div class="subtitle">가나다순 필터와 검색으로 도서를 빠르게 찾고, 결과를 엑셀로 내려받거나 인쇄할 수 있습니다.</div>
+</header>
+
+<div class="container">
+
+  <div class="panel filter-panel">
+    <div class="filter-row">
+      <div class="filter-group flex-wide">
+        <label class="group-label">가나다순 (도서명 첫 글자)</label>
+        <div class="chips" id="filter-initial"></div>
+      </div>
+      <div class="filter-group search-box-wrap">
+        <label class="group-label">검색 (도서명·저자·출판사·ISBN)</label>
+        <input type="text" id="search-input" placeholder="키워드를 입력하세요…">
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="count-info">전체 <strong id="total-count">0</strong>권 중 <strong id="filtered-count">0</strong>권 표시 중</div>
+    <div class="actions">
+      <button class="btn btn-ghost" id="reset-btn">필터 초기화</button>
+      <button class="btn btn-secondary" id="print-btn">🖨 인쇄</button>
+      <button class="btn btn-primary" id="export-btn">⬇ 엑셀 다운로드</button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th data-sort="no">순번<span class="sort-ind">▼</span></th>
+            <th data-sort="title">도서명<span class="sort-ind">▼</span></th>
+            <th data-sort="author">저자<span class="sort-ind">▼</span></th>
+            <th data-sort="publisher">출판사<span class="sort-ind">▼</span></th>
+            <th data-sort="pubdate">출판일<span class="sort-ind">▼</span></th>
+          </tr>
+        </thead>
+        <tbody id="data-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = [{"no": 1, "title": "박태웅의 AI 강의 2025", "author": "박태웅", "isbn": "9791157847679", "publisher": "한빛비즈", "pubdate": "2024-09-30", "link": "https://product.kyobobook.co.kr/detail/S000214298857"}, {"no": 2, "title": "2025 AI 트렌드 100", "author": "Ai100연구소", "isbn": "9791194383314", "publisher": "골든래빗㈜", "pubdate": "2025-06-15", "link": "https://product.kyobobook.co.kr/detail/S000216681173"}, {"no": 3, "title": "2026 AI 사용법", "author": "송진혁 외", "isbn": "9791197840081", "publisher": "상상력집단", "pubdate": "2025-12-08", "link": "https://product.kyobobook.co.kr/detail/S000218880549"}, {"no": 4, "title": "AI 리터러시 교육 어떻게 할 것인가", "author": "권영부", "isbn": "9791199291935", "publisher": "지식프레임", "pubdate": "2026-03-10", "link": "https://product.kyobobook.co.kr/detail/S000219342172"}, {"no": 5, "title": "AI 리터러시: 인공지능 필수 지식부터 완벽 활용까지", "author": "김용성", "isbn": "9788965404026", "publisher": "프리렉", "pubdate": "2024-12-02", "link": "https://product.kyobobook.co.kr/detail/S000214845678"}, {"no": 6, "title": "AI 비즈니스 트렌드 2025", "author": "이예림 , 이소영 , 임종진 , 한지혜", "isbn": "9791164847297", "publisher": "매일경제신문사", "pubdate": "2024-11-15", "link": "https://product.kyobobook.co.kr/detail/S000214724356"}, {"no": 7, "title": "AI 상식 사전", "author": "김지현", "isbn": "9791192742502", "publisher": "크레타", "pubdate": "2025-06-27", "link": "https://product.kyobobook.co.kr/detail/S000216841231"}, {"no": 8, "title": "AI 최전선(AI First)", "author": "애덤 브로트먼, 앤디 색", "isbn": "9791155818961", "publisher": "윌북", "pubdate": "2026-04-05", "link": "https://product.kyobobook.co.kr/detail/S000219468791"}, {"no": 9, "title": "AI로 차트 그래프 인포그래픽 한 번에 끝내기", "author": "이현", "isbn": "9791193000861", "publisher": "천그루숲", "pubdate": "2026-01-30", "link": "https://product.kyobobook.co.kr/detail/S000219080761"}, {"no": 10, "title": "AI와 친한 아이가 살아남습니다", "author": "신재현 , 공혜정", "isbn": "9791164848485", "publisher": "매일경제신문사", "pubdate": "2026-01-25", "link": "https://product.kyobobook.co.kr/detail/S000219025064"}, {"no": 11, "title": "그림으로 배우는 생성형 AI", "author": "프리양카 베르가디아 외", "isbn": "9791175790476", "publisher": "한빛미디어", "pubdate": "2026-04-13", "link": "https://product.kyobobook.co.kr/detail/S000219713793"}, {"no": 12, "title": "먼저 온 미래", "author": "장강명", "isbn": "9788962626605", "publisher": "동아시아", "pubdate": "2025-06-26", "link": "https://product.kyobobook.co.kr/detail/S000216885989"}, {"no": 13, "title": "문과의 언어로 풀어낸 AI 필수 용어 56", "author": "남규택", "isbn": "9791199104747", "publisher": "파이돈", "pubdate": "2025-10-13", "link": "https://product.kyobobook.co.kr/detail/S000218055222"}, {"no": 14, "title": "민들레 Vol.159 : AI 시대, 교육과 인간의 길", "author": "민들레 편집부", "isbn": "9791191621259", "publisher": "민들레", "pubdate": "2026-03-01", "link": "https://product.kyobobook.co.kr/detail/S000219391237"}, {"no": 15, "title": "박태웅의 AI 강의 2026", "author": "박태웅", "isbn": "9791157848676", "publisher": "한빛비즈", "pubdate": "2026-03-20", "link": "https://product.kyobobook.co.kr/detail/S000219446416"}, {"no": 16, "title": "윤리적인 인공지능", "author": "안성진, 권정인 외", "isbn": "9791158087906", "publisher": "자유아카데미", "pubdate": "2026-01-02", "link": "https://product.kyobobook.co.kr/detail/S000218918178"}, {"no": 17, "title": "차별하는 데이터 : 상관관계, 이웃, 새로운 인식의 정치", "author": "엔디 희경 전", "isbn": "9791194232339", "publisher": "워크룸프레스", "pubdate": "2026-01-05", "link": "https://product.kyobobook.co.kr/detail/S000218964220"}, {"no": 18, "title": "처음 만나는 바이브 코딩 X MCP", "author": "김동한", "isbn": "9791130398051", "publisher": "박영사", "pubdate": "2026-03-30", "link": "https://product.kyobobook.co.kr/detail/S000219470421"}, {"no": 19, "title": "출근길에 읽고 퇴근길에 완성하는 바이브 코딩", "author": "노승헌", "isbn": "9788966265183", "publisher": "THE TIES", "pubdate": "2026-02-02", "link": "https://product.kyobobook.co.kr/detail/S000219071696"}, {"no": 20, "title": "클로드 코드를 활용한 바이브 코딩 완벽 입문", "author": "히라카와 토모히데", "isbn": "9791158396688", "publisher": "위키북스", "pubdate": "2026-03-12", "link": "https://product.kyobobook.co.kr/detail/S000219349783"}, {"no": 21, "title": "피지컬 AI 메가 트렌드", "author": "최홍섭 , 원미르", "isbn": "9791175910331", "publisher": "위즈덤하우스", "pubdate": "2026-01-28", "link": "https://product.kyobobook.co.kr/detail/S000219115073"}, {"no": 22, "title": "AGI 시대와 인간의 미래", "author": "맹성현", "isbn": "9791190000000", "publisher": "헤이북스", "pubdate": "2024-06-05", "link": "https://product.kyobobook.co.kr/detail/S000213398879"}, {"no": 23, "title": "AI × 인간지능의 시대", "author": "김상균", "isbn": "9791192488653", "publisher": "베가북스", "pubdate": "2024-04-17", "link": "https://product.kyobobook.co.kr/detail/S000212923906"}, {"no": 24, "title": "AI 디지털 교육 트렌드 리포트 2026", "author": "박기현 외", "isbn": "9791163467854", "publisher": "테크빌교육", "pubdate": "2026-01-09", "link": "https://product.kyobobook.co.kr/detail/S000218938609"}, {"no": 25, "title": "AI 시대의 질문력, 프롬프트 엔지니어링", "author": "류한석", "isbn": "9791190488617", "publisher": "코리아닷컴", "pubdate": "2025-08-12", "link": "https://product.kyobobook.co.kr/detail/S000217048849"}, {"no": 26, "title": "AI 시대의 팀장은 다르게 일합니다", "author": "김현", "isbn": "9788927813569", "publisher": "중앙북스", "pubdate": "2026-01-30", "link": "https://product.kyobobook.co.kr/detail/S000219080456"}, {"no": 27, "title": "AI 코리아 2025", "author": "김상균 외", "isbn": "9791171520602", "publisher": "파지트", "pubdate": "2024-11-01", "link": "https://product.kyobobook.co.kr/detail/S000214614606"}, {"no": 28, "title": "AI 트랜스포메이션", "author": "케이트리", "isbn": "9791194587057", "publisher": "제이펍", "pubdate": "2025-03-28", "link": "https://product.kyobobook.co.kr/detail/S000216042931"}, {"no": 29, "title": "AI 프로덕트는 어떻게 만들어지는가", "author": "류인태 , 김예림 , 임나정", "isbn": "9791175790414", "publisher": "한빛미디어", "pubdate": "2026-04-10", "link": "https://product.kyobobook.co.kr/detail/S000219598383"}, {"no": 30, "title": "AI 프로젝트 100% 성공을 위한 체크리스트 17", "author": "유진호 외", "isbn": "9791189909666", "publisher": "책만", "pubdate": "2026-01-30", "link": "https://product.kyobobook.co.kr/detail/S000219059344"}, {"no": 31, "title": "AI워커스: 리디자인", "author": "김아람", "isbn": "9791193674369", "publisher": "스마트북스", "pubdate": "2026-03-06", "link": "https://product.kyobobook.co.kr/detail/S000219335705"}, {"no": 32, "title": "AX 리더십", "author": "김경수", "isbn": "9791169582360", "publisher": "라온북", "pubdate": "2025-11-06", "link": "https://product.kyobobook.co.kr/detail/S000218278602"}, {"no": 33, "title": "AX 전략 마스터클래스", "author": "원유현", "isbn": "9791157848362", "publisher": "한빛비즈", "pubdate": "2025-11-11", "link": "https://product.kyobobook.co.kr/detail/S000218305065"}, {"no": 34, "title": "Dify AI, 코드 없는 미래", "author": "김정욱", "isbn": "9791199529823", "publisher": "한빛미디어", "pubdate": "2025-12-01", "link": "https://product.kyobobook.co.kr/detail/S000218643002"}, {"no": 35, "title": "넥서스", "author": "유발 하라리", "isbn": "9791194330424", "publisher": "김영사", "pubdate": "2024-10-11", "link": "https://product.kyobobook.co.kr/detail/S000214465905"}, {"no": 36, "title": "생성형 AI 시대 기업이 살아남는 법", "author": "박주원", "isbn": "9791199118072", "publisher": "바다위의정원", "pubdate": "2026-02-10", "link": "https://product.kyobobook.co.kr/detail/S000219188319"}, {"no": 37, "title": "시민 개발자의 시대, 생성형 AI 업무 자동화", "author": "김우현(비현코)", "isbn": "9788931483727", "publisher": "영진닷컴", "pubdate": "2026-04-22", "link": "https://ebook-product.kyobobook.co.kr/dig/epd/ebook/E000012887333"}, {"no": 38, "title": "업무 생산성을 확 높이는 AI 서비스", "author": "김종철", "isbn": "9788931586879", "publisher": "성안당", "pubdate": "2025-01-15", "link": "https://product.kyobobook.co.kr/detail/S000215097044"}, {"no": 39, "title": "엔비디아 웨이", "author": "이덕주", "isbn": "9791140709908", "publisher": "더퀘스트", "pubdate": "2024-07-25", "link": "https://product.kyobobook.co.kr/detail/S000213805237"}, {"no": 40, "title": "최고의 프롬프트 엔지니어링 강의", "author": "김진중", "isbn": "9791194084006", "publisher": "리코맨드", "pubdate": "2024-01-17", "link": "https://product.kyobobook.co.kr/detail/S000213362002"}, {"no": 41, "title": "AGI 시대의 가추적 사유", "author": "서준호", "isbn": "9791143025128", "publisher": "커뮤니케이션북스", "pubdate": "2026-04-22", "link": "https://product.kyobobook.co.kr/detail/S000219751444"}, {"no": 42, "title": "AI 에이전트 생태계", "author": "조쉬(이주환)", "isbn": "9791193229347", "publisher": "로드북", "pubdate": "2025-08-04", "link": "https://product.kyobobook.co.kr/detail/S000217098357"}, {"no": 43, "title": "AI 에이전트, 초개인화 경험을 설계하라", "author": "안용일, 유성진, 최호규", "isbn": "9788925569451", "publisher": "알에이치코리아", "pubdate": "2026-04-10", "link": "https://product.kyobobook.co.kr/detail/S000219653338"}, {"no": 44, "title": "AI 이후의 세계", "author": "헨리 키신저 외", "isbn": "9791155816066", "publisher": "윌북", "pubdate": "2023-05-22", "link": "https://product.kyobobook.co.kr/detail/S000201553092"}, {"no": 45, "title": "AI시대 진로의 탄생", "author": "한민정", "isbn": "9791199663619", "publisher": "나이스에듀", "pubdate": "2026-03-25", "link": "https://product.kyobobook.co.kr/detail/S000219570492"}, {"no": 46, "title": "AX 설계의 법칙: 기술을 넘어 구조로", "author": "박영용", "isbn": "예정", "publisher": "퍼플", "pubdate": "2026-05-01", "link": "https://product.kyobobook.co.kr/detail/S000219617100"}, {"no": 47, "title": "가상 면접 사례로 배우는 생성형 AI 서비스 설계", "author": "알리 아미니안 외", "isbn": "9788966265213", "publisher": "인사이트", "pubdate": "2026-03-12", "link": "https://product.kyobobook.co.kr/detail/S000219386206"}, {"no": 48, "title": "더 커밍 웨이브", "author": "무스타파 술래이만", "isbn": "9791160079982", "publisher": "한스미디어", "pubdate": "2024-01-11", "link": "https://product.kyobobook.co.kr/detail/S000211812703"}, {"no": 49, "title": "생성형 AI를 위한 프롬프트 엔지니어링", "author": "제임스 피닉스 외", "isbn": "9791169213998", "publisher": "한빛미디어", "pubdate": "2025-06-23", "link": "https://product.kyobobook.co.kr/detail/S000216858506"}, {"no": 50, "title": "신뢰할 수 있는 AI와 에이전트 RAG", "author": "정천수", "isbn": "9791143023353", "publisher": "커뮤니케이션북스", "pubdate": "2026-04-09", "link": "https://product.kyobobook.co.kr/detail/S000219615463"}];
+
+const state = {
+  initial: new Set(),
+  search: '',
+  sortKey: null,
+  sortDir: 'asc'
+};
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+// 검색어와 일치하는 부분을 <mark>로 감싸 하이라이트한다.
+// HTML 이스케이프와 매칭은 원본 문자열 기준으로 처리해 인코딩 충돌이 없도록 한다.
+function highlight(s, q) {
+  s = String(s == null ? '' : s);
+  if (!q) return escapeHtml(s);
+  const lower = s.toLowerCase();
+  const qLower = q.toLowerCase();
+  if (!qLower) return escapeHtml(s);
+  let out = '';
+  let i = 0;
+  while (i < s.length) {
+    const idx = lower.indexOf(qLower, i);
+    if (idx === -1) { out += escapeHtml(s.slice(i)); break; }
+    out += escapeHtml(s.slice(i, idx));
+    out += '<mark class="hl">' + escapeHtml(s.slice(idx, idx + qLower.length)) + '</mark>';
+    i = idx + qLower.length;
+  }
+  return out;
+}
+
+const HANGUL_INITIALS = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+// Display order: 한글 14자(쌍자음은 평자음으로 묶음) → A-Z → 0-9
+const INITIAL_ORDER = ['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ',
+  'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+  '0-9'];
+
+function getInitial(s) {
+  if (!s) return '';
+  const ch = s.charAt(0);
+  const code = ch.charCodeAt(0);
+  if (code >= 0xAC00 && code <= 0xD7A3) {
+    let ini = HANGUL_INITIALS[Math.floor((code - 0xAC00) / 588)];
+    // 쌍자음은 평자음 칩에 묶음
+    if (ini === 'ㄲ') ini = 'ㄱ';
+    else if (ini === 'ㄸ') ini = 'ㄷ';
+    else if (ini === 'ㅃ') ini = 'ㅂ';
+    else if (ini === 'ㅆ') ini = 'ㅅ';
+    else if (ini === 'ㅉ') ini = 'ㅈ';
+    return ini;
+  }
+  if (/[A-Za-z]/.test(ch)) return ch.toUpperCase();
+  if (/[0-9]/.test(ch)) return '0-9';
+  return '';
+}
+
+function buildChips() {
+  const initCounts = new Map();
+  DATA.forEach(d => {
+    const ini = getInitial(d.title);
+    if (!ini) return;
+    initCounts.set(ini, (initCounts.get(ini) || 0) + 1);
+  });
+  const initVals = INITIAL_ORDER
+    .filter(v => initCounts.has(v))
+    .map(v => ({ value: v, count: initCounts.get(v) }));
+
+  const ic = document.getElementById('filter-initial');
+  ic.innerHTML = '';
+  initVals.forEach(p => {
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.dataset.value = p.value;
+    chip.innerHTML = escapeHtml(p.value) + ' <span class="chip-count">' + p.count + '</span>';
+    chip.addEventListener('click', () => {
+      if (state.initial.has(p.value)) state.initial.delete(p.value);
+      else state.initial.add(p.value);
+      chip.classList.toggle('active');
+      render();
+    });
+    ic.appendChild(chip);
+  });
+}
+
+function applyFilters() {
+  const q = state.search.trim().toLowerCase();
+  let rows = DATA.filter(d => {
+    if (state.initial.size) {
+      const ini = getInitial(d.title);
+      if (!state.initial.has(ini)) return false;
+    }
+    if (q) {
+      const hay = (d.title + ' ' + d.author + ' ' + d.publisher + ' ' + d.isbn).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  if (state.sortKey) {
+    const k = state.sortKey, dir = state.sortDir === 'asc' ? 1 : -1;
+    rows = [...rows].sort((a, b) => {
+      let va = a[k], vb = b[k];
+      if (k === 'no') { va = parseInt(va) || 0; vb = parseInt(vb) || 0; }
+      else { va = String(va || ''); vb = String(vb || ''); }
+      if (va < vb) return -1 * dir;
+      if (va > vb) return 1 * dir;
+      return 0;
+    });
+  }
+  return rows;
+}
+
+function render() {
+  const rows = applyFilters();
+  document.getElementById('total-count').textContent = DATA.length;
+  document.getElementById('filtered-count').textContent = rows.length;
+  const tbody = document.getElementById('data-tbody');
+  tbody.innerHTML = '';
+  if (!rows.length) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td colspan="5" class="empty">조건에 맞는 도서가 없습니다.</td>';
+    tbody.appendChild(tr);
+    return;
+  }
+  const q = state.search.trim();
+  rows.forEach((d, i) => {
+    const tr = document.createElement('tr');
+    const titleInner = highlight(d.title, q);
+    const titleHtml = d.link
+      ? '<a href="' + escapeHtml(d.link) + '" target="_blank" rel="noopener">' + titleInner + '</a>'
+      : titleInner;
+    tr.innerHTML =
+      '<td class="col-no">' + (i + 1) + '</td>' +
+      '<td class="col-title">' + titleHtml + '</td>' +
+      '<td class="col-author">' + highlight(d.author, q) + '</td>' +
+      '<td class="col-pub">' + highlight(d.publisher, q) + '</td>' +
+      '<td class="col-date">' + escapeHtml(d.pubdate) + '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById('search-input').addEventListener('input', e => {
+  state.search = e.target.value;
+  render();
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  state.initial.clear();
+  state.search = ''; state.sortKey = null;
+  document.getElementById('search-input').value = '';
+  document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('th.sort-asc, th.sort-desc').forEach(t => {
+    t.classList.remove('sort-asc', 'sort-desc');
+    const ind = t.querySelector('.sort-ind');
+    if (ind) ind.textContent = '▼';
+  });
+  render();
+});
+
+document.getElementById('print-btn').addEventListener('click', () => window.print());
+
+document.getElementById('export-btn').addEventListener('click', () => {
+  const rows = applyFilters();
+  if (!rows.length) { alert('내려받을 데이터가 없습니다.'); return; }
+  const header = ['순번','도서명','저자','ISBN','출판사','출판일','링크'];
+  const aoa = [header, ...rows.map((d, i) => [i + 1, d.title, d.author, d.isbn, d.publisher, d.pubdate, d.link])];
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = [{wch:6},{wch:50},{wch:24},{wch:16},{wch:18},{wch:12},{wch:60}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '북러닝 50선');
+  XLSX.writeFile(wb, '북러닝_AX_Academy 도서 목록.xlsx');
+});
+
+document.querySelectorAll('th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    if (state.sortKey === key) state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+    else { state.sortKey = key; state.sortDir = 'asc'; }
+    document.querySelectorAll('th[data-sort]').forEach(t => {
+      t.classList.remove('sort-asc', 'sort-desc');
+      const ind = t.querySelector('.sort-ind');
+      if (ind) ind.textContent = '▼';
+    });
+    th.classList.add(state.sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+    const ind = th.querySelector('.sort-ind');
+    if (ind) ind.textContent = state.sortDir === 'asc' ? '▲' : '▼';
+    render();
+  });
+});
+
+buildChips();
+render();
+</script>
+</body>
+</html>
