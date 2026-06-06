@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=1320, initial-scale=1.0, viewport-fit=cover">
 <title>길가는 교회 탁구 18강 토너먼트</title>
 <style>
   :root{
@@ -31,7 +31,14 @@
     font-display:swap;
   }
 
-  html,body{ width:100%; height:100%; }
+  html,body{
+    width:100%;
+    height:100%;
+    min-width:1320px;
+    min-height:930px;
+    -webkit-text-size-adjust:100%;
+    text-size-adjust:100%;
+  }
 
   body{
     font-family:"GMarketSans","Malgun Gothic","Pretendard","Noto Sans KR",Arial,sans-serif;
@@ -44,10 +51,14 @@
   #stage{
     position:fixed;
     inset:0;
+    width:100vw;
+    height:100vh;
+    height:100dvh;
     display:flex;
     align-items:center;
     justify-content:center;
     background:#fff;
+    overflow:hidden;
   }
 
   #canvas{
@@ -304,6 +315,10 @@
   }
 
   #resetBtn:hover{ background:#edf8f0; }
+
+  @media (max-width:1319px){
+    html,body{ min-width:0; min-height:0; }
+  }
 
   @media print{
     body{ overflow:visible; }
@@ -894,13 +909,27 @@
     recompute(false);
   });
 
+  function viewportSize(){
+    var vv = window.visualViewport;
+    var root = document.documentElement;
+    return {
+      w: Math.max(root.clientWidth || 0, window.innerWidth || 0, vv ? vv.width : 0),
+      h: Math.max(root.clientHeight || 0, window.innerHeight || 0, vv ? vv.height : 0)
+    };
+  }
+
   function fit(){
-    var pad = 20;
-    var scale = Math.min((window.innerWidth - pad*2) / W, (window.innerHeight - pad*2) / H);
+    var size = viewportSize();
+    var pad = size.w >= W ? 20 : 0;
+    var scale = Math.min((size.w - pad*2) / W, (size.h - pad*2) / H);
     canvas.style.transform = "scale(" + Math.min(scale, 1.18) + ")";
   }
 
   window.addEventListener("resize",fit);
+  window.addEventListener("orientationchange",fit);
+  if(window.visualViewport){
+    window.visualViewport.addEventListener("resize",fit);
+  }
   recompute(false);
   fit();
 })();
