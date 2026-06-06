@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1320, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>길가는 교회 탁구 18강 토너먼트</title>
 <style>
   :root{
@@ -34,8 +34,6 @@
   html,body{
     width:100%;
     height:100%;
-    min-width:1320px;
-    min-height:930px;
     -webkit-text-size-adjust:100%;
     text-size-adjust:100%;
   }
@@ -54,15 +52,14 @@
     width:100vw;
     height:100vh;
     height:100dvh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
     background:#fff;
     overflow:hidden;
   }
 
   #canvas{
-    position:relative;
+    position:absolute;
+    left:50%;
+    top:50%;
     width:1320px;
     height:930px;
     transform-origin:center center;
@@ -316,10 +313,6 @@
 
   #resetBtn:hover{ background:#edf8f0; }
 
-  @media (max-width:1319px){
-    html,body{ min-width:0; min-height:0; }
-  }
-
   @media print{
     body{ overflow:visible; }
   }
@@ -350,6 +343,8 @@
 <script>
 (function(){
   var W = 1320, H = 930;
+  var stage = document.getElementById("stage");
+  var canvas = document.getElementById("canvas");
   var teamY = [205, 265, 325, 385, 445, 505, 565, 625, 685];
 
   var COL = {
@@ -911,22 +906,38 @@
 
   function viewportSize(){
     var vv = window.visualViewport;
-    var root = document.documentElement;
+    if(vv){
+      return {
+        w:vv.width,
+        h:vv.height,
+        x:vv.offsetLeft || 0,
+        y:vv.offsetTop || 0
+      };
+    }
     return {
-      w: Math.max(root.clientWidth || 0, window.innerWidth || 0, vv ? vv.width : 0),
-      h: Math.max(root.clientHeight || 0, window.innerHeight || 0, vv ? vv.height : 0)
+      w: window.innerWidth || document.documentElement.clientWidth,
+      h: window.innerHeight || document.documentElement.clientHeight,
+      x:0,
+      y:0
     };
   }
 
   function fit(){
     var size = viewportSize();
-    var pad = size.w >= W ? 20 : 0;
+    var pad = Math.min(20, Math.floor(Math.min(size.w, size.h) * 0.02));
     var scale = Math.min((size.w - pad*2) / W, (size.h - pad*2) / H);
-    canvas.style.transform = "scale(" + Math.min(scale, 1.18) + ")";
+    stage.style.left = size.x + "px";
+    stage.style.top = size.y + "px";
+    stage.style.width = size.w + "px";
+    stage.style.height = size.h + "px";
+    canvas.style.transform = "translate(-50%, -50%) scale(" + Math.min(scale, 1.18) + ")";
   }
 
   window.addEventListener("resize",fit);
-  window.addEventListener("orientationchange",fit);
+  window.addEventListener("orientationchange",function(){
+    fit();
+    setTimeout(fit,250);
+  });
   if(window.visualViewport){
     window.visualViewport.addEventListener("resize",fit);
   }
