@@ -149,6 +149,51 @@
         td[data-tooltip]:hover:before {
             opacity: 1;
         }
+        .pdf-float {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: #d9383a;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(12px);
+            transition: opacity 0.18s ease, transform 0.18s ease;
+            z-index: 50;
+        }
+        .pdf-float.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        .pdf-float__file {
+            position: relative;
+            width: 28px;
+            height: 34px;
+            border-radius: 3px;
+            background: #fff;
+            color: #d9383a;
+            font-size: 9px;
+            font-weight: 700;
+            line-height: 37px;
+            text-align: center;
+        }
+        .pdf-float__file:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            border-top: 9px solid #f2b3b4;
+            border-left: 9px solid transparent;
+        }
     </style>
 </head>
 <body>
@@ -323,6 +368,10 @@
     </table>
 </div>
 
+<a class="pdf-float" href="https://visang-ax.github.io/part3/v-workflow_marketing.pdf" target="_blank" rel="noopener" aria-label="PDF 새 창으로 열기">
+    <span class="pdf-float__file">PDF</span>
+</a>
+
 <script>
     document.querySelectorAll('td').forEach(function(cell) {
         var text = cell.textContent.trim();
@@ -334,6 +383,19 @@
             cell.setAttribute('data-tooltip', '프로세스 개선');
         }
     });
+
+    var pdfFloat = document.querySelector('.pdf-float');
+    var lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', function() {
+        var currentScrollY = window.scrollY;
+        if (currentScrollY > lastScrollY && currentScrollY > 80) {
+            pdfFloat.classList.add('is-visible');
+        } else if (currentScrollY < lastScrollY || currentScrollY <= 80) {
+            pdfFloat.classList.remove('is-visible');
+        }
+        lastScrollY = currentScrollY;
+    }, { passive: true });
 </script>
 </body>
 </html>
