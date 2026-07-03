@@ -504,7 +504,8 @@ function render() {
   tbody.innerHTML = '';
   if (!rows.length) {
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td colspan="7" class="empty">조건에 맞는 과정이 없습니다.</td>';
+    const message = (DATA.length === 0 && localFileNotice) ? localFileNotice : '조건에 맞는 과정이 없습니다.';
+    tr.innerHTML = '<td colspan="7" class="empty">' + escapeHtml(message) + '</td>';
     tbody.appendChild(tr);
     return;
   }
@@ -667,6 +668,7 @@ function resetViewAfterUpload() {
 }
 
 const EXCEL_DATA_FILE = 're_SmartLearning_AX_Academy.xlsx';
+let localFileNotice = '';
 
 function formatExcelUpdateDate(response) {
   const lastModified = response.headers.get('Last-Modified');
@@ -680,6 +682,12 @@ function formatExcelUpdateDate(response) {
 }
 
 async function loadCourseDataFromExcel() {
+  if (location.protocol === 'file:') {
+    localFileNotice = '로컬 파일(file://)로 열면 과정 데이터를 불러올 수 없습니다. 웹서버(GitHub Pages 등)로 열어주세요.';
+    render();
+    return;
+  }
+
   let response;
   try {
     response = await fetch(EXCEL_DATA_FILE, { cache: 'no-cache' });
