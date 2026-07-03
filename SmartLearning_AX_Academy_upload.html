@@ -70,6 +70,21 @@
   }
   .status.error { color: #dc2626; }
   .status.success { color: #16a34a; font-weight: 600; }
+  .btn-view {
+    display: none;
+    margin-top: 18px;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    background: #16a34a;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .btn-view:hover { background: #15803d; }
+  .btn-view.show { display: inline-block; }
 </style>
 </head>
 <body>
@@ -79,6 +94,7 @@
   <button class="btn-upload" id="upload-btn">⬆ 엑셀 업로드</button>
   <input class="file-input-hidden" type="file" id="upload-input" accept=".xlsx,.xls,.csv">
   <div class="status" id="status"></div>
+  <a class="btn-view" id="view-btn" href="https://visang-ax.github.io/part3/re_SmartLearning_AX_Academy.html">AX Academy 인증 과정 보기</a>
 </div>
 
 <script>
@@ -117,6 +133,7 @@ function hasTitle(row) {
 const statusEl = document.getElementById('status');
 const uploadBtn = document.getElementById('upload-btn');
 const uploadInput = document.getElementById('upload-input');
+const viewBtn = document.getElementById('view-btn');
 
 function setStatus(text, kind) {
   statusEl.textContent = text;
@@ -131,6 +148,7 @@ uploadInput.addEventListener('change', async e => {
   if (!file) return;
 
   uploadBtn.disabled = true;
+  viewBtn.classList.remove('show');
   setStatus('엑셀 파일을 확인하는 중입니다…');
 
   try {
@@ -152,11 +170,11 @@ uploadInput.addEventListener('change', async e => {
     const savedInPlace = await saveAsTargetFile(file);
 
     if (savedInPlace) {
-      setStatus(TARGET_FILENAME + ' 저장 완료!\n잠시 후 re_SmartLearning_AX_Academy.html로 이동합니다…', 'success');
-      setTimeout(() => { location.href = 're_SmartLearning_AX_Academy.html'; }, 1200);
+      setStatus(TARGET_FILENAME + ' 저장 완료!', 'success');
     } else {
-      setStatus(TARGET_FILENAME + ' 다운로드 완료!\n다운로드된 파일을 이 폴더로 옮긴 뒤 re_SmartLearning_AX_Academy.html을 열어 확인해 주세요.', 'success');
+      setStatus(TARGET_FILENAME + ' 다운로드 완료!\n다운로드된 파일을 re_SmartLearning_AX_Academy.html과 같은 폴더로 옮겨주세요.', 'success');
     }
+    viewBtn.classList.add('show');
   } catch (err) {
     if (err && err.name === 'AbortError') {
       setStatus('저장이 취소되었습니다.');
@@ -169,8 +187,8 @@ uploadInput.addEventListener('change', async e => {
   }
 });
 
-// Returns true when the file was written directly to a location the user picked
-// (so we can trust it landed next to this page and auto-navigate to the viewer).
+// Returns true when the file was written directly to a location the user picked,
+// false when it was only downloaded (so the caller can adjust the status message).
 async function saveAsTargetFile(file) {
   if (window.showSaveFilePicker) {
     const handle = await window.showSaveFilePicker({
