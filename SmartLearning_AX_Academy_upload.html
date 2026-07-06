@@ -70,6 +70,7 @@
   }
   .status.error { color: #dc2626; }
   .status.success { color: #16a34a; font-weight: 600; }
+  .status.warn { color: #d97706; font-weight: 600; }
   .btn-view {
     display: none;
     margin-top: 18px;
@@ -140,6 +141,11 @@ function setStatus(text, kind) {
   statusEl.className = 'status' + (kind ? ' ' + kind : '');
 }
 
+function getErrorMessage(err) {
+  if (!err) return '알 수 없는 오류';
+  return err.message || String(err);
+}
+
 uploadBtn.addEventListener('click', () => uploadInput.click());
 
 uploadInput.addEventListener('change', async e => {
@@ -152,20 +158,24 @@ uploadInput.addEventListener('change', async e => {
   setStatus('엑셀 파일을 확인하는 중입니다…');
 
   try {
-    const buffer = await file.arrayBuffer();
-    const wb = XLSX.read(buffer, { type: 'array', cellDates: false });
-    const ws = wb.Sheets[wb.SheetNames[0]];
-    const rows = XLSX.utils.sheet_to_json(ws, { defval: '', raw: false });
-    const titledRows = rows.filter(hasTitle);
-    const includedRows = titledRows.filter(shouldImportUploadedRow);
+    if (window.XLSX) {
+      const buffer = await file.arrayBuffer();
+      const wb = XLSX.read(buffer, { type: 'array', cellDates: false });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { defval: '', raw: false });
+      const titledRows = rows.filter(hasTitle);
+      const includedRows = titledRows.filter(shouldImportUploadedRow);
 
-    if (!titledRows.length) {
-      setStatus('과정명이 있는 엑셀 파일인지 확인해 주세요.', 'error');
-      uploadBtn.disabled = false;
-      return;
+      if (!titledRows.length) {
+        setStatus('과정명이 있는 엑셀 파일인지 확인해 주세요.', 'error');
+        uploadBtn.disabled = false;
+        return;
+      }
+
+      setStatus('전체 ' + titledRows.length + '개 과정 중 ' + includedRows.length + '개가 인정여부 YES로 확인되었습니다.\n' + TARGET_FILENAME + '로 저장합니다…');
+    } else {
+      setStatus('엑셀 분석 라이브러리를 불러오지 못해 내용 확인은 건너뜁니다.\n' + TARGET_FILENAME + '로 저장합니다…', 'warn');
     }
-
-    setStatus('전체 ' + titledRows.length + '개 과정 중 ' + includedRows.length + '개가 인정여부 YES로 확인되었습니다.\n' + TARGET_FILENAME + '로 저장합니다…');
 
     downloadAsTargetFile(file);
 
@@ -173,7 +183,14 @@ uploadInput.addEventListener('change', async e => {
     viewBtn.classList.add('show');
   } catch (err) {
     console.error(err);
-    setStatus('엑셀 파일을 처리하는 중 오류가 발생했습니다. 파일 형식을 확인해 주세요.', 'error');
+    try {
+      downloadAsTargetFile(file);
+      setStatus('엑셀 내용을 미리 확인하지 못했지만 ' + TARGET_FILENAME + ' 저장은 완료했습니다.\n상세: ' + getErrorMessage(err), 'warn');
+      viewBtn.classList.add('show');
+    } catch (downloadErr) {
+      console.error(downloadErr);
+      setStatus('엑셀 파일을 처리하는 중 오류가 발생했습니다.\n상세: ' + getErrorMessage(err), 'error');
+    }
   } finally {
     uploadBtn.disabled = false;
   }
