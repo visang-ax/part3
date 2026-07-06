@@ -91,7 +91,7 @@
 <body>
 <div class="card">
   <h1>AX Academy 인증 과정 엑셀 업로드</h1>
-  <p class="desc">엑셀 파일을 선택하면 <code>re_SmartLearning_AX_Academy.xlsx</code>로 저장됩니다.<br>이후 <code>re_SmartLearning_AX_Academy.html</code>을 열면 데이터가 반영됩니다.</p>
+  <p class="desc">엑셀 파일을 선택하면 브라우저에 저장됩니다.<br>이후 <code>re_SmartLearning_AX_Academy.html</code>을 열면 데이터가 반영됩니다.</p>
   <button class="btn-upload" id="upload-btn">⬆ 엑셀 업로드</button>
   <input class="file-input-hidden" type="file" id="upload-input" accept=".xlsx,.xls,.csv">
   <div class="status" id="status"></div>
@@ -100,6 +100,8 @@
 
 <script>
 const TARGET_FILENAME = 're_SmartLearning_AX_Academy.xlsx';
+const STORAGE_ROWS_KEY = 'smartlearningAxAcademyUploadedRows';
+const STORAGE_DATE_KEY = 'smartlearningAxAcademyUpdateDate';
 
 function normalizeUploadKey(value) {
   return String(value || '').replace(/\s+/g, '').replace(/[()[\]{}※*·ㆍ._-]/g, '').toLowerCase();
@@ -126,9 +128,51 @@ function shouldImportUploadedRow(row) {
   return recognitionValue.trim().toUpperCase() === 'YES';
 }
 
+function readUploadValue(row, candidates, fallbackIndex) {
+  const direct = findUploadColumnValue(row, k => candidates.some(c => k === normalizeUploadKey(c)));
+  if (direct !== null) return direct;
+  const values = Object.values(row);
+  return values[fallbackIndex] == null ? '' : String(values[fallbackIndex]).trim();
+}
+
 function hasTitle(row) {
   return findUploadColumnValue(row, k => k.includes('과정명') || k.includes('강의명') || k.includes('콘텐츠명') || k.includes('교육명')) !== null
     || Object.values(row)[3];
+}
+
+function makeUploadRowKey(row) {
+  return String(row.title || '')
+    .normalize('NFKC')
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .replace(/\s+/g, '')
+    .trim()
+    .toLowerCase();
+}
+
+function dedupeUploadedRows(rows) {
+  const seen = new Set();
+  return rows.filter(row => {
+    const key = makeUploadRowKey(row);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function parseUploadedRows(rows) {
+  const parsedRows = rows.filter(shouldImportUploadedRow).map(row => ({
+    cat1: readUploadValue(row, ['카테고리1', '카테고리 1', '대분류'], 1),
+    cat2: readUploadValue(row, ['카테고리2', '카테고리 2', '중분류'], 2),
+    title: readUploadValue(row, ['과정명', '강의명', '콘텐츠명', '교육명'], 3),
+    duration: readUploadValue(row, ['학습시간', '시간', '러닝타임'], 4),
+    contents: readUploadValue(row, ['콘텐츠수', '콘텐츠 수', '차시수', '차시'], 5),
+    instructor: readUploadValue(row, ['강사', '강사명', '교강사'], 6),
+    summary: readUploadValue(row, ['요약', '과정요약', '개요'], 7),
+    goal: readUploadValue(row, ['학습목표', '목표'], 8),
+    target: readUploadValue(row, ['학습대상', '대상'], 9),
+    curriculum: readUploadValue(row, ['커리큘럼', '교육내용', '목차'], 10)
+  })).filter(row => row.title);
+  return dedupeUploadedRows(parsedRows);
 }
 
 const statusEl = document.getElementById('status');
@@ -158,54 +202,40 @@ uploadInput.addEventListener('change', async e => {
   setStatus('엑셀 파일을 확인하는 중입니다…');
 
   try {
-    if (window.XLSX) {
-      const buffer = await file.arrayBuffer();
-      const wb = XLSX.read(buffer, { type: 'array', cellDates: false });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, { defval: '', raw: false });
-      const titledRows = rows.filter(hasTitle);
-      const includedRows = titledRows.filter(shouldImportUploadedRow);
-
-      if (!titledRows.length) {
-        setStatus('과정명이 있는 엑셀 파일인지 확인해 주세요.', 'error');
-        uploadBtn.disabled = false;
-        return;
-      }
-
-      setStatus('전체 ' + titledRows.length + '개 과정 중 ' + includedRows.length + '개가 인정여부 YES로 확인되었습니다.\n' + TARGET_FILENAME + '로 저장합니다…');
-    } else {
-      setStatus('엑셀 분석 라이브러리를 불러오지 못해 내용 확인은 건너뜁니다.\n' + TARGET_FILENAME + '로 저장합니다…', 'warn');
+    if (!window.XLSX) {
+      setStatus('엑셀 분석 라이브러리를 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요.', 'error');
+      return;
     }
 
-    downloadAsTargetFile(file);
+    const buffer = await file.arrayBuffer();
+    const wb = XLSX.read(buffer, { type: 'array', cellDates: false });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { defval: '', raw: false });
+    const titledRows = rows.filter(hasTitle);
+    const parsedRows = parseUploadedRows(rows);
 
-    setStatus(TARGET_FILENAME + ' 저장 완료!', 'success');
+    if (!titledRows.length) {
+      setStatus('과정명이 있는 엑셀 파일인지 확인해 주세요.', 'error');
+      return;
+    }
+
+    if (!parsedRows.length) {
+      setStatus('인정여부 YES인 과정이 없습니다. 엑셀 내용을 확인해 주세요.', 'error');
+      return;
+    }
+
+    localStorage.setItem(STORAGE_ROWS_KEY, JSON.stringify(parsedRows));
+    localStorage.setItem(STORAGE_DATE_KEY, new Date().toISOString());
+
+    setStatus('전체 ' + titledRows.length + '개 과정 중 ' + parsedRows.length + '개가 저장되었습니다.\n아래 버튼으로 과정 목록을 열어 확인해 주세요.', 'success');
     viewBtn.classList.add('show');
   } catch (err) {
     console.error(err);
-    try {
-      downloadAsTargetFile(file);
-      setStatus('엑셀 내용을 미리 확인하지 못했지만 ' + TARGET_FILENAME + ' 저장은 완료했습니다.\n상세: ' + getErrorMessage(err), 'warn');
-      viewBtn.classList.add('show');
-    } catch (downloadErr) {
-      console.error(downloadErr);
-      setStatus('엑셀 파일을 처리하는 중 오류가 발생했습니다.\n상세: ' + getErrorMessage(err), 'error');
-    }
+    setStatus('엑셀 파일을 처리하는 중 오류가 발생했습니다.\n상세: ' + getErrorMessage(err), 'error');
   } finally {
     uploadBtn.disabled = false;
   }
 });
-
-function downloadAsTargetFile(file) {
-  const url = URL.createObjectURL(file);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = TARGET_FILENAME;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
 </script>
 </body>
 </html>

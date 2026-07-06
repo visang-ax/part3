@@ -668,6 +668,8 @@ function resetViewAfterUpload() {
 }
 
 const EXCEL_DATA_FILE = 're_SmartLearning_AX_Academy.xlsx';
+const STORAGE_ROWS_KEY = 'smartlearningAxAcademyUploadedRows';
+const STORAGE_DATE_KEY = 'smartlearningAxAcademyUpdateDate';
 let localFileNotice = '';
 
 function formatExcelUpdateDate(response) {
@@ -681,7 +683,42 @@ function formatExcelUpdateDate(response) {
   return yyyy + '. ' + mm + '. ' + dd;
 }
 
+function formatStoredUpdateDate(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return yyyy + '. ' + mm + '. ' + dd;
+}
+
+function loadStoredUploadedRows() {
+  try {
+    const storedRows = localStorage.getItem(STORAGE_ROWS_KEY);
+    if (!storedRows) return false;
+    const parsedRows = dedupeUploadedRows(JSON.parse(storedRows));
+    if (!parsedRows.length) return false;
+
+    DATA.push(...parsedRows);
+    const updateDate = formatStoredUpdateDate(localStorage.getItem(STORAGE_DATE_KEY));
+    if (updateDate) {
+      document.getElementById('update-note').textContent = '(※ 과정 목록 업데이트일: ' + updateDate + ')';
+    }
+    resetViewAfterUpload();
+    buildChips();
+    updateCat2Dimming();
+    render();
+    return true;
+  } catch (err) {
+    console.warn('브라우저 저장 데이터를 불러오지 못했습니다.', err);
+    return false;
+  }
+}
+
 async function loadCourseDataFromExcel() {
+  if (loadStoredUploadedRows()) return;
+
   if (location.protocol === 'file:') {
     localFileNotice = '로컬 파일(file://)로 열면 과정 데이터를 불러올 수 없습니다. 웹서버(GitHub Pages 등)로 열어주세요.';
     render();
